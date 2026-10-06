@@ -67,9 +67,9 @@ contract; only kinds backed by rendered states receive Semantic Legend
 controls.
 
 State decorations share one top rail: the type sigil and `step` on the left,
-the brand mark at the right corner, and the Viewer's runtime source badge just
-left of the brand. Label layout reserves the badge's width whenever the state
-has verified repository sources.
+the brand mark at the right corner, and the Viewer's runtime citation badge
+just left of the brand. Label layout reserves the badge's width whenever the
+state has citations.
 
 ## Layout budget (v2)
 

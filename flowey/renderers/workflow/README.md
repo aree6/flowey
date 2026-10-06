@@ -25,25 +25,9 @@ legend.
 
 ## Input
 
-Workflow JSON files must set:
-
-```json
-{
-  "schema_version": 2,
-  "diagram_type": "workflow",
-  "meta": {
-    "title": "Agent Tool Call Workflow",
-    "output": "agent-tool-call.html"
-  },
-  "lanes": [],
-  "phases": [],
-  "groups": [],
-  "mainPath": [],
-  "nodes": [],
-  "edges": [],
-  "cards": []
-}
-```
+Workflow JSON files must set `schema_version`, `diagram_type`, `meta`
+(`title`, `output`), `lanes`, `nodes`, and `edges`. Optional: `phases`,
+`groups`, `mainPath`, `cards`, `citations` (per node), and `meta.viewBox`.
 
 Use `schema_version: 2` for new workflows. Its readable layout compiler treats
 every `col` as a logical rank in `0..5` and derives geometry from the measured
@@ -105,8 +89,9 @@ It deliberately omits solver iterations and candidate scores.
 ## Legend
 
 The default legend derives component kinds from `nodes[].type`. Supported
-`meta.legend.entries` keys, in stable order, are `frontend`, `backend`,
-`security`, `messagebus`, `database`, `cloud`, and `external`. Labels and
+`meta.legend.entries` keys, in stable order, are `actor`, `action`,
+`decision`, `record`, `document`, `milestone`, `place`, `outcome`, `group`,
+and `external`. Labels and
 visibility may be overridden through the shared legend contract; only kinds
 backed by rendered nodes receive Semantic Legend controls.
 

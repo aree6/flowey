@@ -9,6 +9,7 @@ const CITATION_NODE_COLLECTIONS = {
   sequence: 'participants',
   dataflow: 'nodes',
   lifecycle: 'states',
+  hierarchy: 'nodes',
 };
 
 function isCitation(value) {

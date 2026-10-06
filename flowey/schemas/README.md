@@ -89,11 +89,12 @@ Supported keys are renderer-owned:
 
 | Renderer | `meta.legend.entries` keys |
 |---|---|
-| Architecture | `frontend`, `backend`, `database`, `cloud`, `security`, `messagebus`, `external` |
-| Workflow | `frontend`, `backend`, `security`, `messagebus`, `database`, `cloud`, `external` |
-| Sequence | `emphasis`, `return`, `security`, `dashed`, `default` |
-| Dataflow | `emphasis`, `security`, `dashed`, `database`, `default` |
+| Architecture | `actor`, `action`, `document`, `milestone`, `decision`, `record`, `place`, `outcome`, `group`, `external` |
+| Workflow | `actor`, `action`, `decision`, `record`, `document`, `milestone`, `place`, `outcome`, `group`, `external` |
+| Sequence | `emphasis`, `return`, `alert`, `dashed`, `default` |
+| Dataflow | `emphasis`, `alert`, `dashed`, `document`, `default` |
 | Lifecycle | `start`, `active`, `waiting`, `decision`, `success`, `failure`, `neutral`, `external` |
+| Hierarchy | `actor`, `action`, `decision`, `milestone`, `place`, `document`, `record`, `outcome`, `group`, `external` |
 
 Labels are presentation only: they do not rename the stable kind, change
 nodes/relationships, or create Semantic Lens edge facts. Sequence message and
@@ -166,8 +167,8 @@ The five diagram schemas reference `common.schema.json#/$defs/...`:
 
 - `id` — element identifiers, pattern `^[a-zA-Z][a-zA-Z0-9_-]*$`
 - `point` — an `[x, y]` pair of numbers (used by `via` and `labelAt`)
-- `componentType` — `frontend`, `backend`, `database`, `cloud`, `security`,
-  `messagebus`, `external`
+- `componentType` — `actor`, `action`, `decision`, `milestone`, `place`,
+  `document`, `record`, `outcome`, `group`, `external`
 - `locale` — a well-formed renderer locale tag (`en` and `zh-CN` are built in;
   any other tag needs a matching `translations` object)
 - `translations` — canonical message key → translated string, for a `locale`
