@@ -20,8 +20,8 @@ const skillRoot = path.resolve(__dirname, '..');
 const cli = path.join(skillRoot, 'bin/flowey.mjs');
 const baseFixture = path.join(skillRoot, 'examples/checkout-platform.base.architecture.json');
 const headFixture = path.join(skillRoot, 'examples/checkout-platform.head.architecture.json');
-const checkedArtifact = path.resolve(skillRoot, '../examples/checkout-platform-delta.html');
-const checkedReceipt = path.resolve(skillRoot, '../examples/checkout-platform-delta.receipt.json');
+const checkedArtifact = path.resolve(skillRoot, 'examples/checkout-platform-delta.html');
+const checkedReceipt = path.resolve(skillRoot, 'examples/checkout-platform-delta.receipt.json');
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'flowey-delta-'));
 
 const read = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -251,7 +251,7 @@ test('change navigator order is exact-ID based, complete, unique, and stable', (
     'component:fraud',
     'relationship:fraud-check',
     'boundary:region:Production region',
-    'boundary:security-group:Checkout trust zone',
+    'boundary:scope:Checkout trust zone',
     'component:checkout',
     'relationship:authorize-payment',
     'relationship:persist-order',
@@ -288,8 +288,8 @@ test('exact identity fails closed instead of guessing relationships or unrelated
 test('evidence-only component changes keep an enabled exact review contract', () => {
   const base = read(baseFixture);
   const head = read(baseFixture);
-  base.components[0].sources = [{ path: 'src/entry.js', line: 1, label: 'baseline' }];
-  head.components[0].sources = [{ path: 'src/entry.js', line: 2, label: 'head' }];
+  base.components[0].citations = [{ label: 'Author notes', detail: 'baseline' }];
+  head.components[0].citations = [{ label: 'Author notes', detail: 'head' }];
   const receipt = compareArchitecture(base, head);
   assert.equal(receipt.changes.components.length, 1);
   assert.equal(receipt.changes.components[0].status, 'evidence-changed');
@@ -394,7 +394,7 @@ test('same-label node id changes remain one removal plus one addition', () => {
   assert.equal(receipt.changes.components.filter((change) => change.headLabel === 'Session Cache' || change.baseLabel === 'Session Cache').length, 2);
 });
 
-test('repository mismatch fails and verified matching revisions remain evidence-bounded', () => {
+test('repository mismatch fails and matching snapshots stay authored', () => {
   const base = read(baseFixture);
   const head = read(headFixture);
   base.meta.repository = { url: 'https://github.com/example/one', revision: 'a'.repeat(40) };
@@ -404,9 +404,10 @@ test('repository mismatch fails and verified matching revisions remain evidence-
     (error) => error instanceof ArchitectureDeltaError && error.code === 'delta/repository-mismatch',
   );
 
-  head.meta.repository.url = 'https://github.com/EXAMPLE/ONE.git/';
-  const receipt = compareArchitecture(base, head, { baseVerified: true, headVerified: true });
-  assert.equal(receipt.proofLevel, 'revision-pinned');
+  // Identity is a plain URL comparison: no forge normalization is applied.
+  head.meta.repository.url = 'https://github.com/example/one';
+  const receipt = compareArchitecture(base, head);
+  assert.equal(receipt.proofLevel, 'authored');
   assert.equal(receipt.summary.provenanceChanged, true);
 });
 
@@ -483,7 +484,7 @@ test('legacy schema-v1 provenance receipts render a generic notice without inven
   assert.throws(() => validateArchitectureDeltaHtml(html.replace(/<aside class="provenance-change"[\s\S]*?<\/aside>/, ''), receipt), ArchitectureDeltaError);
 });
 
-test('repository location representation changes stay redacted in provenance output', () => {
+test('repository location changes fail closed on plain URL identity', () => {
   const base = read(baseFixture);
   const head = read(baseFixture);
   base.meta.repository = {
@@ -494,34 +495,31 @@ test('repository location representation changes stay redacted in provenance out
     url: 'git@github.com:example/one.git',
     revision: 'a'.repeat(40),
   };
-  const receipt = compareArchitecture(base, head, { baseVerified: true, headVerified: true });
-  assert.equal(receipt.summary.provenanceChanged, true);
-  assert.deepEqual(receipt.provenance.changedFields, ['/url']);
-  assert.equal(JSON.stringify(receipt.provenance).includes('github.com'), false);
+  // No forge normalization is applied: different strings are different
+  // repositories, so this fails instead of producing a provenance diff.
+  assert.throws(
+    () => compareArchitecture(base, head),
+    (error) => error instanceof ArchitectureDeltaError && error.code === 'delta/repository-mismatch',
+  );
+
+  head.meta.repository.url = 'https://github.com/example/one';
+  const receipt = compareArchitecture(base, head);
+  assert.equal(receipt.summary.provenanceChanged, false);
+  assert.equal(receipt.provenance, undefined);
 
   const html = renderDelta(receipt);
-  assert.match(html, /\/url: repository location changed/);
+  assert.doesNotMatch(html, /data-provenance-changed="true"/);
   assert.deepEqual(validateArchitectureDeltaHtml(html, receipt), { ok: true, checksPassed: 10, checkCount: 10 });
 });
 
-test('public compare keeps a revision-only provenance change out of graph identities', () => {
+test('public compare rejects repository metadata that schemas no longer accept', () => {
   const data = provenanceFixture();
   const output = path.join(data.root, 'delta.html');
   const result = run([
-    'compare', 'architecture', data.basePath, data.headPath, output,
-    '--repo-root', data.root, '--json',
+    'compare', 'architecture', data.basePath, data.headPath, output, '--json',
   ]);
-  assert.equal(result.status, 0, result.stderr || result.stdout);
-  const receipt = JSON.parse(result.stdout);
-  assert.equal(receipt.summary.provenanceChanged, true);
-  assert.deepEqual(receipt.provenance.changedFields, ['/revision']);
-  assert.deepEqual(receipt.changes, { components: [], connections: [], boundaries: [] });
-  const html = fs.readFileSync(output, 'utf8');
-  assert.match(html, new RegExp(`${data.baseRevision.slice(0, 8)} → ${data.headRevision.slice(0, 8)}`));
-  assert.match(html, /id="review-play"[^>]* disabled/);
-  const deltaSvg = html.match(/<section class="canvas" data-view="delta">([\s\S]*?)<\/section>/)?.[1] || '';
-  assert.doesNotMatch(deltaSvg, /data-delta-state="(?:added|removed|changed|moved|moved-from|rerouted|geometry-changed|evidence-changed)"/);
-  assert.deepEqual(validateArchitectureDeltaHtml(html, receipt), { ok: true, checksPassed: 10, checkCount: 10 });
+  assert.notEqual(result.status, 0, result.stdout);
+  assert.match(result.stderr + result.stdout, /repository/);
 });
 
 test('unchanged provenance preserves the ordinary empty graph state', () => {
@@ -544,37 +542,34 @@ test('unchanged provenance preserves the ordinary empty graph state', () => {
   assert.deepEqual(validateArchitectureDeltaHtml(html, receipt), { ok: true, checksPassed: 10, checkCount: 10 });
 });
 
-test('portable compare retains link settings and uses the same repository identity rules', () => {
+test('portable compare uses plain URL identity without forge normalization', () => {
   const base = read(baseFixture);
   const head = read(headFixture);
-  base.meta.repository = { url: 'https://git.internal/Team/Services/repo.git', revision: 'a'.repeat(40), link_mode: 'local-only' };
-  head.meta.repository = { url: 'https://git.internal:443/Team/Services/repo.git', revision: 'b'.repeat(40), link_mode: 'local-only' };
+  base.meta.repository = { url: 'https://git.internal/Team/Services/repo.git', revision: 'a'.repeat(40) };
+  head.meta.repository = { url: 'https://git.internal/Team/Services/repo.git', revision: 'b'.repeat(40) };
   const canonical = JSON.parse(canonicalArchitectureJson(base));
-  assert.equal(canonical.meta.repository.link_mode, 'local-only');
   assert.equal(canonical.meta.repository.url, 'https://git.internal/Team/Services/repo.git');
-  assert.equal(compareArchitecture(base, head, { baseVerified: true, headVerified: true }).proofLevel, 'revision-pinned');
+  assert.equal(compareArchitecture(base, head).proofLevel, 'authored');
+  // Case differs: without normalization this is a different repository.
   head.meta.repository.url = 'https://git.internal/team/Services/repo.git';
   assert.throws(() => compareArchitecture(base, head), (error) => error.code === 'delta/repository-mismatch');
-  base.meta.repository = { url: 'https://gitee.com/Team/repo', revision: 'a'.repeat(40), provider: 'gitee' };
-  assert.equal(JSON.parse(canonicalArchitectureJson(base)).meta.repository.provider, 'gitee');
 });
 
-test('portable compare preserves literal SCP paths and rejects different Git locations', () => {
+test('compare treats each URL string literally and rejects different locations', () => {
   const base = read(baseFixture);
   const head = read(headFixture);
   for (const [url, other] of [
     ['git@git.internal:Team/repo', 'ssh://git@git.internal/Team/repo'],
-    ['git@git.internal:Team/repo%41', 'git@git.internal:Team/repoA'],
     ['git@git.internal:Team/repo.git.git', 'git@git.internal:Team/repo.git'],
   ]) {
-    base.meta.repository = { url, revision: 'a'.repeat(40), link_mode: 'local-only' };
-    head.meta.repository = { url: other, revision: 'b'.repeat(40), link_mode: 'local-only' };
+    base.meta.repository = { url, revision: 'a'.repeat(40) };
+    head.meta.repository = { url: other, revision: 'b'.repeat(40) };
     const canonical = canonicalArchitectureJson(base);
     assert.equal(JSON.parse(canonical).meta.repository.url, url);
     assert.equal(canonicalArchitectureJson(JSON.parse(canonical)), canonical);
     assert.throws(() => compareArchitecture(base, head), (error) => error.code === 'delta/repository-mismatch');
     head.meta.repository.url = url;
-    assert.equal(compareArchitecture(base, head, { baseVerified: true, headVerified: true }).proofLevel, 'revision-pinned');
+    assert.equal(compareArchitecture(base, head).proofLevel, 'authored');
   }
 });
 

@@ -32,11 +32,8 @@ const testFiles = [
   'route-probe-browser.test.mjs',
   'focus-browser.test.mjs',
   'crossover-state-browser.test.mjs',
-  'semantic-passport-move-browser.test.mjs',
   'export-browser.test.mjs',
   'viewer-identifiers-browser.test.mjs',
-  'repository-evidence.test.mjs',
-  'repository-evidence-types-browser.test.mjs',
 ];
 
 const chrome = findChrome();

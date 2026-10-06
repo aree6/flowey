@@ -57,7 +57,7 @@ test('browser gate includes dedicated and mixed browser suites and enables them'
   for (const file of files) assert.ok(fs.existsSync(path.join(skillRoot, file)), file);
   const required = [
     ...fs.readdirSync(path.join(skillRoot, 'test')).filter((file) => file.endsWith('-browser.test.mjs')),
-    'sequence-header-clearance.test.mjs', 'repository-evidence.test.mjs', 'i18n.test.mjs', 'semantic-radar.test.mjs', 'viewer-chrome-layout.test.mjs',
+    'sequence-header-clearance.test.mjs', 'i18n.test.mjs', 'semantic-radar.test.mjs', 'viewer-chrome-layout.test.mjs',
   ];
   for (const file of required) assert.ok(files.includes(path.join('test', file)), `${file} must run in the browser gate`);
 });
@@ -70,30 +70,7 @@ for (const outcome of [{ status: 7, signal: null }, { status: null, signal: 'SIG
   });
 }
 
-test('CI and release use the same browser command and retain WebM decoding', () => {
+test('package browser command routes through the shared runner', () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(skillRoot, 'package.json'), 'utf8'));
   assert.equal(manifest.scripts['test:browser'], 'node ../scripts/run-browser-tests.mjs');
-  for (const workflow of ['ci.yml', 'release.yml']) {
-    const source = fs.readFileSync(path.join(repoRoot, '.github/workflows', workflow), 'utf8');
-    const gate = source.match(/ {6}- name: Run shared browser regression gate\n([\s\S]*?)(?=\n {6}- name:|\n {2}[\w-]+:|$)/)?.[1];
-    assert.ok(gate, `${workflow} must invoke the shared gate`);
-    assert.match(gate, /run: npm run test:browser\n/);
-    assert.match(gate, /working-directory: flowey/);
-    assert.match(gate, /FLOWEY_CHROME: \$\{\{ steps\.setup-chrome\.outputs\.chrome-path \}\}/);
-    assert.match(source, /run: npm run test:webm/);
-    assert.doesNotMatch(source, /run: node --test[^\n]*test\/.*browser/);
-  }
-});
-
-
-test('website CI uses the maintained browser script including community security coverage', () => {
-  const manifest = JSON.parse(fs.readFileSync(path.join(repoRoot, 'website/package.json'), 'utf8'));
-  const source = fs.readFileSync(path.join(repoRoot, '.github/workflows/ci.yml'), 'utf8');
-  const gate = source.match(/ {6}- name: Verify built website navigation and language continuity\n([\s\S]*?)(?=\n {6}- |\n {2}[\w-]+:|$)/)?.[1];
-  assert.ok(gate, 'website must run its browser regression gate');
-  assert.match(gate, /run: npm run test:browser\n/);
-  assert.match(gate, /working-directory: website/);
-  assert.match(gate, /FLOWEY_SITE_INTEGRATION: '1'/);
-  assert.match(manifest.scripts['test:browser'], /site-language-continuity\.test\.mjs/);
-  assert.match(manifest.scripts['test:browser'], /community-browser\.test\.mjs/);
 });

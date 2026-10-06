@@ -129,7 +129,7 @@ test('repair receipt: validate and deliver share exact Clean Flow evidence while
   assert.deepEqual(fs.readdirSync(tmp).filter((name) => name.startsWith('.flowey-delivery-')), []);
 });
 
-test('repair receipt: repository evidence failures retain a stable rule and exact repair', () => {
+test('repair receipt: removed repository fields fail schema validation with an exact repair', () => {
   const source = JSON.parse(fs.readFileSync(path.join(skillRoot, 'examples/web-app.architecture.json'), 'utf8'));
   source.meta.repository = {
     url: 'https://github.com/example/repository',
@@ -142,9 +142,8 @@ test('repair receipt: repository evidence failures retain a stable rule and exac
   assert.equal(result.status, 1);
   assert.equal(result.stderr, '');
   const repair = receipt(result).diagnostics[0];
-  assert.equal(repair.code, 'repository-evidence/root-required');
-  assert.deepEqual(repair.subject, { surface: 'repository-evidence', path: '/meta/repository' });
-  assert.deepEqual(repair.supportedFixes, ['pass --repo-root with the matching local Git checkout']);
+  assert.match(repair.code, /schema\//);
+  assert.ok(repair.supportedFixes.length > 0, 'schema failures must name a supported fix');
 });
 
 test('repair receipt: public validate reports borderline desktop readability with a supported fix', () => {

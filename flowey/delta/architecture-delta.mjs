@@ -1,5 +1,3 @@
-import { parseRepositoryRemote } from '../renderers/shared/repository-location.mjs';
-
 const COMPARATOR_VERSION = 1;
 const CANONICAL_VERSION = 1;
 
@@ -35,10 +33,9 @@ function sortedBy(values, keyFor) {
 
 function normalizeRepository(repository) {
   if (!repository) return undefined;
-  const location = parseRepositoryRemote(repository.url, { authored: true });
-  const url = location?.url || String(repository.url || '');
+  const url = String(repository.url || '');
   return {
-    url: location?.provider === 'github' ? url.toLowerCase() : url,
+    url,
     revision: String(repository.revision || '').toLowerCase(),
     ...(repository.provider !== undefined ? { provider: repository.provider } : {}),
     ...(repository.link_mode !== undefined ? { link_mode: repository.link_mode } : {}),
@@ -74,7 +71,7 @@ function provenanceChange(base, head) {
 function normalizeComponent(component) {
   return {
     ...component,
-    ...(Array.isArray(component.sources) ? { sources: sortedObjects(component.sources) } : {}),
+    ...(Array.isArray(component.citations) ? { citations: sortedObjects(component.citations) } : {}),
   };
 }
 
@@ -164,7 +161,7 @@ function boundaryIndex(boundaries, side) {
 
 function normalizedField(item, field) {
   const value = item?.[field];
-  if (field === 'sources' && Array.isArray(value)) return sortedObjects(value);
+  if (field === 'citations' && Array.isArray(value)) return sortedObjects(value);
   if (field === 'wraps' && Array.isArray(value)) return sorted(value);
   return value;
 }
@@ -182,7 +179,7 @@ function fieldChanges(before, after, groups) {
 
 const COMPONENT_FIELDS = {
   semantic: ['type', 'label', 'sublabel', 'tag', 'brand', 'icon'],
-  evidence: ['sources'],
+  evidence: ['citations'],
   geometry: ['row', 'col', 'pos', 'size'],
 };
 const CONNECTION_FIELDS = {
@@ -274,7 +271,7 @@ export function compareArchitecture(base, head, evidence = {}) {
 
   const baseRepository = normalizeRepository(base.meta?.repository);
   const headRepository = normalizeRepository(head.meta?.repository);
-  const identity = (repository) => parseRepositoryRemote(repository.url, { authored: true })?.identity || repository.url;
+  const identity = (repository) => String(repository.url || '');
   if (baseRepository && headRepository && identity(baseRepository) !== identity(headRepository)) {
     fail('delta/repository-mismatch', 'The snapshots name different repositories.', {
       baseRepository: baseRepository.url,
@@ -282,12 +279,7 @@ export function compareArchitecture(base, head, evidence = {}) {
       supportedFixes: ['compare snapshots from the same repository or remove repository evidence from both inputs'],
     });
   }
-  const proofLevel = baseRepository && headRepository
-    && evidence.baseVerified && evidence.headVerified
-    && /^[a-f0-9]{40}$/.test(baseRepository.revision)
-    && /^[a-f0-9]{40}$/.test(headRepository.revision)
-    ? 'revision-pinned'
-    : 'authored';
+  const proofLevel = 'authored';
 
   const components = compareEntities(baseComponents, headComponents, 'component', COMPONENT_FIELDS, (id, before, after) => ({
     id,

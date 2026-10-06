@@ -37,12 +37,11 @@ test('schema policy documents the workflow and lifecycle v1/v2 compatibility bou
   assert.doesNotMatch(schemaReadme, /schema_version` is `"const": 1`/);
 });
 
-test('deployment ownership stays explicit, fact-backed, and cannot be removed to pass', () => {
-  assert.match(authoringDefaults, /`meta\.engineering_profile` for an ordinary system overview/);
-  assert.match(authoringDefaults, /engineering profile\]\(authoring-contract\.md#engineering-profile-default\)/);
-  assert.match(authoringContract, /Region,[\s\S]*cluster,[\s\S]*security boundary[\s\S]*do not[\s\S]*engineering profile/i);
-  assert.match(authoringContract, /production deployment topology, ownership handoff, or\s+fail-closed deployment review/i);
-  assert.match(authoringContract, /do not remove the engineering profile merely to pass validation/i);
+test('trust boundaries stay explicit scope frames and cannot be removed to pass', () => {
+  assert.match(authoringDefaults, /trust or persistence boundary/);
+  const citations = fs.readFileSync(path.join(skillRoot, 'references', 'citations-authoring.md'), 'utf8');
+  assert.match(citations, /kind: "region"[\s\S]*kind:\s*"scope"/);
+  assert.match(citations, /boundaries and cards are added\s+only when they\s+answer a real reader question/);
 });
 
 test('visual-check stays a pending sidecar receipt instead of a polish claim', () => {
