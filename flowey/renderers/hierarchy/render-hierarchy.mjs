@@ -126,7 +126,7 @@ const legendEntries = resolveLegend(hierarchy.meta?.legend, LEGEND_CATALOG, pres
 const legendWidth = Math.max(320, layout.width);
 const legendExtra = legendFootprint(legendEntries, { width: legendWidth - 80 }).extraHeight;
 
-let viewBox = [Math.ceil(layout.width), Math.ceil(layout.height + legendExtra + 56)];
+let viewBox = [Math.ceil(layout.width), Math.ceil(layout.height + legendExtra + 96)];
 if (Array.isArray(hierarchy.meta?.viewBox)) {
   const [authoredW, authoredH] = hierarchy.meta.viewBox;
   if (authoredW < viewBox[0] || authoredH < viewBox[1]) {
