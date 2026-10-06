@@ -4104,14 +4104,14 @@ svg[data-preset="signal-flow"] [data-legend-kind][data-legend-selected] [data-le
 svg[data-preset="blueprint"] [data-legend-hit],
 svg[data-preset="blueprint"] [data-legend-count-badge] rect { rx: 0; filter: none; }
 svg[data-legend-preview-active] [data-node-id],
-svg[data-legend-preview-active] [data-edge-from] { filter: saturate(0); }
+svg[data-legend-preview-active] [data-edge-from] { filter: saturate(0) brightness(0.85); }
 svg[data-legend-preview-active] [data-legend-preview-match] { opacity: 1; filter: none; }
 svg[data-legend-preview-active] [data-legend-preview-peer] { opacity: 0.62; }
 svg[data-legend-preview-active] [data-legend-preview-selected] {
   filter: drop-shadow(0 0 8px var(--document-stroke));
 }
 svg[data-lens-active] [data-node-id],
-svg[data-lens-active] [data-edge-from] { filter: saturate(0); }
+svg[data-lens-active] [data-edge-from] { filter: saturate(0) brightness(0.85); }
 svg[data-lens-active] [data-lens-match] { opacity: 1; filter: none; }
 svg[data-lens-active] [data-lens-peer] { opacity: 0.62; }
 svg[data-lens-active] [data-lens-selected] {
@@ -4170,14 +4170,14 @@ html[data-embed="true"] .semantic-lens-overlay { display: none; }
    export still observe exactly one edge, then mirror reader emphasis from
    the paired foreground path in this presentation-only wrapper. */
 svg[data-legend-preview-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"],
-svg[data-lens-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { filter: saturate(0); }
+svg[data-lens-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { filter: saturate(0) brightness(0.85); }
 svg[data-legend-preview-active] [data-graph-role="automatic-crossover"]:has(> [data-legend-preview-match]) > [data-graph-role="automatic-crossover-underlay"],
 svg[data-lens-active] [data-graph-role="automatic-crossover"]:has(> [data-lens-match]) > [data-graph-role="automatic-crossover-underlay"] { opacity: 1; }
 svg[data-legend-preview-active] [data-graph-role="automatic-crossover"]:has(> [data-legend-preview-peer]) > [data-graph-role="automatic-crossover-underlay"],
 svg[data-lens-active] [data-graph-role="automatic-crossover"]:has(> [data-lens-peer]) > [data-graph-role="automatic-crossover-underlay"] { opacity: 0.62; }
 svg[data-focus-active] [data-node-id],
-svg[data-focus-active] [data-edge-from] { filter: saturate(0); }
-svg[data-focus-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { filter: saturate(0); }
+svg[data-focus-active] [data-edge-from] { filter: saturate(0) brightness(0.85); }
+svg[data-focus-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { filter: saturate(0) brightness(0.85); }
 svg[data-focus-active] [data-lifecycle-rail] { opacity: 0; }
 svg[data-focus-active] [data-focus-match] { opacity: 1; filter: none; }
 svg[data-focus-active] [data-graph-role="automatic-crossover"]:has(> [data-focus-match]) > [data-graph-role="automatic-crossover-underlay"] { opacity: 1; }
@@ -4190,8 +4190,8 @@ svg[data-focus-active] [data-focus-selected] {
    downstream walks outgoing edges. It never claims runtime causality and
    changes only viewer emphasis, not canonical geometry or export bytes. */
 svg[data-reach-active] [data-node-id],
-svg[data-reach-active] [data-edge-from] { filter: saturate(0); }
-svg[data-reach-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { filter: saturate(0); }
+svg[data-reach-active] [data-edge-from] { filter: saturate(0) brightness(0.85); }
+svg[data-reach-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { filter: saturate(0) brightness(0.85); }
 svg[data-reach-active] [data-reach-match] { opacity: 1; filter: none; }
 svg[data-reach-active] [data-graph-role="automatic-crossover"]:has(> [data-reach-match]) > [data-graph-role="automatic-crossover-underlay"] { opacity: 1; }
 svg[data-reach-active="upstream"] [data-reach-origin] {
@@ -4432,8 +4432,8 @@ svg[data-route-picking] [data-route-start] {
   filter: drop-shadow(0 0 10px var(--actor-stroke));
 }
 svg[data-route-active] [data-node-id],
-svg[data-route-active] [data-edge-from] { filter: saturate(0); }
-svg[data-route-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { filter: saturate(0); }
+svg[data-route-active] [data-edge-from] { filter: saturate(0) brightness(0.85); }
+svg[data-route-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { filter: saturate(0) brightness(0.85); }
 svg[data-route-active] [data-route-match] { opacity: 1; filter: none; }
 svg[data-route-active] [data-graph-role="automatic-crossover"]:has(> [data-route-match]) > [data-graph-role="automatic-crossover-underlay"] { opacity: 1; }
 svg[data-route-active] [data-route-start] {
