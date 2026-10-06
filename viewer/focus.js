@@ -558,7 +558,7 @@
         var target = nodes().find(function (node) { return node.getAttribute('data-node-id') === to; });
         var sourceKind = source ? source.getAttribute('data-node-kind') || 'neutral' : 'neutral';
         var targetKind = target ? target.getAttribute('data-node-kind') || 'neutral' : 'neutral';
-        if (/\ba-security\b/.test(classEvidence) || sourceKind === 'decision' || targetKind === 'decision' || targetKind === 'failure') return 'decision';
+        if (/\ba-alert\b/.test(classEvidence) || sourceKind === 'decision' || targetKind === 'decision' || targetKind === 'failure') return 'alert';
         if (/\ba-dashed\b/.test(classEvidence) || sourceKind === 'record' || targetKind === 'record') return 'event';
         if (sourceKind === 'document' || targetKind === 'document') return 'data';
         if (targetKind === 'waiting' || targetKind === 'success') return 'state';
@@ -605,9 +605,9 @@
           token.appendChild(relationshipTokenPart('rect', 'relationship-flow-token-shape', { x: '-7', y: '-3', width: '4', height: '6', rx: '1' }));
           token.appendChild(relationshipTokenPart('rect', 'relationship-flow-token-shape', { x: '-2', y: '-3', width: '4', height: '6', rx: '1' }));
           token.appendChild(relationshipTokenPart('rect', 'relationship-flow-token-shape', { x: '3', y: '-3', width: '4', height: '6', rx: '1' }));
-        } else if (kind === 'decision') {
-          token.appendChild(relationshipTokenPart('path', 'relationship-flow-token-shape', { d: 'M 0 -5 L 4 -3.4 V 0 c 0 3 -1.6 4.5 -4 5.5 C -2.4 4.5 -4 3 -4 0 v -3.4 Z' }));
-          token.appendChild(relationshipTokenPart('path', 'relationship-flow-token-ink', { d: 'm -2 .2 1.4 1.4 L 2 -1.4' }));
+        } else if (kind === 'alert') {
+          token.appendChild(relationshipTokenPart('path', 'relationship-flow-token-shape', { d: 'M 0 -5 L 4.6 3.6 H -4.6 Z' }));
+          token.appendChild(relationshipTokenPart('path', 'relationship-flow-token-ink', { d: 'M 0 -2.4 V 0.8 M 0 2.4 v 0.2' }));
         } else if (kind === 'state') {
           token.appendChild(relationshipTokenPart('circle', 'relationship-flow-token-shape', { cx: '0', cy: '0', r: '5' }));
           token.appendChild(relationshipTokenPart('circle', 'relationship-flow-token-dot', { cx: '0', cy: '0', r: '1.35' }));

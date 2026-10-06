@@ -1116,14 +1116,18 @@ html[data-preset="blueprint"] .overview-map-surface { border-radius: 0.1rem; }
   cursor: pointer;
   transition: fill-opacity 140ms ease, stroke-width 140ms ease, filter 140ms ease;
 }
-.overview-map-node[data-kind="actor],
+.overview-map-node[data-kind="actor"],
 .overview-map-node[data-kind="start"] { fill: var(--actor-stroke); stroke: var(--actor-stroke); }
-.overview-map-node[data-kind="document],
+.overview-map-node[data-kind="action"],
+.overview-map-node[data-kind="active"] { fill: var(--action-stroke); stroke: var(--action-stroke); }
+.overview-map-node[data-kind="document"],
 .overview-map-node[data-kind="success"] { fill: var(--document-stroke); stroke: var(--document-stroke); }
-.overview-map-node[data-kind="milestone],
+.overview-map-node[data-kind="milestone"],
 .overview-map-node[data-kind="waiting"] { fill: var(--milestone-stroke); stroke: var(--milestone-stroke); }
-.overview-map-node[data-kind="record] { fill: var(--record-stroke); stroke: var(--record-stroke); }
-.overview-map-node[data-kind="decision],
+.overview-map-node[data-kind="place"] { fill: var(--place-stroke); stroke: var(--place-stroke); }
+.overview-map-node[data-kind="record"] { fill: var(--record-stroke); stroke: var(--record-stroke); }
+.overview-map-node[data-kind="outcome"] { fill: var(--outcome-stroke); stroke: var(--outcome-stroke); }
+.overview-map-node[data-kind="group"] { fill: var(--group-stroke); stroke: var(--group-stroke); }
 .overview-map-node[data-kind="decision"],
 .overview-map-node[data-kind="failure"] { fill: var(--decision-stroke); stroke: var(--decision-stroke); }
 .overview-map-node[data-kind="external"],
@@ -1281,16 +1285,18 @@ html[data-preset="blueprint"] .semantic-lens { border-radius: 0.28rem; }
   transition: border-color 140ms ease, background 140ms ease, opacity 140ms ease;
 }
 html[data-preset="blueprint"] .semantic-lens-kind { border-radius: 0.12rem; }
-.semantic-lens-kind[data-kind="actor],
+.semantic-lens-kind[data-kind="actor"],
 .semantic-lens-kind[data-kind="start"] { --lens-color: var(--actor-stroke); }
-.semantic-lens-kind[data-kind="action],
+.semantic-lens-kind[data-kind="action"],
 .semantic-lens-kind[data-kind="active"] { --lens-color: var(--action-stroke); }
-.semantic-lens-kind[data-kind="document],
+.semantic-lens-kind[data-kind="document"],
 .semantic-lens-kind[data-kind="success"] { --lens-color: var(--document-stroke); }
-.semantic-lens-kind[data-kind="milestone],
+.semantic-lens-kind[data-kind="milestone"],
 .semantic-lens-kind[data-kind="waiting"] { --lens-color: var(--milestone-stroke); }
-.semantic-lens-kind[data-kind="record] { --lens-color: var(--record-stroke); }
-.semantic-lens-kind[data-kind="decision],
+.semantic-lens-kind[data-kind="place"] { --lens-color: var(--place-stroke); }
+.semantic-lens-kind[data-kind="record"] { --lens-color: var(--record-stroke); }
+.semantic-lens-kind[data-kind="outcome"] { --lens-color: var(--outcome-stroke); }
+.semantic-lens-kind[data-kind="group"] { --lens-color: var(--group-stroke); }
 .semantic-lens-kind[data-kind="decision"],
 .semantic-lens-kind[data-kind="failure"] { --lens-color: var(--decision-stroke); }
 .semantic-lens-kind:hover,
@@ -3871,7 +3877,7 @@ html[data-preset="editorial"] .node-finder {
 /* Relationship labels share the exact color token used by their path. */
 .t-edge-default  { fill: var(--arrow); }
 .t-edge-emphasis { fill: var(--arrow-emphasis); }
-.t-edge-security { fill: var(--decision-stroke); }
+.t-edge-alert    { fill: var(--decision-stroke); }
 .t-edge-dashed   { fill: var(--document-stroke); }
 
 /* Classic canvas: a quiet dot field replaces drafting grid lines, and nodes
@@ -3917,12 +3923,15 @@ svg .semantic-sigil {
 }
 svg .semantic-sigil > * { vector-effect: non-scaling-stroke; }
 svg .semantic-sigil .sigil-fill { fill: currentColor; stroke: none; }
-svg .s-frontend   { color: var(--actor-stroke); }
-svg .s-backend    { color: var(--action-stroke); }
-svg .s-database   { color: var(--document-stroke); }
-svg .s-cloud      { color: var(--milestone-stroke); }
-svg .s-security   { color: var(--decision-stroke); }
-svg .s-messagebus { color: var(--record-stroke); }
+svg .s-actor      { color: var(--actor-stroke); }
+svg .s-action     { color: var(--action-stroke); }
+svg .s-decision   { color: var(--decision-stroke); }
+svg .s-milestone  { color: var(--milestone-stroke); }
+svg .s-place      { color: var(--place-stroke); }
+svg .s-document   { color: var(--document-stroke); }
+svg .s-record     { color: var(--record-stroke); }
+svg .s-outcome    { color: var(--outcome-stroke); }
+svg .s-group      { color: var(--group-stroke); }
 svg .s-external   { color: var(--external-stroke); }
 
 /* Brand Marks are authored identity badges. Their color is contained
@@ -3999,13 +4008,13 @@ svg [data-node-id]:focus-visible [data-detail-anchor] { transform: none; }
 /* Arrows */
 .a-default   { stroke: var(--arrow); fill: none; }
 .a-emphasis  { stroke: var(--arrow-emphasis); fill: none; }
-.a-security  { stroke: var(--decision-stroke); fill: none; stroke-dasharray: 5,5; }
+.a-alert     { stroke: var(--decision-stroke); fill: none; stroke-dasharray: 5,5; }
 .a-dashed    { stroke: var(--document-stroke); fill: none; stroke-dasharray: 4,4; }
 
 /* Arrowhead markers reference these */
 .m-default   { fill: var(--arrow); }
 .m-emphasis  { fill: var(--arrow-emphasis); }
-.m-security  { fill: var(--decision-stroke); }
+.m-alert     { fill: var(--decision-stroke); }
 .m-dashed    { fill: var(--document-stroke); }
 
 /* Stable semantic exploration hooks emitted by every renderer. */
@@ -4346,7 +4355,7 @@ svg[data-preset="editorial"] .relationship-flow-pulse {
 .relationship-flow-token-dot { fill: currentColor; stroke: none; }
 .semantic-flow-token[data-token-kind="data"] { color: var(--document-stroke); }
 .semantic-flow-token[data-token-kind="event"] { color: var(--record-stroke); }
-.semantic-flow-token[data-token-kind="decision] { color: var(--decision-stroke); }
+.semantic-flow-token[data-token-kind="alert"] { color: var(--decision-stroke); }
 .semantic-flow-token[data-token-kind="state"] { color: var(--milestone-stroke); }
 svg[data-preset="signal-flow"] .semantic-flow-token {
   filter: drop-shadow(0 0 5px currentColor);

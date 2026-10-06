@@ -1762,35 +1762,41 @@ export function labelPoint(item, points) {
 }
 
 export const componentFill = {
-  frontend: 'c-actor',
-  backend: 'c-action',
-  database: 'c-document',
-  cloud: 'c-milestone',
-  security: 'c-decision',
-  messagebus: 'c-record',
+  actor: 'c-actor',
+  action: 'c-action',
+  decision: 'c-decision',
+  milestone: 'c-milestone',
+  place: 'c-place',
+  document: 'c-document',
+  record: 'c-record',
+  outcome: 'c-outcome',
+  group: 'c-group',
   external: 'c-external'
 };
 
 export const componentText = {
-  frontend: 't-actor',
-  backend: 't-action',
-  database: 't-document',
-  cloud: 't-milestone',
-  security: 't-decision',
-  messagebus: 't-record',
+  actor: 't-actor',
+  action: 't-action',
+  decision: 't-decision',
+  milestone: 't-milestone',
+  place: 't-place',
+  document: 't-document',
+  record: 't-record',
+  outcome: 't-outcome',
+  group: 't-group',
   external: 't-external'
 };
 
 export const arrowClassMap = {
   default: ['a-default', 'arrowhead'],
   emphasis: ['a-emphasis', 'arrowhead-emphasis'],
-  security: ['a-security', 'arrowhead-security'],
+  alert: ['a-alert', 'arrowhead-alert'],
   dashed: ['a-dashed', 'arrowhead-dashed']
 };
 
 // Structural phase/group accents retain their existing semantic colors.
 export function variantAccent(variant) {
-  return variant === 'decision' ? 't-decision'
+  return variant === 'alert' ? 't-decision'
     : variant === 'emphasis' ? 't-action'
       : variant === 'dashed' ? 't-record' : 't-muted';
 }
@@ -1799,8 +1805,8 @@ export function variantAccent(variant) {
 // edge-specific: node-kind text colors only coincide with some path colors in
 // the classic preset and must not define the relationship's visual meaning.
 export function edgeLabelAccent(variant) {
-  return variant === 'decision'
-    ? 't-edge-security'
+  return variant === 'alert'
+    ? 't-edge-alert'
     : variant === 'emphasis'
       ? 't-edge-emphasis'
       : variant === 'dashed'

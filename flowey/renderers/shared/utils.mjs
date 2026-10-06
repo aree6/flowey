@@ -17,8 +17,8 @@ export function renderDefinitions() {
           <marker id="arrowhead-emphasis" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
             <polygon points="0 0, 10 3.5, 0 7" class="m-emphasis" />
           </marker>
-          <marker id="arrowhead-security" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-            <polygon points="0 0, 10 3.5, 0 7" class="m-security" />
+          <marker id="arrowhead-alert" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" class="m-alert" />
           </marker>
           <marker id="arrowhead-dashed" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
             <polygon points="0 0, 10 3.5, 0 7" class="m-dashed" />
@@ -30,18 +30,20 @@ export function renderDefinitions() {
 }
 
 const SIGIL_TONE = {
-  frontend: 'actor',
+  actor: 'actor',
   start: 'actor',
-  backend: 'action',
-  active: 'actor',
-  database: 'document',
+  action: 'action',
+  active: 'action',
   success: 'action',
-  cloud: 'milestone',
-  waiting: 'milestone',
-  security: 'decision',
-  decision: 'document',
+  outcome: 'outcome',
+  decision: 'decision',
   failure: 'decision',
-  messagebus: 'record',
+  milestone: 'milestone',
+  waiting: 'milestone',
+  place: 'place',
+  document: 'document',
+  record: 'record',
+  group: 'group',
   external: 'external',
   neutral: 'external',
 };
@@ -53,20 +55,19 @@ const SIGIL_SHAPE = {
   briefcase: `<rect x="2" y="5" width="12" height="9" rx="2"/><path d="M5 5V2h6v3M2 9h12M7 9v2h2V9"/>`,
   flag: `<path d="M3 14V2h10l-2 3 2 3H3"/>`,
   moon: `<path d="M13.5 10A6 6 0 0 1 6 2.5 6 6 0 1 0 13.5 10Z"/>`,
-  frontend: `<rect x="2" y="3" width="12" height="10" rx="2"/>
-            <path d="M2 6.5h12"/>
-            <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
-            <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>`,
-  backend: `<path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>`,
-  database: `<ellipse cx="8" cy="4" rx="5" ry="2"/>
-            <path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/>`,
-  cloud: `<path d="M4.3 12.5h7.3a2.4 2.4 0 0 0 .2-4.8 4 4 0 0 0-7.5-1.3A3.1 3.1 0 0 0 4.3 12.5Z"/>`,
-  security: `<path d="M8 2.2 13 4v3.5c0 3.1-1.8 5.4-5 6.5-3.2-1.1-5-3.4-5-6.5V4Z"/>
-            <path d="m5.8 8 1.5 1.5 3-3"/>`,
-  messagebus: `<path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11"/>
+  actor: `<circle cx="8" cy="5" r="2.6"/><path d="M2.8 14v-1.6a5.2 5.2 0 0 1 10.4 0V14"/>`,
+  action: `<path d="M3 3.5 7 8l-4 4.5M8 3.5 12 8l-4 4.5"/>`,
+  decision: `<path d="M8 2.2 13.8 8 8 13.8 2.2 8Z"/><circle cx="8" cy="8" r="1.1" class="sigil-fill"/>`,
+  milestone: `<path d="M8 2.2l1.7 3.5 3.8.5-2.7 2.7.6 3.8L8 10.9l-3.4 1.8.6-3.8-2.7-2.7 3.8-.5Z"/>`,
+  place: `<path d="M8 1.8a4.4 4.4 0 0 1 4.4 4.4C12.4 9.8 8 14.2 8 14.2S3.6 9.8 3.6 6.2A4.4 4.4 0 0 1 8 1.8Z"/><circle cx="8" cy="6.2" r="1.5"/>`,
+  document: `<path d="M4 1.8h5.5L12.5 5v9.2H4Z"/><path d="M9.5 1.8V5H12.5M6 8h4M6 10.2h4"/>`,
+  record: `<path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11"/>
             <circle cx="5" cy="4.5" r="1" class="sigil-fill"/>
             <circle cx="10.5" cy="8" r="1" class="sigil-fill"/>
             <circle cx="7" cy="11.5" r="1" class="sigil-fill"/>`,
+  outcome: `<circle cx="8" cy="8" r="5.3"/>
+            <path d="m5.2 8 1.8 1.8 3.8-4"/>`,
+  group: `<circle cx="5.6" cy="5.4" r="2.1"/><circle cx="10.8" cy="5.4" r="2.1"/><path d="M1.8 13.6v-1.2a3.8 3.8 0 0 1 7.6 0v1.2M7.4 13.6v-1a3.8 3.8 0 0 1 7.4-1.1"/>`,
   external: `<rect x="2.5" y="5" width="8.5" height="8" rx="1.5"/>
             <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>`,
   start: `<circle cx="8" cy="8" r="5"/>
