@@ -1894,17 +1894,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       background: var(--action-stroke);
       box-shadow: 0 0 0 3px color-mix(in srgb, var(--action-stroke) 14%, transparent);
     }
-    .semantic-passport-repository {
-      min-width: 0;
-      overflow: hidden;
-      color: var(--text-faint);
-      font-size: 0.5rem;
-      text-decoration: none;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .semantic-passport-repository:hover,
-    .semantic-passport-repository:focus-visible { color: var(--action-stroke); }
     .semantic-passport-evidence-links { display: grid; gap: 0.22rem; }
     .semantic-passport-source {
       display: grid;
@@ -4203,18 +4192,18 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
        live inside the owning node so every focus, route, story, and guided
        view keeps one coherent opacity state. Export serialization removes
        them before producing the canonical SVG or any derived visual. */
-    .source-evidence-beacon {
+    .citation-beacon {
       pointer-events: none;
       opacity: 1;
       transition: filter 160ms ease;
     }
-    .source-evidence-beacon rect {
+    .citation-beacon rect {
       fill: color-mix(in srgb, var(--mask) 92%, var(--action-stroke));
       stroke: color-mix(in srgb, var(--action-stroke) 82%, var(--panel-border));
       stroke-width: 1;
       vector-effect: non-scaling-stroke;
     }
-    .source-evidence-beacon text {
+    .citation-beacon text {
       fill: var(--action-stroke);
       font-size: 7px;
       font-weight: 700;
@@ -4222,14 +4211,14 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       text-anchor: middle;
       text-transform: uppercase;
     }
-    svg [data-node-id]:hover .source-evidence-beacon,
-    svg [data-node-id]:focus-visible .source-evidence-beacon,
-    svg [data-node-id][data-focus-selected] .source-evidence-beacon {
+    svg [data-node-id]:hover .citation-beacon,
+    svg [data-node-id]:focus-visible .citation-beacon,
+    svg [data-node-id][data-focus-selected] .citation-beacon {
       opacity: 1;
       filter: drop-shadow(0 0 4px color-mix(in srgb, var(--action-stroke) 72%, transparent));
     }
-    svg[data-preset="signal-flow"] .source-evidence-beacon { opacity: 0.9; }
-    svg[data-preset="blueprint"] .source-evidence-beacon rect {
+    svg[data-preset="signal-flow"] .citation-beacon { opacity: 0.9; }
+    svg[data-preset="blueprint"] .citation-beacon rect {
       rx: 0.8px;
       filter: none;
     }
@@ -4891,7 +4880,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         filter: none;
       }
       .relationship-pulse-overlay { display: none !important; }
-      .source-evidence-beacon,
+      .citation-beacon,
       svg [data-node-id], svg [data-edge-from], svg [data-detail], svg [data-detail-anchor], svg [data-legend-hit], svg { transition: none !important; }
     }
   </style>
@@ -5010,7 +4999,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       <p class="subtitle">[Subtitle description]</p>
     </div>
 
-    <!-- FLOWEY:SOURCE_EVIDENCE_DATA -->
+    <!-- FLOWEY:CITATIONS_DATA -->
     <!-- FLOWEY:I18N_DATA -->
     <!-- Main Diagram -->
     <div class="diagram-container" data-detail-level="read"
@@ -5235,8 +5224,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             </div>
             <div class="semantic-passport-evidence" id="focus-evidence" hidden aria-label="{{i18n:viewer.passport.evidence}}">
               <div class="semantic-passport-evidence-head">
-                <span class="semantic-passport-evidence-status">{{i18n:viewer.passport.verified}}</span>
-                <a class="semantic-passport-repository" id="focus-repository" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer"></a>
+                <span class="semantic-passport-evidence-status">{{i18n:viewer.passport.cited}}</span>
               </div>
               <div class="semantic-passport-evidence-links" id="focus-evidence-links"></div>
             </div>
@@ -5733,15 +5721,15 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         Array.prototype.forEach.call(clone.querySelectorAll('[data-relationship-hit-overlay]'), function (el) {
           el.remove();
         });
-        Array.prototype.forEach.call(clone.querySelectorAll('[data-source-evidence-beacon]'), function (el) {
+        Array.prototype.forEach.call(clone.querySelectorAll('[data-citation-beacon]'), function (el) {
           el.remove();
         });
-        Array.prototype.forEach.call(clone.querySelectorAll('[data-source-evidence-count]'), function (el) {
-          var originalLabel = el.getAttribute('data-source-evidence-original-label');
+        Array.prototype.forEach.call(clone.querySelectorAll('[data-citation-count]'), function (el) {
+          var originalLabel = el.getAttribute('data-citation-original-label');
           if (originalLabel == null || originalLabel === '') el.removeAttribute('aria-label');
           else el.setAttribute('aria-label', originalLabel);
-          el.removeAttribute('data-source-evidence-count');
-          el.removeAttribute('data-source-evidence-original-label');
+          el.removeAttribute('data-citation-count');
+          el.removeAttribute('data-citation-original-label');
         });
         Array.prototype.forEach.call(clone.querySelectorAll('[data-focus-match], [data-focus-selected]'), function (el) {
           el.removeAttribute('data-focus-match');
@@ -5818,7 +5806,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           !clone.hasAttribute('data-share-reach') &&
           !clone.style.getPropertyValue('transform') &&
           !clone.style.getPropertyValue('clip-path') &&
-          clone.querySelectorAll('[data-focus-match], [data-focus-selected], [data-reach-match], [data-reach-origin], [data-reach-depth], [data-semantic-lens-overlay], [data-lens-match], [data-lens-selected], [data-lens-peer], [data-legend-bridge], [data-legend-kind], [data-legend-bridge-runtime], [data-legend-count], [data-legend-zero], [data-legend-selected], [data-legend-preview-match], [data-legend-preview-selected], [data-legend-preview-peer], [data-relationship-hit-overlay], [data-relationship-pulse-overlay], [data-relationship-preview], [data-relationship-preview-node], [data-relationship-preview-source], [data-relationship-preview-target], [data-intent-trace-overlay], [data-intent-trace-match], [data-intent-trace-selected], [data-route-probe-overlay], [data-route-journey-overlay], [data-route-match], [data-route-start], [data-route-end], [data-route-step], [data-route-candidate], [data-route-journey-state], [data-route-journey-current], [data-share-route-match], [data-share-route-step], [data-share-route-start], [data-share-route-end], [data-share-route-middle], [data-share-reach-match], [data-share-reach-origin], [data-share-reach-depth], [data-source-evidence-beacon], [data-source-evidence-count], [data-source-evidence-original-label], [data-detail], [data-detail-anchor]').length === 0;
+          clone.querySelectorAll('[data-focus-match], [data-focus-selected], [data-reach-match], [data-reach-origin], [data-reach-depth], [data-semantic-lens-overlay], [data-lens-match], [data-lens-selected], [data-lens-peer], [data-legend-bridge], [data-legend-kind], [data-legend-bridge-runtime], [data-legend-count], [data-legend-zero], [data-legend-selected], [data-legend-preview-match], [data-legend-preview-selected], [data-legend-preview-peer], [data-relationship-hit-overlay], [data-relationship-pulse-overlay], [data-relationship-preview], [data-relationship-preview-node], [data-relationship-preview-source], [data-relationship-preview-target], [data-intent-trace-overlay], [data-intent-trace-match], [data-intent-trace-selected], [data-route-probe-overlay], [data-route-journey-overlay], [data-route-match], [data-route-start], [data-route-end], [data-route-step], [data-route-candidate], [data-route-journey-state], [data-route-journey-current], [data-share-route-match], [data-share-route-step], [data-share-route-start], [data-share-route-end], [data-share-route-middle], [data-share-reach-match], [data-share-reach-origin], [data-share-reach-depth], [data-citation-beacon], [data-citation-count], [data-citation-original-label], [data-detail], [data-detail-anchor]').length === 0;
       }
 
 
@@ -7407,18 +7395,19 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       };
     })();
 
-    /* Verified repository evidence is emitted only after the renderer checks
-       the authored GitHub revision, source blobs, and optional line ranges
-       against the explicit --repo-root. It remains outside the SVG so every
-       canonical visual export stays free of repository paths. */
-    Flowey.sourceEvidence = (function () {
-      var element = document.getElementById('flowey-source-evidence-data');
+    /* Authored citations are emitted exactly as the diagram author wrote
+       them: notes, URLs, PDF pages, interviewees, documents. They are never
+       verified against external systems; they record where the facts came
+       from so readers can judge provenance. They remain outside the SVG so
+       every canonical visual export stays free of citation text. */
+    Flowey.citations = (function () {
+      var element = document.getElementById('flowey-citations-data');
       var payload = null;
       var svgNamespace = 'http://www.w3.org/2000/svg';
       if (element) {
         try {
           var parsed = JSON.parse(element.textContent || 'null');
-          if (parsed && parsed.verified === true && parsed.repository && parsed.nodes) payload = parsed;
+          if (parsed && parsed.cited === true && parsed.nodes) payload = parsed;
         } catch (_) {}
       }
       function installBeacons() {
@@ -7429,7 +7418,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         Array.prototype.forEach.call(svg.querySelectorAll('[data-node-id]'), function (node) {
           var id = node.getAttribute('data-node-id');
           var sources = payload.nodes[id];
-          if (!Array.isArray(sources) || !sources.length || node.querySelector('[data-source-evidence-beacon]')) return;
+          if (!Array.isArray(sources) || !sources.length || node.querySelector('[data-citation-beacon]')) return;
           var shape = node.querySelector('[data-animate="node"]') || node.querySelector('[class*="c-"]');
           var box;
           try { box = (shape || node).getBBox(); } catch (_) { return; }
@@ -7438,8 +7427,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           var count = sources.length;
           var label = viewerCount('viewer.passport.beacon', count);
           var beacon = document.createElementNS(svgNamespace, 'g');
-          beacon.classList.add('source-evidence-beacon');
-          beacon.setAttribute('data-source-evidence-beacon', '');
+          beacon.classList.add('citation-beacon');
+          beacon.setAttribute('data-citation-beacon', '');
           beacon.setAttribute('aria-hidden', 'true');
           var brandOffset = node.hasAttribute('data-node-brand') ? 22 : 0;
           var title = document.createElementNS(svgNamespace, 'title');
@@ -7473,8 +7462,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           beacon.setAttribute('transform', 'translate(' + (box.x + box.width - 6 - brandOffset - plateWidth) + ' ' + (box.y + 4.5) + ')');
 
           var originalLabel = node.getAttribute('aria-label') || '';
-          node.setAttribute('data-source-evidence-count', String(count));
-          node.setAttribute('data-source-evidence-original-label', originalLabel);
+          node.setAttribute('data-citation-count', String(count));
+          node.setAttribute('data-citation-original-label', originalLabel);
           node.setAttribute('aria-label', (originalLabel ? originalLabel + ', ' : '') + viewerCount('viewer.passport.sourceCount', count));
           installed += 1;
         });
@@ -7482,7 +7471,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       }
       return {
         available: function () { return Boolean(payload); },
-        repository: function () { return payload ? payload.repository : null; },
         node: function (id) {
           var sources = payload && payload.nodes ? payload.nodes[id] : null;
           return Array.isArray(sources) ? sources.slice() : [];
@@ -7490,7 +7478,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         installBeacons: installBeacons
       };
     })();
-    Flowey.sourceEvidence.installBeacons();
+    Flowey.citations.installBeacons();
 
     /* ============================================================
        Explore — stable-ID neighborhood focus + dependency-free pan/zoom.
@@ -7509,7 +7497,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       var tag = document.getElementById('focus-tag');
       var semanticId = document.getElementById('focus-id');
       var evidence = document.getElementById('focus-evidence');
-      var repositoryLink = document.getElementById('focus-repository');
       var evidenceLinks = document.getElementById('focus-evidence-links');
       var summary = document.getElementById('focus-summary');
       var reachSection = document.getElementById('focus-reach');
@@ -7828,42 +7815,35 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       }
       function renderSourceEvidence(id) {
         evidenceLinks.textContent = '';
-        repositoryLink.removeAttribute('href');
-        repositoryLink.removeAttribute('aria-label');
-        repositoryLink.textContent = '';
-        var sources = Flowey.sourceEvidence.node(id);
-        var repository = Flowey.sourceEvidence.repository();
-        if (!repository || !sources.length) {
+        var citations = Flowey.citations.node(id);
+        if (!citations.length) {
           evidence.hidden = true;
           return;
         }
-        repositoryLink.textContent = repository.label + ' @ ' + repository.shortRevision;
-        if (repository.href) {
-          repositoryLink.href = repository.href;
-          repositoryLink.setAttribute('aria-label', viewerText('viewer.passport.repository.open', { revision: repository.revision }));
-        }
-        evidence.title = viewerText('viewer.passport.verificationScope');
-        sources.forEach(function (source) {
-          var link = document.createElement(source.href ? 'a' : 'div');
+        evidence.title = viewerText('viewer.passport.citationScope');
+        citations.forEach(function (citation) {
+          var link = document.createElement(citation.ref ? 'a' : 'div');
           link.className = 'semantic-passport-source';
-          if (source.href) {
-            link.href = source.href;
+          if (citation.ref) {
+            link.href = citation.ref;
             link.target = '_blank';
             link.rel = 'noopener noreferrer';
             link.referrerPolicy = 'no-referrer';
-            link.setAttribute('aria-label', viewerText('viewer.passport.source.open', { path: source.path, revision: repository.shortRevision }));
+            link.setAttribute('aria-label', viewerText('viewer.passport.source.open', { label: citation.label }));
           }
           var name = document.createElement('strong');
-          name.textContent = source.label || source.path.split('/').pop() || source.path;
-          var location = document.createElement('code');
-          location.textContent = source.line
-            ? 'L' + source.line + (source.endLine && source.endLine !== source.line ? '–' + source.endLine : '') + (source.href ? ' ↗' : '')
-            : source.href ? viewerText('viewer.passport.source.openLink') : '';
-          var sourcePath = document.createElement('small');
-          sourcePath.textContent = source.path;
+          name.textContent = citation.label;
           link.appendChild(name);
-          link.appendChild(location);
-          link.appendChild(sourcePath);
+          if (citation.detail) {
+            var detail = document.createElement('small');
+            detail.textContent = citation.detail;
+            link.appendChild(detail);
+          }
+          if (citation.ref) {
+            var openHint = document.createElement('code');
+            openHint.textContent = viewerText('viewer.passport.source.openLink');
+            link.appendChild(openHint);
+          }
           evidenceLinks.appendChild(link);
         });
         evidence.hidden = false;
@@ -8777,8 +8757,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         semanticId.hidden = true;
         evidence.hidden = true;
         evidenceLinks.textContent = '';
-        repositoryLink.removeAttribute('href');
-        repositoryLink.textContent = '';
         summary.textContent = '';
         reachSection.hidden = true;
         upstreamCount.textContent = '0';
@@ -11431,9 +11409,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         var tag = node.getAttribute('data-node-tag') || '';
         var brand = node.getAttribute('data-node-brand') || '';
         var type = semanticType(node);
-        var sources = Flowey.sourceEvidence.node(id);
+        var sources = Flowey.citations.node(id);
         var sourceSearch = sources.map(function (source) {
-          return [source.path, source.label, source.line, source.endLine].filter(Boolean).join(' ');
+          return [source.label, source.detail, source.ref].filter(Boolean).join(' ');
         }).join(' ');
         return {
           id: id,

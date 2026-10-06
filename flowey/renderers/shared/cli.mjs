@@ -3,9 +3,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { applyTemplate, renderCards, esc } from './utils.mjs';
 import { validateSchema } from './validator.mjs';
-import { verifyRepositoryEvidence } from './repository-evidence.mjs';
+import { collectCitations } from './citations.mjs';
 import { installRendererDiagnosticBoundary, throwDiagnosticError, throwDiagnosticProblems, recordDiagnostic } from './diagnostics.mjs';
-import { validateEngineeringProfile } from './engineering-profiles.mjs';
 import {
   resolveOutputPath,
   validateAuthoredOutputPath,
@@ -110,8 +109,7 @@ export function loadDiagram({ rendererDir, diagramType, defaultExample, argv = p
   validateSchema(diagramType, diagram);
   applyLocaleTranslations(diagramType, diagram);
   validateCrossCollectionContracts(diagramType, diagram);
-  validateEngineeringProfile(diagramType, diagram);
-  const sourceEvidence = verifyRepositoryEvidence(diagramType, diagram, process.env.FLOWEY_REPO_ROOT);
+  const sourceEvidence = collectCitations(diagramType, diagram);
   const template = fs.readFileSync(path.join(skillRoot, 'assets/template.html'), 'utf8');
   const outputRequest = {
     requestedOutput: argv[3],
@@ -382,13 +380,10 @@ export function validateCrossCollectionContracts(diagramType, diagram) {
 export function svgRootAttrs(meta, explicitQualityProfile) {
   const animation = meta.animation === 'trace' ? ' data-animation="trace"' : '';
   const preset = ` data-preset="${esc(meta.visual_preset || 'classic')}"`;
-  const engineeringProfile = meta.engineering_profile
-    ? ` data-engineering-profile="${esc(meta.engineering_profile)}"`
-    : '';
   const requestedProfile = explicitQualityProfile || process.env.FLOWEY_QUALITY_PROFILE || meta.quality_profile;
   const qualityProfile = requestedProfile === 'showcase' ? 'showcase' : 'standard';
   const advisory = requestedProfile ? '' : ' data-quality-gates="advisory"';
-  return `role="img" lang="${esc(resolveLocale(meta.locale))}" aria-labelledby="flowey-diagram-title flowey-diagram-description"${animation}${preset}${engineeringProfile} data-quality-profile="${esc(qualityProfile)}"${advisory}`;
+  return `role="img" lang="${esc(resolveLocale(meta.locale))}" aria-labelledby="flowey-diagram-title flowey-diagram-description"${animation}${preset} data-quality-profile="${esc(qualityProfile)}"${advisory}`;
 }
 
 // Keep the accessible name inside the SVG so it survives standalone SVG

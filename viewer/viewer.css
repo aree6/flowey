@@ -1725,17 +1725,6 @@ html[data-preset="blueprint"] .semantic-passport-evidence { border-radius: 0.18r
   background: var(--action-stroke);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--action-stroke) 14%, transparent);
 }
-.semantic-passport-repository {
-  min-width: 0;
-  overflow: hidden;
-  color: var(--text-faint);
-  font-size: 0.5rem;
-  text-decoration: none;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.semantic-passport-repository:hover,
-.semantic-passport-repository:focus-visible { color: var(--action-stroke); }
 .semantic-passport-evidence-links { display: grid; gap: 0.22rem; }
 .semantic-passport-source {
   display: grid;
@@ -4034,18 +4023,18 @@ svg [data-node-id]:focus-visible {
    live inside the owning node so every focus, route, story, and guided
    view keeps one coherent opacity state. Export serialization removes
    them before producing the canonical SVG or any derived visual. */
-.source-evidence-beacon {
+.citation-beacon {
   pointer-events: none;
   opacity: 1;
   transition: filter 160ms ease;
 }
-.source-evidence-beacon rect {
+.citation-beacon rect {
   fill: color-mix(in srgb, var(--mask) 92%, var(--action-stroke));
   stroke: color-mix(in srgb, var(--action-stroke) 82%, var(--panel-border));
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
 }
-.source-evidence-beacon text {
+.citation-beacon text {
   fill: var(--action-stroke);
   font-size: 7px;
   font-weight: 700;
@@ -4053,14 +4042,14 @@ svg [data-node-id]:focus-visible {
   text-anchor: middle;
   text-transform: uppercase;
 }
-svg [data-node-id]:hover .source-evidence-beacon,
-svg [data-node-id]:focus-visible .source-evidence-beacon,
-svg [data-node-id][data-focus-selected] .source-evidence-beacon {
+svg [data-node-id]:hover .citation-beacon,
+svg [data-node-id]:focus-visible .citation-beacon,
+svg [data-node-id][data-focus-selected] .citation-beacon {
   opacity: 1;
   filter: drop-shadow(0 0 4px color-mix(in srgb, var(--action-stroke) 72%, transparent));
 }
-svg[data-preset="signal-flow"] .source-evidence-beacon { opacity: 0.9; }
-svg[data-preset="blueprint"] .source-evidence-beacon rect {
+svg[data-preset="signal-flow"] .citation-beacon { opacity: 0.9; }
+svg[data-preset="blueprint"] .citation-beacon rect {
   rx: 0.8px;
   filter: none;
 }
@@ -4722,6 +4711,6 @@ html[data-share-playback="true"] svg[data-animation="trace"] [data-graph-role="a
     filter: none;
   }
   .relationship-pulse-overlay { display: none !important; }
-  .source-evidence-beacon,
+  .citation-beacon,
   svg [data-node-id], svg [data-edge-from], svg [data-detail], svg [data-detail-anchor], svg [data-legend-hit], svg { transition: none !important; }
 }

@@ -2175,13 +2175,13 @@ function invalidProvenance(artifactPath, sidecar, reason, evidence = {}) {
 
 function usage() {
   return `Usage:
-  flowey render <type> <input.json> [output.html] [--quality standard|showcase] [--repo-root path]
-  flowey compare architecture <base.json> <head.json> [output.html] [--receipt path] [--json] [--quality standard|showcase] [--repo-root path]
-  flowey deliver <type> <input.json> [output.html] [--json] [--open] [--quality standard|showcase] [--repo-root path]
-  flowey finalize <type> <input.json> <output.html> [--json] [--receipt path] [--out-dir <dir>] [--quality standard|showcase] [--repo-root path] [--candidate-sha256 hex]
-  flowey preview <type> <input.json> [output.html] [--no-open] [--quality standard|showcase] [--repo-root path]
-  flowey validate <type> <input.json> [--json] [--layout-json] [--quality standard|showcase] [--repo-root path]
-  flowey migrate workflow <old.json> <new.json> --to-schema 2 [--output portable.html] [--json] [--repo-root path]
+  flowey render <type> <input.json> [output.html] [--quality standard|showcase] 
+  flowey compare architecture <base.json> <head.json> [output.html] [--receipt path] [--json] [--quality standard|showcase] 
+  flowey deliver <type> <input.json> [output.html] [--json] [--open] [--quality standard|showcase] 
+  flowey finalize <type> <input.json> <output.html> [--json] [--receipt path] [--out-dir <dir>] [--quality standard|showcase]  [--candidate-sha256 hex]
+  flowey preview <type> <input.json> [output.html] [--no-open] [--quality standard|showcase] 
+  flowey validate <type> <input.json> [--json] [--layout-json] [--quality standard|showcase] 
+  flowey migrate workflow <old.json> <new.json> --to-schema 2 [--output portable.html] [--json] 
   flowey inspect <type> <input.json>
   flowey check <output.html> [--json] [--require-provenance]
   flowey browser-check <output.html> [--json|--summary] [--require-provenance] [--out-dir <dir>]
@@ -2274,31 +2274,19 @@ function extractQualityArgs(args) {
 
 function extractRepoRootArgs(args) {
   const rest = [];
-  let repoRoot;
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
-    if (arg === '--repo-root') {
-      repoRoot = args[index + 1];
-      if (!repoRoot || repoRoot.startsWith('--')) rejectCliArgument('--repo-root requires a repository path.', {
-        code: 'cli/missing-option-value',
+    if (arg === '--repo-root' || arg.startsWith('--repo-root=')) {
+      if (arg === '--repo-root') index += 1;
+      rejectCliArgument('--repo-root was removed: flowey citations are authored per node and never verified against a repository.', {
+        code: 'cli/removed-option',
         subject: { option: '--repo-root' },
-        supportedFixes: ['provide one repository path after --repo-root'],
+        supportedFixes: ['remove --repo-root and author "citations" on the relevant nodes instead'],
       });
-      index += 1;
-      continue;
-    }
-    if (arg.startsWith('--repo-root=')) {
-      repoRoot = arg.slice('--repo-root='.length);
-      if (!repoRoot) rejectCliArgument('--repo-root requires a repository path.', {
-        code: 'cli/missing-option-value',
-        subject: { option: '--repo-root' },
-        supportedFixes: ['provide one repository path after --repo-root'],
-      });
-      continue;
     }
     rest.push(arg);
   }
-  return { rest, repoRoot: repoRoot ? path.resolve(repoRoot) : undefined };
+  return { rest, repoRoot: undefined };
 }
 
 function extractOutDirArgs(args) {
@@ -4264,18 +4252,13 @@ function reportArtifactArgumentFailure(command, error) {
 
 function sourceEvidenceFromArtifact(artifact) {
   const html = artifact.toString('utf8');
-  const match = html.match(/<script id="flowey-source-evidence-data" type="application\/json">([\s\S]*?)<\/script>/);
+  const match = html.match(/<script id="flowey-citations-data" type="application\/json">([\s\S]*?)<\/script>/);
   if (!match) return null;
   const evidence = JSON.parse(match[1]);
-  if (evidence?.verified !== true || !evidence.repository?.url || !evidence.repository?.revision || !Number.isInteger(evidence.referenceCount)) {
-    throw new Error('Rendered source evidence receipt is incomplete.');
+  if (evidence?.cited !== true || typeof evidence.nodes !== 'object' || evidence.nodes === null) {
+    throw new Error('Rendered citations receipt is incomplete.');
   }
   return evidence;
-}
-
-function engineeringProfileFromArtifact(artifact) {
-  const match = artifact.toString('utf8').match(/<svg[^>]*\sdata-engineering-profile="([^"]+)"/);
-  return match ? match[1] : null;
 }
 
 async function commandDeliver(args) {
@@ -4832,7 +4815,7 @@ async function commandDeliver(args) {
     try {
       sourceEvidence = sourceEvidenceFromArtifact(artifact);
     } catch (error) {
-      const message = `Could not read the repository evidence receipt: ${error.message}`;
+      const message = `Could not read the citations receipt: ${error.message}`;
       await reportDeliveryFailure({
         json,
         stage: 'receipt',
@@ -4849,7 +4832,6 @@ async function commandDeliver(args) {
       });
       return;
     }
-    const engineeringProfile = engineeringProfileFromArtifact(artifact);
     const receipt = {
       schemaVersion: 1,
       receiptId,
@@ -4871,7 +4853,6 @@ async function commandDeliver(args) {
         checkCount: result.checks.length,
         compositionProfile: result.composition.profile,
         compositionStatus: result.composition.status,
-        ...(engineeringProfile ? { engineeringProfile } : {}),
         errors: result.composition.summary.errors,
         warnings: result.composition.summary.warnings,
         ...(result.composition.summary.warnings ? {
@@ -4880,11 +4861,9 @@ async function commandDeliver(args) {
       },
       ...(sourceEvidence ? {
         evidence: {
-          verified: true,
-          repository: sourceEvidence.repository.url,
-          revision: sourceEvidence.repository.revision,
-          references: sourceEvidence.referenceCount,
-          ...(sourceEvidence.repository.linkMode ? { linkMode: sourceEvidence.repository.linkMode } : {}),
+          cited: true,
+          citedNodes: Object.keys(sourceEvidence.nodes).length,
+          citations: Object.values(sourceEvidence.nodes).reduce((total, list) => total + list.length, 0),
         },
       } : {}),
     };
@@ -5093,10 +5072,7 @@ async function commandDeliver(args) {
       console.log(JSON.stringify(receipt, null, 2));
     } else {
       console.log(`delivered ${type} ${outputPath}`);
-      const engineering = receipt.validation.engineeringProfile
-        ? `; engineering ${receipt.validation.engineeringProfile}: pass`
-        : '';
-      console.log(`${receipt.validation.checksPassed}/${receipt.validation.checkCount} artifact checks; composition ${receipt.validation.compositionProfile}: ${receipt.validation.compositionStatus}${engineering}; sha256 ${receipt.artifact.sha256.slice(0, 12)}`);
+      console.log(`${receipt.validation.checksPassed}/${receipt.validation.checkCount} artifact checks; composition ${receipt.validation.compositionProfile}: ${receipt.validation.compositionStatus}; sha256 ${receipt.artifact.sha256.slice(0, 12)}`);
       if (receipt.open?.status === 'opened') console.log(`opened ${outputPath}`);
       if (receipt.update.noticeRequired) console.log(receipt.update.noticeText);
     }
@@ -6183,7 +6159,7 @@ async function commandMigrate(args) {
     || options.positional.length !== 3
     || options.toSchema !== '2'
   ) {
-    fail('Usage: flowey migrate workflow <old.json> <new.json> --to-schema 2 [--output portable.html] [--json] [--repo-root path]');
+    fail('Usage: flowey migrate workflow <old.json> <new.json> --to-schema 2 [--output portable.html] [--json] ');
   }
 
   const sourcePath = path.resolve(sourceArgument);
@@ -6814,7 +6790,6 @@ async function commandValidate(args) {
         exitCode = check.status ?? 1;
       } else {
         const result = JSON.parse(check.stdout);
-        const engineeringProfile = engineeringProfileFromArtifact(fs.readFileSync(out));
         if (json) {
           const candidate = {
             path: path.resolve(input),
@@ -6837,7 +6812,6 @@ async function commandValidate(args) {
                 '<output.html>',
                 '--quality',
                 resolvedQuality,
-                ...(repoRoot ? ['--repo-root', repoRoot] : []),
                 '--candidate-sha256',
                 candidate.sha256,
                 '--json',
@@ -6845,13 +6819,9 @@ async function commandValidate(args) {
             },
             checks: result.checks,
             composition: result.composition,
-            ...(engineeringProfile ? { engineeringProfile } : {}),
           }, null, 2));
         } else {
-          const engineering = engineeringProfile
-            ? `; engineering ${engineeringProfile}: pass`
-            : '';
-          console.log(`ok ${type} ${path.resolve(input)} (${result.checks.length} artifact checks; composition ${result.composition.profile}: ${result.composition.summary.errors} errors, ${result.composition.summary.warnings} warnings${engineering})`);
+          console.log(`ok ${type} ${path.resolve(input)} (${result.checks.length} artifact checks; composition ${result.composition.profile}: ${result.composition.summary.errors} errors, ${result.composition.summary.warnings} warnings)`);
         }
       }
     }

@@ -436,7 +436,6 @@ function validateArchitecture() {
   if (resolvedBoundaryTitles.readabilityProblem) {
     problems.push(resolvedBoundaryTitles.readabilityProblem);
   }
-  const requiresNestedBoundaryMembership = arch.meta?.engineering_profile === 'deployment-ownership';
   if (components.size !== asArray(arch.components).length) problems.push('Component ids must be unique.');
   if (grid) {
     validateGridPlacement(arch, grid, problems);
@@ -534,28 +533,14 @@ function validateArchitecture() {
           `Boundary labels "${left.label}" and "${right.label}" overlap — shorten a label or increase boundary title space.`,
         );
       }
-      // Ordinary architecture boundaries are sets, not an implied ownership
-      // tree: orthogonal scopes such as runtime and compliance may share some
-      // components while each contains others. The opt-in deployment profile
-      // does promise hierarchical region/private-scope membership, so only it
-      // receives the stricter membership-to-frame containment contract.
-      if (!requiresNestedBoundaryMembership) continue;
+      // Flowey boundaries are sets, not an implied ownership tree:
+      // orthogonal scopes such as a department and a project team may share
+      // some members while each contains others. Partial membership overlap
+      // is allowed; only the final frames must be disjoint or nested.
       const rightMembers = new Set(asArray(right.wraps));
       const shared = [...leftMembers].filter((id) => rightMembers.has(id));
       const leftNested = [...leftMembers].every((id) => rightMembers.has(id));
       const rightNested = [...rightMembers].every((id) => leftMembers.has(id));
-      if (shared.length && !leftNested && !rightNested) {
-        const leftOnly = [...leftMembers].filter((id) => !rightMembers.has(id));
-        const rightOnly = [...rightMembers].filter((id) => !leftMembers.has(id));
-        problems.push(
-          `Boundary "${left.label}" crosses boundary "${right.label}" because their memberships partially overlap `
-          + `(shared: ${shared.map((id) => `"${id}"`).join(', ')}; `
-          + `only in "${left.label}": ${leftOnly.map((id) => `"${id}"`).join(', ')}; `
-          + `only in "${right.label}": ${rightOnly.map((id) => `"${id}"`).join(', ')}) — `
-          + 'keep one boundary fully nested by removing outside members, or split the boundary.',
-        );
-        continue;
-      }
 
       if (!rectsOverlap(left, right)) continue;
       const leftContainsRight = rectContains(left, right);

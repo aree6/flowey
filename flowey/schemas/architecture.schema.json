@@ -21,8 +21,6 @@
         "animation": { "$ref": "common.schema.json#/$defs/animation" },
         "visual_preset": { "$ref": "common.schema.json#/$defs/visualPreset" },
         "quality_profile": { "$ref": "common.schema.json#/$defs/qualityProfile" },
-        "engineering_profile": { "enum": ["deployment-ownership"] },
-        "repository": { "$ref": "common.schema.json#/$defs/repository" },
         "views": { "$ref": "common.schema.json#/$defs/guidedViews" },
         "legend": {
           "type": "object",
@@ -85,7 +83,7 @@
           "tag": { "type": "string" },
           "icon": { "$ref": "common.schema.json#/$defs/nodeIcon" },
           "brand": { "$ref": "common.schema.json#/$defs/brandMark" },
-          "sources": { "$ref": "common.schema.json#/$defs/sourceReferences" },
+          "citations": { "$ref": "common.schema.json#/$defs/citations" },
           "row": { "type": "integer", "minimum": 0 },
           "col": { "type": "integer", "minimum": 0 },
           "pos": { "$ref": "common.schema.json#/$defs/point" },

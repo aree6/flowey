@@ -63,9 +63,9 @@
         var tag = node.getAttribute('data-node-tag') || '';
         var brand = node.getAttribute('data-node-brand') || '';
         var type = semanticType(node);
-        var sources = Flowey.sourceEvidence.node(id);
+        var sources = Flowey.citations.node(id);
         var sourceSearch = sources.map(function (source) {
-          return [source.path, source.label, source.line, source.endLine].filter(Boolean).join(' ');
+          return [source.label, source.detail, source.ref].filter(Boolean).join(' ');
         }).join(' ');
         return {
           id: id,

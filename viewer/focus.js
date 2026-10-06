@@ -15,7 +15,6 @@
       var tag = document.getElementById('focus-tag');
       var semanticId = document.getElementById('focus-id');
       var evidence = document.getElementById('focus-evidence');
-      var repositoryLink = document.getElementById('focus-repository');
       var evidenceLinks = document.getElementById('focus-evidence-links');
       var summary = document.getElementById('focus-summary');
       var reachSection = document.getElementById('focus-reach');
@@ -334,42 +333,35 @@
       }
       function renderSourceEvidence(id) {
         evidenceLinks.textContent = '';
-        repositoryLink.removeAttribute('href');
-        repositoryLink.removeAttribute('aria-label');
-        repositoryLink.textContent = '';
-        var sources = Flowey.sourceEvidence.node(id);
-        var repository = Flowey.sourceEvidence.repository();
-        if (!repository || !sources.length) {
+        var citations = Flowey.citations.node(id);
+        if (!citations.length) {
           evidence.hidden = true;
           return;
         }
-        repositoryLink.textContent = repository.label + ' @ ' + repository.shortRevision;
-        if (repository.href) {
-          repositoryLink.href = repository.href;
-          repositoryLink.setAttribute('aria-label', viewerText('viewer.passport.repository.open', { revision: repository.revision }));
-        }
-        evidence.title = viewerText('viewer.passport.verificationScope');
-        sources.forEach(function (source) {
-          var link = document.createElement(source.href ? 'a' : 'div');
+        evidence.title = viewerText('viewer.passport.citationScope');
+        citations.forEach(function (citation) {
+          var link = document.createElement(citation.ref ? 'a' : 'div');
           link.className = 'semantic-passport-source';
-          if (source.href) {
-            link.href = source.href;
+          if (citation.ref) {
+            link.href = citation.ref;
             link.target = '_blank';
             link.rel = 'noopener noreferrer';
             link.referrerPolicy = 'no-referrer';
-            link.setAttribute('aria-label', viewerText('viewer.passport.source.open', { path: source.path, revision: repository.shortRevision }));
+            link.setAttribute('aria-label', viewerText('viewer.passport.source.open', { label: citation.label }));
           }
           var name = document.createElement('strong');
-          name.textContent = source.label || source.path.split('/').pop() || source.path;
-          var location = document.createElement('code');
-          location.textContent = source.line
-            ? 'L' + source.line + (source.endLine && source.endLine !== source.line ? '–' + source.endLine : '') + (source.href ? ' ↗' : '')
-            : source.href ? viewerText('viewer.passport.source.openLink') : '';
-          var sourcePath = document.createElement('small');
-          sourcePath.textContent = source.path;
+          name.textContent = citation.label;
           link.appendChild(name);
-          link.appendChild(location);
-          link.appendChild(sourcePath);
+          if (citation.detail) {
+            var detail = document.createElement('small');
+            detail.textContent = citation.detail;
+            link.appendChild(detail);
+          }
+          if (citation.ref) {
+            var openHint = document.createElement('code');
+            openHint.textContent = viewerText('viewer.passport.source.openLink');
+            link.appendChild(openHint);
+          }
           evidenceLinks.appendChild(link);
         });
         evidence.hidden = false;
@@ -1283,8 +1275,6 @@
         semanticId.hidden = true;
         evidence.hidden = true;
         evidenceLinks.textContent = '';
-        repositoryLink.removeAttribute('href');
-        repositoryLink.textContent = '';
         summary.textContent = '';
         reachSection.hidden = true;
         upstreamCount.textContent = '0';

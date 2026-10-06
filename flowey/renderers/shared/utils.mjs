@@ -125,7 +125,7 @@ ${card.items.map((item) => `          <li>${esc(item)}</li>`).join('\n')}
 const SVG_SLOT_RE = /      <!-- FLOWEY:SVG_SLOT_START -->[\s\S]*?      <!-- FLOWEY:SVG_SLOT_END -->/;
 const CARDS_SLOT_RE = /    <!-- FLOWEY:CARDS_SLOT_START -->[\s\S]*?    <!-- FLOWEY:CARDS_SLOT_END -->/;
 const SUBTITLE_SLOT_RE = /^([ \t]*)<p class="subtitle">\[Subtitle description\]<\/p>[ \t]*(\r?\n)?/m;
-const SOURCE_EVIDENCE_PLACEHOLDER = '    <!-- FLOWEY:SOURCE_EVIDENCE_DATA -->';
+const CITATIONS_PLACEHOLDER = '    <!-- FLOWEY:CITATIONS_DATA -->';
 const I18N_PLACEHOLDER = '    <!-- FLOWEY:I18N_DATA -->';
 
 function serializeScriptJson(value) {
@@ -165,11 +165,11 @@ export function applyTemplate(template, {
       throw new Error(`applyTemplate: template missing placeholder ${JSON.stringify(ph)}`);
     }
   }
-  // Keep existing custom templates compatible when evidence is not requested.
-  // Silently dropping verified evidence would be misleading, so the new slot
-  // becomes mandatory only for the opt-in evidence path.
-  if (sourceEvidence && !template.includes(SOURCE_EVIDENCE_PLACEHOLDER)) {
-    throw new Error(`applyTemplate: repository evidence requires placeholder ${JSON.stringify(SOURCE_EVIDENCE_PLACEHOLDER)}`);
+  // Keep existing custom templates compatible when citations are absent.
+  // Silently dropping authored citations would be misleading, so the new slot
+  // becomes mandatory only for the opt-in citations path.
+  if (sourceEvidence && !template.includes(CITATIONS_PLACEHOLDER)) {
+    throw new Error(`applyTemplate: citations require placeholder ${JSON.stringify(CITATIONS_PLACEHOLDER)}`);
   }
   // Function replacers: a literal `$&`, `$'`, `$\`` or `$$` in titles, labels,
   // or rendered SVG must not be interpreted as a replacement pattern.
@@ -190,8 +190,8 @@ export function applyTemplate(template, {
       : '')
     .replace(SVG_SLOT_RE, () => svg)
     .replace(CARDS_SLOT_RE, () => cards)
-    .replace(SOURCE_EVIDENCE_PLACEHOLDER, () => sourceEvidence
-      ? `    <script id="flowey-source-evidence-data" type="application/json">${sourceEvidenceJson}</script>`
+    .replace(CITATIONS_PLACEHOLDER, () => sourceEvidence
+      ? `    <script id="flowey-citations-data" type="application/json">${sourceEvidenceJson}</script>`
       : '');
 }
 

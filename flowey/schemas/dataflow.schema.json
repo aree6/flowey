@@ -52,9 +52,6 @@
         "quality_profile": {
           "$ref": "common.schema.json#/$defs/qualityProfile"
         },
-        "repository": {
-          "$ref": "common.schema.json#/$defs/repository"
-        },
         "views": {
           "$ref": "common.schema.json#/$defs/guidedViews"
         },
@@ -146,8 +143,8 @@
           "brand": {
             "$ref": "common.schema.json#/$defs/brandMark"
           },
-          "sources": {
-            "$ref": "common.schema.json#/$defs/sourceReferences"
+          "citations": {
+            "$ref": "common.schema.json#/$defs/citations"
           },
           "stage": {
             "type": "integer",

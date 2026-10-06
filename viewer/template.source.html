@@ -284,7 +284,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       <p class="subtitle">[Subtitle description]</p>
     </div>
 
-    <!-- FLOWEY:SOURCE_EVIDENCE_DATA -->
+    <!-- FLOWEY:CITATIONS_DATA -->
     <!-- FLOWEY:I18N_DATA -->
     <!-- Main Diagram -->
     <div class="diagram-container" data-detail-level="read"
@@ -509,8 +509,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             </div>
             <div class="semantic-passport-evidence" id="focus-evidence" hidden aria-label="{{i18n:viewer.passport.evidence}}">
               <div class="semantic-passport-evidence-head">
-                <span class="semantic-passport-evidence-status">{{i18n:viewer.passport.verified}}</span>
-                <a class="semantic-passport-repository" id="focus-repository" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer"></a>
+                <span class="semantic-passport-evidence-status">{{i18n:viewer.passport.cited}}</span>
               </div>
               <div class="semantic-passport-evidence-links" id="focus-evidence-links"></div>
             </div>
@@ -903,18 +902,19 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 
 /* FLOWEY:MOTION_GOVERNOR */
 
-    /* Verified repository evidence is emitted only after the renderer checks
-       the authored GitHub revision, source blobs, and optional line ranges
-       against the explicit --repo-root. It remains outside the SVG so every
-       canonical visual export stays free of repository paths. */
-    Flowey.sourceEvidence = (function () {
-      var element = document.getElementById('flowey-source-evidence-data');
+    /* Authored citations are emitted exactly as the diagram author wrote
+       them: notes, URLs, PDF pages, interviewees, documents. They are never
+       verified against external systems; they record where the facts came
+       from so readers can judge provenance. They remain outside the SVG so
+       every canonical visual export stays free of citation text. */
+    Flowey.citations = (function () {
+      var element = document.getElementById('flowey-citations-data');
       var payload = null;
       var svgNamespace = 'http://www.w3.org/2000/svg';
       if (element) {
         try {
           var parsed = JSON.parse(element.textContent || 'null');
-          if (parsed && parsed.verified === true && parsed.repository && parsed.nodes) payload = parsed;
+          if (parsed && parsed.cited === true && parsed.nodes) payload = parsed;
         } catch (_) {}
       }
       function installBeacons() {
@@ -925,7 +925,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         Array.prototype.forEach.call(svg.querySelectorAll('[data-node-id]'), function (node) {
           var id = node.getAttribute('data-node-id');
           var sources = payload.nodes[id];
-          if (!Array.isArray(sources) || !sources.length || node.querySelector('[data-source-evidence-beacon]')) return;
+          if (!Array.isArray(sources) || !sources.length || node.querySelector('[data-citation-beacon]')) return;
           var shape = node.querySelector('[data-animate="node"]') || node.querySelector('[class*="c-"]');
           var box;
           try { box = (shape || node).getBBox(); } catch (_) { return; }
@@ -934,8 +934,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           var count = sources.length;
           var label = viewerCount('viewer.passport.beacon', count);
           var beacon = document.createElementNS(svgNamespace, 'g');
-          beacon.classList.add('source-evidence-beacon');
-          beacon.setAttribute('data-source-evidence-beacon', '');
+          beacon.classList.add('citation-beacon');
+          beacon.setAttribute('data-citation-beacon', '');
           beacon.setAttribute('aria-hidden', 'true');
           var brandOffset = node.hasAttribute('data-node-brand') ? 22 : 0;
           var title = document.createElementNS(svgNamespace, 'title');
@@ -969,8 +969,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           beacon.setAttribute('transform', 'translate(' + (box.x + box.width - 6 - brandOffset - plateWidth) + ' ' + (box.y + 4.5) + ')');
 
           var originalLabel = node.getAttribute('aria-label') || '';
-          node.setAttribute('data-source-evidence-count', String(count));
-          node.setAttribute('data-source-evidence-original-label', originalLabel);
+          node.setAttribute('data-citation-count', String(count));
+          node.setAttribute('data-citation-original-label', originalLabel);
           node.setAttribute('aria-label', (originalLabel ? originalLabel + ', ' : '') + viewerCount('viewer.passport.sourceCount', count));
           installed += 1;
         });
@@ -978,7 +978,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       }
       return {
         available: function () { return Boolean(payload); },
-        repository: function () { return payload ? payload.repository : null; },
         node: function (id) {
           var sources = payload && payload.nodes ? payload.nodes[id] : null;
           return Array.isArray(sources) ? sources.slice() : [];
@@ -986,7 +985,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         installBeacons: installBeacons
       };
     })();
-    Flowey.sourceEvidence.installBeacons();
+    Flowey.citations.installBeacons();
 
 /* FLOWEY:FOCUS */
 
