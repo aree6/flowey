@@ -124,7 +124,7 @@ for (const [name, transition, expected] of [
   });
 }
 
-test('note-only text pinned inside a state is rejected without replacing the old artifact', { timeout: 60000 }, (t) => {
+test('note-only text pinned inside a state is rejected and its stale artifact quarantined', { timeout: 60000 }, (t) => {
   const data = fixture(t);
   const initial = run(data, 'deliver', document({ route: 'straight' }));
   assert.equal(initial.status, 0, initial.stdout);
@@ -138,11 +138,17 @@ test('note-only text pinned inside a state is rejected without replacing the old
     const result = run(data, command, value);
     assert.notEqual(result.status, 0, 'note-only geometry must participate in state collision checks');
     assert.match(result.receipt.error, /overlaps state "review"/);
-    assert.deepEqual(fs.readFileSync(data.output), previous);
+    if (command === 'validate') {
+      assert.deepEqual(fs.readFileSync(data.output), previous);
+    } else {
+      // The candidate changed, so the previous artifact is stale: the
+      // failed deliver quarantines it instead of silently keeping it.
+      assert.equal(fs.existsSync(data.output), false);
+    }
   }
 });
 
-test('note-only text participates in collisions with another transition label', { timeout: 60000 }, (t) => {
+test('note-only text collisions reject the run and quarantine the stale artifact', { timeout: 60000 }, (t) => {
   const data = fixture(t);
   const value = document({ route: 'straight', note: 'manager sign-off', labelAt: [300, 220] });
   value.lanes.push({ id: 'terminal', label: 'Terminal' });
@@ -161,7 +167,13 @@ test('note-only text participates in collisions with another transition label', 
     const result = run(data, command, value);
     assert.notEqual(result.status, 0, 'note-only text must be included in label collision checks');
     assert.match(result.receipt.error, /Labels .*manager sign-off.*archive.* overlap/);
-    assert.deepEqual(fs.readFileSync(data.output), previous);
+    if (command === 'validate') {
+      assert.deepEqual(fs.readFileSync(data.output), previous);
+    } else {
+      // The candidate changed, so the previous artifact is stale: the
+      // failed deliver quarantines it instead of silently keeping it.
+      assert.equal(fs.existsSync(data.output), false);
+    }
   }
 });
 

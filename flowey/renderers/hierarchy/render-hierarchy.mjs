@@ -16,7 +16,8 @@ import {
   componentFill,
   componentText,
 } from '../shared/geometry.mjs';
-import { layoutForest, elbowPoints, TREE } from './tree-layout.mjs';
+import { layoutForest, elbowPoints, TREE, forestGapCounts } from './tree-layout.mjs';
+import { DESKTOP_READER_DIAGRAM_WIDTH, MIN_PROJECTED_NODE_TEXT_PX } from '../shared/desktop-readability.mjs';
 import { placeAutomaticLabels } from '../architecture/labels.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -84,7 +85,42 @@ const LEGEND_CATALOG = [
   'external',
 ].map((kind) => ({ kind, label: i18nText(hierarchy.meta.locale, `legend.hierarchy.${kind}`) }));
 
-const layout = layoutForest(nodes, links);
+let layout = layoutForest(nodes, links);
+// Desktop-readability budget relief: when the measured tree exceeds the
+// desktop readability width, squeeze sibling and forest gaps toward their
+// documented floor minima (same proportional pattern the lifecycle renderer
+// uses squeezing column gaps toward its floorGap) before reporting an
+// over-budget canvas. Relief never moves or narrows a node box.
+{
+  // Mirror the artifact checker's readability evidence: the smallest semantic
+  // source size among rendered node labels, node roles (context detail), and
+  // edge labels (fixed 8px). Tags render as fine detail and are excluded by
+  // the checker, so they never set the budget.
+  const renderedSizes = [];
+  for (const node of nodes) {
+    const box = layout.boxes.get(node.id);
+    if (!box) continue;
+    const fonts = nodeFontSizes(node, box.width);
+    renderedSizes.push(fonts.label);
+    if (node.role) renderedSizes.push(fonts.role);
+  }
+  if (links.some((link) => link.label)) renderedSizes.push(8);
+  const smallestText = renderedSizes.length ? Math.min(...renderedSizes) : TREE.labelFont;
+  const budget = Math.floor(DESKTOP_READER_DIAGRAM_WIDTH * smallestText / MIN_PROJECTED_NODE_TEXT_PX);
+  const excess = Math.ceil(layout.width) - budget;
+  if (excess > 0) {
+    const { siblingSlots, forestSlots } = forestGapCounts(nodes, links);
+    const slack = siblingSlots * (TREE.gapX - TREE.floorGapX)
+      + forestSlots * (TREE.forestGap - TREE.floorForestGap);
+    if (slack > 0) {
+      const ratio = Math.min(1, excess / slack);
+      layout = layoutForest(nodes, links, {
+        gapX: Math.floor(TREE.gapX - (TREE.gapX - TREE.floorGapX) * ratio),
+        forestGap: Math.floor(TREE.forestGap - (TREE.forestGap - TREE.floorForestGap) * ratio),
+      });
+    }
+  }
+}
 const presentKinds = new Set(nodes.map((node) => node.type));
 const legendEntries = resolveLegend(hierarchy.meta?.legend, LEGEND_CATALOG, presentKinds);
 const legendWidth = Math.max(320, layout.width);

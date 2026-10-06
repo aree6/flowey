@@ -982,6 +982,29 @@ function artifactIdentity(artifact) {
   return { sha256: createHash('sha256').update(artifact).digest('hex'), bytes: artifact.byteLength };
 }
 
+// Delivery stages that finish before the verified pair commits. A failure
+// here means this run produced no artifact bytes: anything on disk predates
+// the run, no commit was attempted, and no serial recovery can be pending.
+// Failure handling for these stages must neither present those prior bytes as
+// the run's artifact nor leave this attempt's pending journal behind to fail
+// later checkers. Commit/release failures keep the journal and any retained
+// backups so the reported recovery can complete serially.
+const PRE_COMMIT_DELIVERY_STAGES = new Set(['input', 'prepare', 'render', 'check', 'receipt']);
+
+function readCurrentDeliveryProvenance(provenancePath) {
+  let parsed;
+  try {
+    parsed = JSON.parse(fs.readFileSync(provenancePath, 'utf8'));
+  } catch {
+    return null;
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+  if (parsed.schemaVersion !== 1 || parsed.command !== 'deliver' || parsed.status !== 'current') return null;
+  if (typeof parsed.specification?.sha256 !== 'string'
+    || !/^[0-9a-f]{64}$/.test(parsed.specification.sha256)) return null;
+  return parsed;
+}
+
 function beginDeliveryAttempt({ ownership, input, pathsAlias, fileBindingRuntime }) {
   const state = assertDeliveryOwnership(ownership, 'begin the delivery journal', { allowInitializing: true });
   const {
@@ -1673,6 +1696,19 @@ function recordDeliveryFailure(options) {
   // Keep independent evidence even when the artifact is unreadable or the
   // provenance target is locked, aliases the input, or cannot be replaced.
   let journalError;
+  let artifactStateResolved = false;
+  // The previous provenance is read before this failure overwrites it: a
+  // current marker whose specification no longer matches the candidate proves
+  // the on-disk HTML is stale, and a failed pre-commit run quarantines that
+  // stale output instead of silently keeping it beside the new failure.
+  let previousProvenance = null;
+  try {
+    previousProvenance = readCurrentDeliveryProvenance(
+      state?.provenancePath || deliveryProvenancePath(stableOutput),
+    );
+  } catch {
+    previousProvenance = null;
+  }
   if (!recorded && !state?.pendingIdentity) {
     try {
       beginDeliveryAttempt({ ownership, input, pathsAlias, fileBindingRuntime });
@@ -1698,6 +1734,51 @@ function recordDeliveryFailure(options) {
       verifyRegularFileBinding,
       releaseRegularFileBinding,
     } = fileBindingRuntime || {};
+    const quarantineRemoveRegularFileBinding = fileBindingRuntime?.quarantineRemoveRegularFileBinding;
+    // Quarantine an on-disk artifact proven stale against the candidate: a
+    // current provenance marker for an older specification means the HTML no
+    // longer matches this run's input. Artifacts without such proof (hand
+    // placed files, unprovenanced outputs) are never touched here.
+    const quarantineStaleAttemptArtifact = () => {
+      if (!artifactStateResolved) return;
+      if (!previousProvenance || !input) return;
+      let candidateSha256 = null;
+      try {
+        candidateSha256 = createHash('sha256').update(fs.readFileSync(input)).digest('hex');
+      } catch {
+        return;
+      }
+      if (!candidateSha256 || previousProvenance.specification.sha256 === candidateSha256) return;
+      try {
+        if (typeof captureRegularFileBinding !== 'function'
+          || typeof quarantineRemoveRegularFileBinding !== 'function'
+          || typeof releaseRegularFileBinding !== 'function') return;
+        const staleCapture = captureRegularFileBinding(stableOutput, {
+          subject: 'stale-delivery-artifact',
+          expectedLinks: 1,
+        });
+        if (staleCapture.status !== 'captured') return;
+        let removed;
+        try {
+          removed = quarantineRemoveRegularFileBinding(staleCapture.binding, stableOutput, {
+            subject: 'stale-delivery-artifact',
+            expectedLinks: 1,
+          });
+        } finally {
+          releaseRegularFileBinding(staleCapture.binding);
+        }
+        if (removed.status === 'removed') {
+          recorded.staleArtifactQuarantine = {
+            removed: true,
+            ...(previousProvenance.artifact?.sha256 ? { sha256: previousProvenance.artifact.sha256 } : {}),
+            ...(Number.isSafeInteger(previousProvenance.artifact?.bytes) ? { bytes: previousProvenance.artifact.bytes } : {}),
+          };
+        }
+      } catch {
+        // Leave a questionable artifact in place rather than risk an unsafe
+        // removal: the failed marker still keeps checkers fail-closed.
+      }
+    };
     try {
       if (typeof captureRegularFileBinding === 'function') {
         const artifactCapture = captureRegularFileBinding(stableOutput, {
@@ -1708,8 +1789,10 @@ function recordDeliveryFailure(options) {
         if (artifactCapture.status === 'captured') {
           artifact = artifactCapture.content.buffer;
           artifactBinding = artifactCapture.binding;
+          artifactStateResolved = true;
         } else if (['ENOENT', 'ENOTDIR'].includes(artifactCapture.reason?.systemCode)) {
           recorded = { ok: true, status: 'absent' };
+          artifactStateResolved = true;
         }
         // A failed marker does not need an artifact hash to invalidate old
         // evidence. Non-regular or changing paths are never followed.
@@ -1759,7 +1842,13 @@ function recordDeliveryFailure(options) {
             stage,
             input,
             output: stableOutput,
-            ...(artifact ? { artifact: artifactIdentity(artifact) } : {}),
+            // A pre-commit failure produced no bytes, so the failed marker
+            // carries no artifact hash: reporting the previous run's bytes
+            // here would present them as this run's artifact. Commit and
+            // release failures keep the captured bytes as recovery evidence.
+            ...(artifact && !PRE_COMMIT_DELIVERY_STAGES.has(stage)
+              ? { artifact: artifactIdentity(artifact) }
+              : {}),
             error,
           }, {
             beforeCommit: () => {
@@ -1786,6 +1875,9 @@ function recordDeliveryFailure(options) {
             fileBindingRuntime,
           });
           recorded = { ok: true, status: 'failed' };
+          if (PRE_COMMIT_DELIVERY_STAGES.has(stage)) {
+            quarantineStaleAttemptArtifact();
+          }
         } catch (writeError) {
           if (writeError.deliveryOwnershipCode === 'delivery/ownership-lost') {
             recorded = { ok: false, status: 'unrecorded', ownershipError: writeError };
@@ -1843,6 +1935,42 @@ function recordDeliveryFailure(options) {
     }
   }
   if (recorded?.journalRecovery || recorded?.provenanceRecovery) return recorded;
+  // A pre-commit failure leaves no delivery to recover: remove this
+  // attempt's pending journal so later checkers read the failed marker
+  // instead of failing on an unfinished attempt that will never resume.
+  // Only an entry this attempt created (verified by content and identity)
+  // is removed; anything else is left for serial recovery.
+  const retireFailedAttemptJournal = () => {
+    if (!artifactStateResolved) return;
+    if (!state?.pendingIdentity || !state?.pendingContent) return;
+    try {
+      quarantineRemoveOwnedDeliveryEntry(state, {
+        filePath: state.pendingPath,
+        identity: state.pendingIdentity,
+        content: state.pendingContent,
+        subject: 'delivery-journal',
+        operation: 'clean up the failed delivery journal',
+        evidenceKey: 'journal',
+      });
+      state.pendingIdentity = undefined;
+      state.pendingContent = undefined;
+      recorded.journalCleanup = { removed: true };
+    } catch (cleanupError) {
+      recorded.journalCleanup = {
+        removed: false,
+        diagnostic: diagnostic({
+          code: 'delivery/journal-cleanup',
+          message: 'The failed delivery attempt could not remove its pending journal.',
+          subject: { output: stableOutput, journal: state.pendingPath },
+          evidence: {
+            reason: cleanupError.message,
+            ...(cleanupError?.code ? { systemCode: cleanupError.code } : {}),
+          },
+          supportedFixes: ['leave the journal untouched and recover the delivery serially, then rerun deliver successfully'],
+        }),
+      };
+    }
+  };
   if (acquiredHere || shouldReleaseSuppliedOwnership) {
     try {
       releaseDeliveryOwnership(ownership, { allowInitializing: true });
@@ -1867,6 +1995,21 @@ function recordDeliveryFailure(options) {
       }
       return { ...recorded, lockError: recorded.ownershipError || lockError };
     }
+  }
+  // The lock released cleanly, so no delivery is in flight anymore: a
+  // pre-commit failure retires this attempt's pending journal instead of
+  // leaving it to fail later checkers. Retirement runs only when this call
+  // owned releasing the lock: initialization failures report through a
+  // callback without release ownership, and a release failure above keeps
+  // the journal untouched for serial recovery. Content verification keeps a
+  // successor attempt's journal safe from this cleanup. Journal retirement
+  // additionally requires a resolved artifact state: when the previous
+  // bytes cannot even be inspected, the failed marker is incomplete and the
+  // journal stays as the conservative fail-closed barrier.
+  if ((acquiredHere || shouldReleaseSuppliedOwnership)
+    && (recorded?.status === 'failed' || recorded?.status === 'absent')
+    && PRE_COMMIT_DELIVERY_STAGES.has(stage)) {
+    retireFailedAttemptJournal();
   }
   return recorded;
 }
@@ -4211,19 +4354,44 @@ function writeDeliveryFailureReceipt(options) {
     return recorded;
   }
   const recoveryDiagnosticFirst = Boolean(recorded.journalRecovery || recorded.provenanceRecovery);
+  const cleanupDiagnostics = [];
+  if (recorded.journalCleanup && !recorded.journalCleanup.removed && recorded.journalCleanup.diagnostic) {
+    cleanupDiagnostics.push(recorded.journalCleanup.diagnostic);
+  }
+  if (recorded.staleArtifactQuarantine?.removed) {
+    cleanupDiagnostics.push(diagnostic({
+      code: 'delivery/stale-artifact-quarantined',
+      message: `The previous artifact no longer matched the candidate, so the failed run quarantined it instead of keeping it beside the new failure.`,
+      subject: { output: options.output },
+      evidence: {
+        ...(recorded.staleArtifactQuarantine.sha256 ? { sha256: recorded.staleArtifactQuarantine.sha256 } : {}),
+        ...(Number.isSafeInteger(recorded.staleArtifactQuarantine.bytes) ? { bytes: recorded.staleArtifactQuarantine.bytes } : {}),
+      },
+      supportedFixes: ['repair the specification and complete a successful deliver to publish a current artifact'],
+    }));
+  }
+  const error = recorded.staleArtifactQuarantine?.removed && typeof options.error === 'string'
+    ? options.error.replace(
+      'the previous artifact was preserved',
+      'the stale previous artifact was quarantined',
+    )
+    : options.error;
   const diagnostics = recoveryDiagnosticFirst
     ? [
       ...(recorded.diagnostic ? [recorded.diagnostic] : []),
       ...(options.diagnostics || []),
+      ...cleanupDiagnostics,
     ]
     : [
       ...(options.diagnostics || []),
       ...(recorded.diagnostic ? [recorded.diagnostic] : []),
+      ...cleanupDiagnostics,
     ];
   reportArtifactFailure({
     ...options,
     command: 'deliver',
     receiptId,
+    ...(error === options.error ? {} : { error }),
     provenance: recorded.status,
     diagnostics,
   });
