@@ -493,48 +493,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <p class="node-finder-empty" id="node-finder-empty" hidden>{{i18n:viewer.finder.empty}}</p>
         <p class="node-finder-status" id="node-finder-status" aria-live="polite"></p>
       </div>
-      <div class="focus-chip relationship-lens no-print" id="focus-chip" hidden role="region" aria-labelledby="relationship-lens-title">
-        <div class="relationship-lens-head">
-          <button class="relationship-lens-drag-handle" id="btn-focus-move" type="button" data-focus-drag-handle aria-label="{{i18n:viewer.passport.move}}" title="{{i18n:viewer.passport.move}}"></button>
-          <div class="relationship-lens-copy">
-            <span class="relationship-lens-eyebrow">{{i18n:viewer.passport.eyebrow}}</span>
-            <strong class="relationship-lens-title" id="relationship-lens-title"><span id="focus-label"></span></strong>
-            <span class="semantic-passport-detail" id="focus-detail" hidden></span>
-            <div class="semantic-passport-meta" id="focus-passport-meta" aria-label="{{i18n:viewer.passport.metadata}}">
-              <span id="focus-kind" data-passport="kind"></span>
-              <span id="focus-context" data-passport="context" hidden></span>
-              <span id="focus-tag" data-passport="tag" hidden></span>
-              <span id="focus-brand" data-passport="brand" hidden></span>
-              <code id="focus-id" data-passport="id"></code>
-            </div>
-            <div class="semantic-passport-evidence" id="focus-evidence" hidden aria-label="{{i18n:viewer.passport.evidence}}">
-              <div class="semantic-passport-evidence-head">
-                <span class="semantic-passport-evidence-status">{{i18n:viewer.passport.cited}}</span>
-              </div>
-              <div class="semantic-passport-evidence-links" id="focus-evidence-links"></div>
-            </div>
-            <span class="relationship-lens-summary" id="focus-summary" aria-live="polite"></span>
-            <div class="semantic-passport-reach" id="focus-reach" hidden>
-              <span class="semantic-passport-reach-label">{{i18n:viewer.passport.reach}}</span>
-              <div class="semantic-passport-reach-actions" role="group" aria-label="{{i18n:viewer.passport.reach.trace}}">
-                <button id="btn-reach-upstream" type="button" aria-label="{{i18n:viewer.passport.upstream.trace}}" aria-pressed="false">
-                  <span>{{i18n:viewer.passport.upstream}}</span><strong id="focus-reach-upstream-count">0</strong>
-                </button>
-                <button id="btn-reach-downstream" type="button" aria-label="{{i18n:viewer.passport.downstream.trace}}" aria-pressed="false">
-                  <span>{{i18n:viewer.passport.downstream}}</span><strong id="focus-reach-downstream-count">0</strong>
-                </button>
-              </div>
-              <small class="semantic-passport-reach-status" id="focus-reach-status" hidden aria-live="polite"></small>
-            </div>
-          </div>
-          <div class="relationship-lens-actions">
-            <button id="btn-focus-clear" type="button" aria-label="{{i18n:viewer.passport.close}}" title="{{i18n:viewer.common.close}}">&#215;</button>
-            <button id="btn-focus-copy" type="button" aria-label="{{i18n:viewer.passport.copy.focus}}">{{i18n:viewer.passport.copy}}</button>
-            <button id="btn-focus-relations" type="button" aria-label="{{i18n:viewer.passport.relations.show}}" aria-expanded="false" aria-controls="relationship-lens-list">{{i18n:viewer.passport.relations}}</button>
-          </div>
-        </div>
-        <div class="relationship-lens-list" id="relationship-lens-list" aria-label="{{i18n:viewer.passport.relations.list}}"></div>
-      </div>
       <div class="route-probe no-print" id="route-probe" hidden role="region" aria-labelledby="route-probe-title" data-state="idle">
         <div class="route-probe-head">
           <span class="route-probe-copy">
@@ -608,6 +566,48 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     <div class="rail-controls no-print" role="toolbar" aria-label="{{i18n:viewer.rail.controls}}">
       <button class="rail-control" id="rail-placement" type="button" hidden aria-label="{{i18n:viewer.rail.bottom}}" title="{{i18n:viewer.rail.bottom}}" data-placement="right"><span class="rail-control-icon placement" aria-hidden="true"></span></button>
       <button class="rail-control" id="rail-collapse" type="button" hidden aria-controls="reader-rail" aria-expanded="true" aria-label="{{i18n:viewer.rail.collapse}}" title="{{i18n:viewer.rail.collapse}}"><span class="rail-control-icon collapse" aria-hidden="true"></span></button>
+    </div>
+    <div class="focus-chip relationship-lens no-print" id="focus-chip" hidden role="region" aria-labelledby="relationship-lens-title">
+      <div class="relationship-lens-head">
+        <button class="relationship-lens-drag-handle" id="btn-focus-move" type="button" data-focus-drag-handle aria-label="{{i18n:viewer.passport.move}}" title="{{i18n:viewer.passport.move}}"></button>
+        <div class="relationship-lens-copy">
+          <span class="relationship-lens-eyebrow">{{i18n:viewer.passport.eyebrow}}</span>
+          <strong class="relationship-lens-title" id="relationship-lens-title"><span id="focus-label"></span></strong>
+          <span class="semantic-passport-detail" id="focus-detail" hidden></span>
+          <div class="semantic-passport-meta" id="focus-passport-meta" aria-label="{{i18n:viewer.passport.metadata}}">
+            <span id="focus-kind" data-passport="kind"></span>
+            <span id="focus-context" data-passport="context" hidden></span>
+            <span id="focus-tag" data-passport="tag" hidden></span>
+            <span id="focus-brand" data-passport="brand" hidden></span>
+            <code id="focus-id" data-passport="id"></code>
+          </div>
+          <div class="semantic-passport-evidence" id="focus-evidence" hidden aria-label="{{i18n:viewer.passport.evidence}}">
+            <div class="semantic-passport-evidence-head">
+              <span class="semantic-passport-evidence-status">{{i18n:viewer.passport.cited}}</span>
+            </div>
+            <div class="semantic-passport-evidence-links" id="focus-evidence-links"></div>
+          </div>
+          <span class="relationship-lens-summary" id="focus-summary" aria-live="polite"></span>
+          <div class="semantic-passport-reach" id="focus-reach" hidden>
+            <span class="semantic-passport-reach-label">{{i18n:viewer.passport.reach}}</span>
+            <div class="semantic-passport-reach-actions" role="group" aria-label="{{i18n:viewer.passport.reach.trace}}">
+              <button id="btn-reach-upstream" type="button" aria-label="{{i18n:viewer.passport.upstream.trace}}" aria-pressed="false">
+                <span>{{i18n:viewer.passport.upstream}}</span><strong id="focus-reach-upstream-count">0</strong>
+              </button>
+              <button id="btn-reach-downstream" type="button" aria-label="{{i18n:viewer.passport.downstream.trace}}" aria-pressed="false">
+                <span>{{i18n:viewer.passport.downstream}}</span><strong id="focus-reach-downstream-count">0</strong>
+              </button>
+            </div>
+            <small class="semantic-passport-reach-status" id="focus-reach-status" hidden aria-live="polite"></small>
+          </div>
+        </div>
+        <div class="relationship-lens-actions">
+          <button id="btn-focus-clear" type="button" aria-label="{{i18n:viewer.passport.close}}" title="{{i18n:viewer.common.close}}">&#215;</button>
+          <button id="btn-focus-copy" type="button" aria-label="{{i18n:viewer.passport.copy.focus}}">{{i18n:viewer.passport.copy}}</button>
+          <button id="btn-focus-relations" type="button" aria-label="{{i18n:viewer.passport.relations.show}}" aria-expanded="false" aria-controls="relationship-lens-list">{{i18n:viewer.passport.relations}}</button>
+        </div>
+      </div>
+      <div class="relationship-lens-list" id="relationship-lens-list" aria-label="{{i18n:viewer.passport.relations.list}}"></div>
     </div>
     <!-- FLOWEY:CARDS_SLOT_START -->
     <div class="cards">
