@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "Scholarship disbursement",
+    "subtitle": "Where the money goes, application to bank",
+    "quality_profile": "showcase",
+    "output": "examples/scholarship-disbursement.dataflow.html"
+  },
+  "stages": [
+    {
+      "label": "Apply"
+    },
+    {
+      "label": "Verify"
+    },
+    {
+      "label": "Approve"
+    },
+    {
+      "label": "Pay"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "student",
+      "type": "actor",
+      "label": "Student",
+      "sublabel": "applicant",
+      "stage": 0,
+      "row": 1
+    },
+    {
+      "id": "portal",
+      "type": "action",
+      "label": "Aid portal",
+      "sublabel": "online form",
+      "stage": 0,
+      "row": 3
+    },
+    {
+      "id": "records",
+      "type": "record",
+      "label": "Student records",
+      "sublabel": "enrolment + grades",
+      "stage": 1,
+      "row": 0
+    },
+    {
+      "id": "means_test",
+      "type": "decision",
+      "label": "Means test",
+      "sublabel": "income check",
+      "stage": 1,
+      "row": 2,
+      "tag": "policy gate"
+    },
+    {
+      "id": "committee",
+      "type": "group",
+      "label": "Award committee",
+      "sublabel": "monthly sitting",
+      "stage": 2,
+      "row": 1
+    },
+    {
+      "id": "award_letter",
+      "type": "document",
+      "label": "Award letter",
+      "sublabel": "signed offer",
+      "stage": 2,
+      "row": 3
+    },
+    {
+      "id": "bursary",
+      "type": "place",
+      "label": "Bursary",
+      "sublabel": "payments office",
+      "stage": 3,
+      "row": 1
+    },
+    {
+      "id": "bank",
+      "type": "external",
+      "label": "Student bank",
+      "sublabel": "direct credit",
+      "stage": 3,
+      "row": 3
+    }
+  ],
+  "flows": [
+    {
+      "id": "application",
+      "from": "student",
+      "to": "portal",
+      "label": "application",
+      "variant": "emphasis",
+      "labelAt": [
+        100,
+        315
+      ]
+    },
+    {
+      "id": "enrolment_check",
+      "from": "portal",
+      "to": "records",
+      "label": "enrolment pull",
+      "variant": "default"
+    },
+    {
+      "id": "income_check",
+      "from": "portal",
+      "to": "means_test",
+      "label": "household income",
+      "variant": "default",
+      "labelAt": [
+        330,
+        429
+      ]
+    },
+    {
+      "id": "eligible",
+      "from": "means_test",
+      "to": "committee",
+      "label": "eligible file",
+      "variant": "emphasis"
+    },
+    {
+      "id": "award",
+      "from": "committee",
+      "to": "award_letter",
+      "label": "award decision",
+      "variant": "emphasis",
+      "labelAt": [
+        530,
+        315
+      ]
+    },
+    {
+      "id": "accept",
+      "from": "award_letter",
+      "to": "bursary",
+      "label": "accepted offer",
+      "variant": "default"
+    },
+    {
+      "id": "payout",
+      "from": "bursary",
+      "to": "bank",
+      "label": "semester payout",
+      "classification": "restricted",
+      "variant": "alert",
+      "labelAt": [
+        745,
+        315
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "amber",
+      "title": "Money path",
+      "items": [
+        "Eligibility gates the committee; the committee gates the payout",
+        "The final bank transfer is the only restricted flow"
+      ]
+    }
+  ]
+}

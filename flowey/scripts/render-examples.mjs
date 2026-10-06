@@ -16,6 +16,11 @@ const TARGETS = [
   ['lifecycle', 'agent-run.lifecycle.json', 'lifecycle-agent-run.html'],
   ['architecture', 'web-app.architecture.json', 'web-app-rendered.html'],
   ['hierarchy', 'org-chart.hierarchy.json', 'hierarchy-org-chart.html'],
+  ['workflow', 'leave-approval.workflow.json', 'leave-approval.workflow.html'],
+  ['architecture', 'leave-approval.architecture.json', 'leave-approval.architecture.html'],
+  ['sequence', 'clinic-visit.sequence.json', 'clinic-visit.sequence.html'],
+  ['dataflow', 'scholarship-disbursement.dataflow.json', 'scholarship-disbursement.dataflow.html'],
+  ['lifecycle', 'visa-application.lifecycle.json', 'visa-application.lifecycle.html'],
 ];
 
 for (const [mode, input, output] of TARGETS) {

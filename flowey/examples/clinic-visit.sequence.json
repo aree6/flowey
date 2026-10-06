@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Clinic visit",
+    "subtitle": "A follow-up appointment, front desk to pharmacy",
+    "quality_profile": "showcase",
+    "output": "examples/clinic-visit.sequence.html",
+    "viewBox": [1080, 680],
+    "column_fit": "spread"
+  },
+  "participants": [
+    { "id": "patient", "type": "actor", "label": "Patient", "sublabel": "follow-up visit" },
+    { "id": "desk", "type": "action", "label": "Front desk", "sublabel": "registration" },
+    { "id": "doctor", "type": "actor", "label": "Doctor", "sublabel": "consultation" },
+    { "id": "lab", "type": "place", "label": "Lab", "sublabel": "blood test" },
+    { "id": "pharmacy", "type": "place", "label": "Pharmacy", "sublabel": "dispensary" }
+  ],
+  "segments": [
+    { "from": 150, "to": 280, "label": "Arrival" },
+    { "from": 290, "to": 430, "label": "Consultation" },
+    { "from": 440, "to": 540, "label": "Checkout" }
+  ],
+  "messages": [
+    { "id": "arrive", "from": "patient", "to": "desk", "y": 160, "label": "arrive with card", "variant": "default" },
+    { "id": "queue", "from": "desk", "to": "patient", "y": 190, "label": "queue number", "variant": "return" },
+    { "id": "call_in", "from": "desk", "to": "doctor", "y": 220, "label": "patient ready", "variant": "default" },
+    { "id": "examine", "from": "patient", "to": "doctor", "y": 250, "label": "describe symptoms", "variant": "emphasis" },
+    { "id": "order_test", "from": "doctor", "to": "lab", "y": 300, "label": "order blood test", "variant": "default" },
+    { "id": "take_sample", "from": "patient", "to": "lab", "y": 330, "label": "give sample", "variant": "default" },
+    { "id": "results", "from": "lab", "to": "doctor", "y": 370, "label": "results in 1h", "variant": "return" },
+    { "id": "prescribe", "from": "doctor", "to": "pharmacy", "y": 410, "label": "send prescription", "variant": "emphasis" },
+    { "id": "collect", "from": "patient", "to": "pharmacy", "y": 450, "label": "collect medicine", "variant": "default" },
+    { "id": "receipt", "from": "pharmacy", "to": "patient", "y": 480, "label": "receipt + dosage", "variant": "return" },
+    { "id": "followup", "from": "doctor", "to": "patient", "y": 515, "label": "review in 2 weeks", "variant": "dashed", "note": "SMS reminder" }
+  ],
+  "activations": [
+    { "participant": "doctor", "from": 250, "to": 410, "type": "action" },
+    { "participant": "lab", "from": 330, "to": 370, "type": "place" }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Back and forth",
+      "items": [
+        "The patient moves desk, doctor, lab, pharmacy in one visit",
+        "Results gate the prescription: no results, no medicine"
+      ]
+    }
+  ]
+}

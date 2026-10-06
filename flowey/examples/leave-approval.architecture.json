@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Leave approval desk",
+    "subtitle": "The parts behind a leave application",
+    "quality_profile": "showcase",
+    "output": "examples/leave-approval.architecture.html"
+  },
+  "components": [
+    { "id": "student", "type": "actor", "label": "Student", "sublabel": "applies for leave", "pos": [40, 90] },
+    { "id": "form", "type": "document", "label": "Leave form", "sublabel": "2 pages + ID", "pos": [300, 90], "citations": [{ "label": "Leave policy", "detail": "section 2" }] },
+    { "id": "supervisor", "type": "actor", "label": "Supervisor", "sublabel": "endorses", "pos": [560, 90] },
+    { "id": "dean", "type": "actor", "label": "Dean office", "sublabel": "signs off", "pos": [560, 280] },
+    { "id": "registry", "type": "record", "label": "Leave registry", "sublabel": "recorded leaves", "pos": [300, 280] },
+    { "id": "notice_board", "type": "external", "label": "Notice board", "sublabel": "public calendar", "pos": [40, 280] }
+  ],
+  "boundaries": [
+    { "kind": "scope", "label": "Faculty office", "wraps": ["supervisor", "dean", "registry"] }
+  ],
+  "connections": [
+    { "id": "files", "from": "student", "to": "form", "label": "files" },
+    { "id": "reviews", "from": "form", "to": "supervisor", "label": "reviewed" },
+    { "id": "signs", "from": "supervisor", "to": "dean", "label": "endorsed" },
+    { "id": "records", "from": "dean", "to": "registry", "label": "recorded", "variant": "emphasis" },
+    { "id": "publishes", "from": "registry", "to": "notice_board", "label": "dates posted", "variant": "dashed" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Same story, parts view",
+      "items": [
+        "The workflow shows the steps; this map shows the parts and who owns them",
+        "The registry is the only system of record"
+      ]
+    }
+  ]
+}

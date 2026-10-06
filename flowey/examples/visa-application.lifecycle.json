@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "Student visa application",
+    "subtitle": "Where the application stands",
+    "quality_profile": "showcase",
+    "output": "examples/visa-application.lifecycle.html"
+  },
+  "lanes": [
+    { "id": "main", "label": "Application progress" },
+    { "id": "waiting", "label": "Waiting on others" },
+    { "id": "terminal", "label": "Terminal outcomes" }
+  ],
+  "states": [
+    { "id": "draft", "type": "start", "label": "Draft", "sublabel": "form + documents", "lane": "main", "col": 0, "step": "01" },
+    { "id": "submitted", "type": "active", "label": "Submitted", "sublabel": "fee paid", "lane": "main", "col": 1, "step": "02" },
+    { "id": "screening", "type": "active", "label": "Screening", "sublabel": "completeness check", "lane": "main", "col": 2, "step": "03" },
+    { "id": "interview", "type": "decision", "label": "Interview", "sublabel": "at the consulate", "lane": "main", "col": 3, "step": "04" },
+    { "id": "issued", "type": "success", "label": "Visa issued", "sublabel": "sticker in passport", "lane": "main", "col": 4, "step": "05" },
+    { "id": "docs_requested", "type": "waiting", "label": "Docs requested", "sublabel": "embassy asks more", "lane": "waiting", "col": 1 },
+    { "id": "rejected", "type": "failure", "label": "Rejected", "sublabel": "with appeal window", "lane": "terminal", "col": 0 },
+    { "id": "withdrawn", "type": "neutral", "label": "Withdrawn", "sublabel": "applicant pulled out", "lane": "terminal", "col": 1 }
+  ],
+  "transitions": [
+    { "id": "filed", "from": "draft", "to": "submitted", "label": "filed" },
+    { "id": "accepted", "from": "submitted", "to": "screening", "label": "accepted" },
+    { "id": "asked_more", "from": "screening", "to": "docs_requested", "label": "incomplete", "variant": "alert" },
+    { "id": "resupplied", "from": "docs_requested", "to": "screening", "label": "docs sent", "variant": "emphasis" },
+    { "id": "shortlisted", "from": "screening", "to": "interview", "label": "cleared" },
+    { "id": "granted", "from": "interview", "to": "issued", "label": "approved", "variant": "emphasis" },
+    { "id": "refused", "from": "interview", "to": "rejected", "label": "refused", "variant": "alert" },
+    { "id": "pulled", "from": "submitted", "to": "withdrawn", "label": "withdrew", "variant": "dashed" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Waits vs ends",
+      "items": [
+        "A document request pauses the file without ending it",
+        "Rejection and withdrawal both end the application"
+      ]
+    }
+  ]
+}

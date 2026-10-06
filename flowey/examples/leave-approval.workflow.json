@@ -1,0 +1,155 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Student leave approval",
+    "subtitle": "From application to recorded leave",
+    "quality_profile": "showcase",
+    "output": "examples/leave-approval.workflow.html"
+  },
+  "lanes": [
+    {
+      "id": "student",
+      "label": "Student"
+    },
+    {
+      "id": "supervisor",
+      "label": "Supervisor"
+    },
+    {
+      "id": "dean_office",
+      "label": "Dean office"
+    }
+  ],
+  "mainPath": [
+    "apply",
+    "supervisor_check",
+    "dean_signoff",
+    "recorded"
+  ],
+  "nodes": [
+    {
+      "id": "apply",
+      "lane": "student",
+      "col": 0,
+      "type": "action",
+      "label": "Submit leave form",
+      "sublabel": "2 pages + student ID",
+      "icon": "document",
+      "citations": [
+        {
+          "label": "Leave policy",
+          "detail": "section 2, how to apply"
+        }
+      ],
+      "width": 150
+    },
+    {
+      "id": "supervisor_check",
+      "lane": "supervisor",
+      "col": 1,
+      "type": "decision",
+      "label": "Supervisor review",
+      "sublabel": "approve or return",
+      "width": 150
+    },
+    {
+      "id": "revise",
+      "lane": "student",
+      "col": 2,
+      "type": "action",
+      "label": "Revise and resubmit",
+      "sublabel": "fix flagged items",
+      "width": 160
+    },
+    {
+      "id": "dean_signoff",
+      "lane": "dean_office",
+      "col": 3,
+      "type": "decision",
+      "label": "Dean sign-off",
+      "sublabel": "final approval",
+      "tag": "3 working days",
+      "width": 140
+    },
+    {
+      "id": "rejected",
+      "lane": "dean_office",
+      "col": 4,
+      "type": "outcome",
+      "label": "Rejected",
+      "sublabel": "with written reason",
+      "width": 120
+    },
+    {
+      "id": "recorded",
+      "lane": "dean_office",
+      "col": 5,
+      "type": "outcome",
+      "label": "Leave recorded",
+      "sublabel": "registrar notified",
+      "icon": "flag",
+      "width": 150
+    }
+  ],
+  "edges": [
+    {
+      "id": "to_supervisor",
+      "from": "apply",
+      "to": "supervisor_check",
+      "label": "form filed"
+    },
+    {
+      "id": "needs_revision",
+      "from": "supervisor_check",
+      "to": "revise",
+      "label": "returned",
+      "role": "branch"
+    },
+    {
+      "id": "resubmitted",
+      "from": "revise",
+      "to": "supervisor_check",
+      "label": "fixed form",
+      "role": "return"
+    },
+    {
+      "id": "forwarded",
+      "from": "supervisor_check",
+      "to": "dean_signoff",
+      "label": "endorsed"
+    },
+    {
+      "id": "approved",
+      "from": "dean_signoff",
+      "to": "recorded",
+      "label": "signed"
+    },
+    {
+      "id": "denied",
+      "from": "dean_signoff",
+      "to": "rejected",
+      "label": "denied",
+      "role": "error",
+      "variant": "alert"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Happy path",
+      "items": [
+        "Student files the form, the supervisor endorses it, the dean signs",
+        "Recording notifies the registrar automatically"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Loops and exits",
+      "items": [
+        "A returned form loops back to the student, not to the dean",
+        "A denial ends the flow with a written reason"
+      ]
+    }
+  ]
+}

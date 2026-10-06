@@ -5,7 +5,7 @@
     "title": "Faculty of Computing",
     "subtitle": "Who reports to whom, plus advisory lines",
     "quality_profile": "showcase",
-    "output": "hierarchy-org-chart.html"
+    "output": "examples/hierarchy-org-chart.html"
   },
   "nodes": [
     {
