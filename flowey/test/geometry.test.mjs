@@ -1270,3 +1270,79 @@ test('applyTemplate requires the new evidence slot only when evidence is present
     sourceEvidence: { verified: true },
   }), /repository evidence requires placeholder/);
 });
+
+test('route rhythm floors pass exact-minimum measurements and agree with budget metrics', () => {
+  const exactMicro = [[0, 0], [8, 0]];
+  const exactInterior = [[0, 0], [100, 0], [100, 16], [200, 16]];
+  assert.deepEqual(collectRouteRhythmIssues({ routedRelations: [{ points: exactMicro }] }), []);
+  assert.deepEqual(collectRouteRhythmIssues({ routedRelations: [{ points: exactInterior }] }), []);
+  const microMetrics = routeBudgetMetrics({ routedRelations: [{ points: exactMicro }] });
+  assert.equal(microMetrics.microSegmentCount, 0);
+  assert.equal(microMetrics.minSegmentPx, 8);
+  const interiorMetrics = routeBudgetMetrics({ routedRelations: [{ points: exactInterior }] });
+  assert.equal(interiorMetrics.shortInteriorSegmentCount, 0);
+  assert.equal(interiorMetrics.minInteriorSegmentPx, 16);
+
+  // Below the floor still fails on both sides of the evidence.
+  const shortEndpoint = [[0, 0], [7.5, 0]];
+  assert.equal(collectRouteRhythmIssues({ routedRelations: [{ points: shortEndpoint }] }).length, 1);
+  assert.equal(routeBudgetMetrics({ routedRelations: [{ points: shortEndpoint }] }).microSegmentCount, 1);
+  const shortInterior = [[0, 0], [100, 0], [100, 15], [200, 15]];
+  assert.equal(collectRouteRhythmIssues({ routedRelations: [{ points: shortInterior }] }).length, 1);
+  assert.equal(routeBudgetMetrics({ routedRelations: [{ points: shortInterior }] }).shortInteriorSegmentCount, 1);
+
+  // Solver-exact placements that re-derive a few ulps short still meet the floor.
+  const ulpShort = [[0, 0], [7.9999999999, 0]];
+  assert.deepEqual(collectRouteRhythmIssues({ routedRelations: [{ points: ulpShort }] }), []);
+  assert.equal(routeBudgetMetrics({ routedRelations: [{ points: ulpShort }] }).microSegmentCount, 0);
+});
+
+test('ambiguous corridors still fail an exact-minimum 8px shared corridor', () => {
+  const pair = (length) => ([
+    { relation: { from: 'a', to: 'b' }, points: [[0, 0], [length, 0]] },
+    { relation: { from: 'c', to: 'd' }, points: [[0, 0], [length, 0]] },
+  ]);
+  assert.equal(collectAmbiguousCorridors({ routedRelations: pair(8) }).length, 1);
+  assert.equal(collectAmbiguousCorridors({ routedRelations: pair(7.5) }).length, 0);
+});
+
+test('inferred endpoint sides tolerate a few pixels of automatic port-spread drift', () => {
+  // A same-row automatic edge whose shared anchor spread 2px off-axis.
+  const drifted = [[220, 310], [500, 312]];
+  const problems = cleanEndpointSideProblems({
+    relations: [{ id: 'hub-direct', from: 'hub', to: 'direct' }],
+    endpointIds: new Set(['hub', 'direct']),
+    pathFor: () => ({ points: drifted }),
+    diagramType: 'dataflow',
+    relationCollection: 'flows',
+    fromSideFor: () => 'right',
+    toSideFor: () => 'left',
+  });
+  assert.deepEqual(problems, []);
+
+  // A genuinely wrong side still fails even when inferred.
+  const wrongWay = [[220, 310], [220, 400], [500, 400]];
+  const wrongProblems = cleanEndpointSideProblems({
+    relations: [{ id: 'hub-branch', from: 'hub', to: 'branch' }],
+    endpointIds: new Set(['hub', 'branch']),
+    pathFor: () => ({ points: wrongWay }),
+    diagramType: 'dataflow',
+    relationCollection: 'flows',
+    fromSideFor: () => 'right',
+    toSideFor: () => 'left',
+  });
+  assert.equal(wrongProblems.length, 1);
+  assert.match(wrongProblems[0], /inferred fromSide "right"/);
+
+  // Authored sides keep the exact perpendicular contract: 2px of drift fails.
+  const authoredProblems = cleanEndpointSideProblems({
+    relations: [{ id: 'hub-direct', from: 'hub', to: 'direct', fromSide: 'right', toSide: 'left' }],
+    endpointIds: new Set(['hub', 'direct']),
+    pathFor: () => ({ points: drifted }),
+    diagramType: 'dataflow',
+    relationCollection: 'flows',
+  });
+  assert.equal(authoredProblems.length, 2);
+  assert.match(authoredProblems[0], /fromSide "right"/);
+  assert.doesNotMatch(authoredProblems[0], /inferred/);
+});

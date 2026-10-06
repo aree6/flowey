@@ -346,7 +346,7 @@ const ENDPOINT_SIDE_RULES = {
   },
 };
 
-function endpointSideIssue(points, endpoint, side) {
+function endpointSideIssue(points, endpoint, side, acrossTolerancePx = 0.0001) {
   const rule = ENDPOINT_SIDE_RULES[side];
   if (!rule) return null;
   const normalized = normalizeRoutePoints(points);
@@ -359,7 +359,7 @@ function endpointSideIssue(points, endpoint, side) {
   const along = rule.axis === 'horizontal' ? dx : dy;
   const across = rule.axis === 'horizontal' ? dy : dx;
   const expectedSign = endpoint === 'source' ? rule.sourceSign : rule.targetSign;
-  if (Math.abs(across) <= 0.0001 && along * expectedSign > 0.0001) return null;
+  if (Math.abs(across) <= acrossTolerancePx && along * expectedSign > 0.0001) return null;
   return {
     endpoint,
     side,
@@ -384,7 +384,14 @@ export function routeHonorsEndpointSides(points, fromSide, toSide) {
 // authored via points already carry their own geometry semantics: when they
 // omit endpoint sides, do not invent a relative-position side and then reject
 // the route for disagreeing with that invention. Pure automatic routes may
-// still be checked against renderer-inferred sides.
+// still be checked against renderer-inferred sides, but only against the
+// dominant travel axis: automatic port spreading may displace a shared anchor
+// a few pixels off the ideal axis, and every automatic router treats under
+// 4px of cross-axis drift as the same row or column when it emits a straight
+// edge. The inferred-side gate must agree with that renderer contract instead
+// of rejecting a straight automatic edge it was given no explicit side to
+// satisfy. Authored sides keep the exact perpendicular contract.
+const INFERRED_SIDE_ACROSS_TOLERANCE_PX = 4;
 export function cleanEndpointSideProblems({
   relations,
   endpointIds,
@@ -417,10 +424,10 @@ export function cleanEndpointSideProblems({
     const toSide = authoredToSide ?? inferredToSide;
     const checks = [
       fromSide
-        ? { ...endpointSideIssue(points, 'source', fromSide), sideOrigin: authoredFromSide ? 'authored' : 'inferred' }
+        ? { ...endpointSideIssue(points, 'source', fromSide, authoredFromSide ? 0.0001 : INFERRED_SIDE_ACROSS_TOLERANCE_PX), sideOrigin: authoredFromSide ? 'authored' : 'inferred' }
         : null,
       toSide
-        ? { ...endpointSideIssue(points, 'target', toSide), sideOrigin: authoredToSide ? 'authored' : 'inferred' }
+        ? { ...endpointSideIssue(points, 'target', toSide, authoredToSide ? 0.0001 : INFERRED_SIDE_ACROSS_TOLERANCE_PX), sideOrigin: authoredToSide ? 'authored' : 'inferred' }
         : null,
     ].filter((issue) => issue?.endpoint);
     for (const issue of checks) {
@@ -996,12 +1003,16 @@ export function routeBudgetMetrics({
       if (position === 'interior') {
         minInteriorSegmentPx = minInteriorSegmentPx == null ? length : Math.min(minInteriorSegmentPx, length);
       }
-      if (length < segmentPx) {
+      // Match the showcase gate floors in collectRouteRhythmIssues below: a
+      // pair the solver places at exactly its minimum can re-derive a few
+      // ulps short, so measurements within the numeric tolerance of the floor
+      // count as meeting it in both the metrics and the gate.
+      if (length + 0.0001 < segmentPx) {
         shortSegmentCount += 1;
         if (position === 'interior') shortInteriorSegmentCount += 1;
         else shortEndpointSegmentCount += 1;
       }
-      if (length < microSegmentPx) microSegmentCount += 1;
+      if (length + 0.0001 < microSegmentPx) microSegmentCount += 1;
     }
     const direct = Math.abs(points.at(-1)[0] - points[0][0]) + Math.abs(points.at(-1)[1] - points[0][1]);
     if (direct > 0.0001) {

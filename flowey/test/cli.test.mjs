@@ -854,17 +854,32 @@ test('cli: deliver preserves the previous artifact when the final check fails', 
   );
 });
 
-test('cli: deliver reports renderer failure as json and preserves the previous artifact', () => {
+test('cli: a failed input validation leaves no delivery journal behind', () => {
+  const out = path.join(tmp, 'never-delivered.html');
+  const result = run(['deliver', 'architecture', path.join(tmp, 'does-not-exist.json'), out, '--json']);
+
+  assert.equal(result.status, 1);
+  const failure = JSON.parse(result.stdout);
+  assert.equal(failure.ok, false);
+  assert.equal(failure.stage, 'input');
+  // Deliver never ran, so no pending journal may linger to fail later
+  // checkers, and no stale output may be kept either.
+  assert.equal(fs.existsSync(deliveryPendingPath(out)), false);
+  assert.equal(fs.existsSync(out), false);
+});
+
+test('cli: deliver quarantines a stale previous artifact when rendering fails validation', () => {
   const validInput = path.join(skillRoot, 'examples/agent-tool-call.workflow.json');
   const input = path.join(tmp, 'invalid-delivery.workflow.json');
   const source = JSON.parse(fs.readFileSync(validInput, 'utf8'));
   source.nodes[0].unexpected = true;
   fs.writeFileSync(input, JSON.stringify(source));
 
-  const out = path.join(tmp, 'renderer-failure-preserved.html');
+  const out = path.join(tmp, 'renderer-failure-quarantined.html');
   const delivered = run(['deliver', 'workflow', validInput, out, '--json']);
   assert.equal(delivered.status, 0, delivered.stderr);
   const trustedPriorArtifact = fs.readFileSync(out);
+  const priorSha256 = createHash('sha256').update(trustedPriorArtifact).digest('hex');
 
   const result = run(['deliver', 'workflow', input, out, '--json']);
   assert.equal(result.status, 1);
@@ -872,24 +887,34 @@ test('cli: deliver reports renderer failure as json and preserves the previous a
   assert.equal(failure.ok, false);
   assert.equal(failure.stage, 'render');
   assert.match(failure.error, /schema validation failed/i);
-  assert.deepEqual(fs.readFileSync(out), trustedPriorArtifact);
+  // The previous artifact was rendered from an older candidate, so the
+  // failed run quarantines it instead of silently keeping stale bytes, and
+  // the failed marker carries no artifact hash from the previous run.
+  assert.equal(fs.existsSync(out), false);
+  assert.equal(fs.existsSync(deliveryPendingPath(out)), false);
   const provenance = JSON.parse(fs.readFileSync(deliveryProvenancePath(out), 'utf8'));
   assert.equal(provenance.status, 'failed');
   assert.equal(provenance.stage, 'render');
-  assert.equal(provenance.artifact.sha256, sha256(out));
+  assert.equal('artifact' in provenance, false);
   assert.equal(provenance.receiptId, failure.receiptId);
+  assert.ok(failure.diagnostics.some((entry) => entry.code === 'delivery/stale-artifact-quarantined'));
 
   const checked = run(['check', out]);
   assert.equal(checked.status, 1);
   const checkReceipt = JSON.parse(checked.stdout);
-  assert.equal(checkReceipt.provenance, 'failed');
-  assert.equal(checkReceipt.diagnostics[0].code, 'delivery/provenance-failed');
+  assert.equal(checkReceipt.diagnostics[0].code, 'input/artifact-unreadable');
 
   const visual = run(['visual-check', out, '--json']);
   assert.equal(visual.status, 1);
-  const visualReceipt = JSON.parse(visual.stdout);
-  assert.equal(visualReceipt.provenance, 'failed');
-  assert.equal(visualReceipt.diagnostics[0].code, 'delivery/provenance-failed');
+  assert.equal(JSON.parse(visual.stdout).diagnostics[0].code, 'input/artifact-unreadable');
+
+  // Repairing the candidate and delivering again publishes a current artifact.
+  const recovered = run(['deliver', 'workflow', validInput, out, '--json']);
+  assert.equal(recovered.status, 0, recovered.stderr);
+  assert.deepEqual(fs.readFileSync(out), trustedPriorArtifact);
+  const recoveredProvenance = JSON.parse(fs.readFileSync(deliveryProvenancePath(out), 'utf8'));
+  assert.equal(recoveredProvenance.status, 'current');
+  assert.equal(recoveredProvenance.artifact.sha256, priorSha256);
 });
 
 test('cli: a later successful delivery replaces stale provenance with an artifact-bound receipt', () => {
@@ -1893,7 +1918,10 @@ await import(${JSON.stringify(pathToFileURL(cli).href)});
   assert.deepEqual(fs.readFileSync(out), artifactBefore);
   assert.notDeepEqual(fs.readFileSync(provenancePath), provenanceBefore);
   assert.equal(JSON.parse(fs.readFileSync(provenancePath, 'utf8')).status, 'failed');
-  assert.equal(fs.existsSync(pendingPath), true);
+  // The failure-recording pass recreates the journal once the one-shot
+  // injection is spent, but the run still fails before any delivery, so the
+  // journal is retired instead of lingering to fail later checkers.
+  assert.equal(fs.existsSync(pendingPath), false);
   assert.equal(fs.existsSync(lockPath), false);
 });
 
@@ -3645,7 +3673,7 @@ test('cli: visual-check input errors identify the artifact and preserve unowned 
   }
 });
 
-test('cli: unreadable preserved artifact still leaves a journal that blocks later checks', () => {
+test('cli: stale artifact on failed validation is quarantined and fails later checks closed', () => {
   const validInput = path.join(skillRoot, 'examples/agent-tool-call.workflow.json');
   const invalidInput = path.join(tmp, 'unreadable-preserved-artifact.workflow.json');
   const invalid = JSON.parse(fs.readFileSync(validInput, 'utf8'));
@@ -3672,13 +3700,15 @@ await import(${JSON.stringify(pathToFileURL(cli).href)});
   const result = spawnSync(process.execPath, [wrapper], { cwd: skillRoot, encoding: 'utf8' });
 
   assert.equal(result.status, 1);
-  assert.equal(fs.existsSync(deliveryPendingPath(out)), true);
+  // Validation failed before any delivery committed, so no pending journal
+  // may linger: the failed marker below keeps later checkers fail-closed.
+  assert.equal(fs.existsSync(deliveryPendingPath(out)), false);
   const checked = run(['check', out, '--require-provenance']);
   assert.equal(checked.status, 1);
   assertCheckFailureReceipt(
     JSON.parse(checked.stdout),
     out,
-    /^delivery\/provenance-failed$/,
+    /^input\/artifact-unreadable$/,
   );
 });
 
@@ -3820,7 +3850,10 @@ test('cli: failed visual provenance preflight preserves unowned stale evidence',
   assert.equal(receipt.command, 'visual-check');
   assert.equal(receipt.status, 'fail');
   assert.equal(receipt.artifact.path, path.resolve(out));
-  assert.match(receipt.diagnostics[0].code, /^delivery\/provenance-failed$/);
+  // The failed validation quarantined the stale HTML, so the preflight fails
+  // on the missing artifact instead of stale provenance; either way it stays
+  // fail-closed and the unowned evidence files below are preserved.
+  assert.match(receipt.diagnostics[0].code, /^input\/artifact-unreadable$/);
   assert.ok(receipt.diagnostics.some((entry) => entry.code === 'viewer/evidence-path-conflict'));
   assert.equal(fs.readFileSync(evidence.receipt, 'utf8'), staleReceipt);
   assert.equal(fs.readFileSync(evidence.contactSheet, 'utf8'), staleContactSheet);

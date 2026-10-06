@@ -382,6 +382,32 @@ test('workflow: automatic cross-lane fan-out selects distinct perpendicular sour
   assert.deepEqual(connectionPoints(html, 'to-lower')[0], [88, 269]);
 });
 
+test('dataflow: an automatic same-row straight edge survives its own spread drift', () => {
+  const html = render('dataflow', {
+    schema_version: 1,
+    diagram_type: 'dataflow',
+    meta: { title: 'Same-row spread drift' },
+    stages: [{ label: 'Source' }, { label: 'Mid' }, { label: 'Sinks' }],
+    nodes: [
+      { id: 'hub', type: 'action', label: 'Hub', stage: 0, row: 2, height: 36 },
+      { id: 'same', type: 'document', label: 'Same', stage: 2, row: 2, height: 36 },
+      { id: 'other', type: 'milestone', label: 'Other', stage: 2, row: 0 },
+    ],
+    flows: [
+      { id: 'to-same', from: 'hub', to: 'same', label: 'same row' },
+      { id: 'to-other', from: 'hub', to: 'other', label: 'other row' },
+    ],
+  });
+
+  // The shared hub anchor spreads a couple of pixels off-axis, but the
+  // same-row edge still renders as one straight segment and the inferred
+  // side-direction gate (no explicit fromSide/toSide authored) accepts it.
+  const points = connectionPoints(html, 'to-same');
+  assert.equal(points.length, 2);
+  assert.ok(Math.abs(points[0][1] - points[1][1]) <= 4, `expected same-row drift, got ${JSON.stringify(points)}`);
+  assert.ok(points[0][0] < points[1][0], 'forward arrow still points at the target');
+});
+
 test('dataflow: automatic fan-out spreads flows without changing their authored topology', () => {
   const html = render('dataflow', {
     schema_version: 1,
