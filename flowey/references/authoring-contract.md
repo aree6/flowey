@@ -292,11 +292,11 @@ not settle viewport fit. These are repair directions, not guaranteed coordinates
 
 ### Sequence
 
-Participants are ordered by conversation role. Messages own their vertical order. Use return/async/alert variants for meaning, not decoration; sequence does not use Automatic Port Spread.
+Participants are ordered by conversation role. Messages own their vertical order. Use return/async/alert variants for meaning, not decoration; sequence does not use Automatic Port Spread. Keep one sequence to about a dozen messages (the worked examples carry 11–14); past roughly 15 messages, split into two diagrams — the main exchange plus a separate fallback or async follow-up — instead of stacking everything vertically.
 
 ### Dataflow
 
-Stages express transformation or custody. Rows separate parallel streams. Label only data contracts, classifications, or cross-boundary movement that is not obvious.
+Stages express transformation or custody. Rows separate parallel streams. Label only data contracts, classifications, or cross-boundary movement that is not obvious. Keep one node’s out-degree to about three or four flows; past that, group the outflows through an intermediate node (a collector, topic, or gate) so each hop stays readable. `top-channel` runs a flow along a corridor above both endpoints and `bottom-channel` along one below both (each honoring an explicit `channelY`); use them to lift a long flow clear of the nodes between its stages instead of threading it through.
 
 ### Lifecycle
 
@@ -315,6 +315,14 @@ states in the same column there need distinct `yOffset` values.
 
 In both versions a recoverable failure needs a real transition back to an
 active state. A card saying “retry” is not topology.
+
+### Hierarchy
+
+Geometry is fully derived: authors describe nodes and parent/child links, and
+the renderer lays the tree top-down from measured labels. When a chart crowds
+or overflows, reduce leaves per parent (about six at default widths), shorten
+roles or set narrower node `width` values, and split an oversized chart into
+two — for example one chart per department — instead of squeezing text.
 
 ## Citations
 
