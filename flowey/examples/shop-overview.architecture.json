@@ -1,0 +1,121 @@
+{
+  "boundaries": [],
+  "cards": [
+    {
+      "dot": "cyan",
+      "items": [
+        "Click Storefront, API Service, or Database: each opens its detail view in a new tab"
+      ],
+      "title": "How to present"
+    }
+  ],
+  "components": [
+    {
+      "id": "shopper",
+      "label": "Shopper",
+      "pos": [
+        40,
+        250
+      ],
+      "size": [
+        120,
+        60
+      ],
+      "sublabel": "Browser",
+      "type": "external"
+    },
+    {
+      "id": "storefront",
+      "label": "Storefront",
+      "pos": [
+        260,
+        250
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "sublabel": "Web UI",
+      "type": "actor"
+    },
+    {
+      "id": "api",
+      "label": "API Service",
+      "pos": [
+        510,
+        250
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "sublabel": ":8000",
+      "type": "action"
+    },
+    {
+      "id": "db",
+      "label": "Database",
+      "pos": [
+        760,
+        250
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "sublabel": "Orders + stock",
+      "type": "document"
+    },
+    {
+      "id": "pay",
+      "label": "Pay Provider",
+      "pos": [
+        510,
+        420
+      ],
+      "size": [
+        150,
+        60
+      ],
+      "sublabel": "External",
+      "type": "external"
+    }
+  ],
+  "connections": [
+    {
+      "from": "shopper",
+      "id": "c1",
+      "to": "storefront"
+    },
+    {
+      "from": "storefront",
+      "id": "c2",
+      "label": "REST",
+      "to": "api"
+    },
+    {
+      "from": "api",
+      "id": "c3",
+      "label": "SQL",
+      "to": "db"
+    },
+    {
+      "from": "api",
+      "fromSide": "bottom",
+      "id": "c4",
+      "label": "charge",
+      "labelAt": [
+        585,
+        342
+      ],
+      "to": "pay",
+      "toSide": "top"
+    }
+  ],
+  "diagram_type": "architecture",
+  "meta": {
+    "output": "shop-overview.html",
+    "title": "Shop Platform (overview)"
+  },
+  "schema_version": 1
+}

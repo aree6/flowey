@@ -73,8 +73,8 @@
       "enum": ["actor", "action", "decision", "milestone", "place", "document", "record", "outcome", "group", "external"]
     },
     "nodeIcon": {
-      "description": "Decorative corner icon. Omit the icon field for the type default; none hides it. Does not change type, color, or legend grouping.",
-      "enum": ["calendar", "clock", "person", "briefcase", "flag", "moon", "actor", "action", "decision", "milestone", "place", "document", "record", "outcome", "group", "external", "start", "active", "waiting", "success", "failure", "neutral", "none"]
+      "description": "Decorative corner icon. Omit the icon field for the type default; none hides it. Any glyph in icons/catalog.json (vendored Phosphor, MIT) is also accepted and renders as a tone-colored corner stamp. Does not change type, color, or legend grouping.",
+      "enum": ["calendar", "clock", "person", "briefcase", "flag", "moon", "actor", "action", "decision", "milestone", "place", "document", "record", "outcome", "group", "external", "start", "active", "waiting", "success", "failure", "neutral", "airplane", "bank", "bell", "book-open", "browser", "calendar-check", "camera", "chart-bar", "chat-circle-text", "cloud", "code", "cpu", "database", "device-mobile", "envelope", "factory", "file-text", "first-aid", "gavel", "git-branch", "globe", "graduation-cap", "handshake", "hard-drives", "headset", "heart", "hospital", "image", "key", "leaf", "lock", "map-pin", "network", "package", "pencil", "pill", "plug", "printer", "ruler", "scales", "shield-check", "shopping-cart", "stethoscope", "storefront", "sun", "terminal", "tote", "truck", "wifi-high", "wrench", "none"]
     },
     "brandMark": {
       "oneOf": [

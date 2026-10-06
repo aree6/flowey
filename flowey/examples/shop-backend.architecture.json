@@ -1,0 +1,75 @@
+{
+  "boundaries": [],
+  "cards": [
+    {
+      "dot": "emerald",
+      "items": [
+        "Writes go to the Database (see overview)"
+      ],
+      "title": "Detail"
+    }
+  ],
+  "components": [
+    {
+      "id": "router",
+      "label": "Router",
+      "pos": [
+        40,
+        250
+      ],
+      "size": [
+        140,
+        60
+      ],
+      "sublabel": "REST routes",
+      "type": "action"
+    },
+    {
+      "id": "orders",
+      "label": "Orders",
+      "pos": [
+        280,
+        250
+      ],
+      "size": [
+        140,
+        60
+      ],
+      "sublabel": "Create + pay",
+      "type": "action"
+    },
+    {
+      "id": "stock",
+      "label": "Stock",
+      "pos": [
+        520,
+        250
+      ],
+      "size": [
+        140,
+        60
+      ],
+      "sublabel": "Reserve items",
+      "type": "record"
+    }
+  ],
+  "connections": [
+    {
+      "from": "router",
+      "id": "e1",
+      "to": "orders"
+    },
+    {
+      "from": "orders",
+      "id": "e2",
+      "label": "reserve",
+      "to": "stock"
+    }
+  ],
+  "diagram_type": "architecture",
+  "meta": {
+    "output": "shop-backend.html",
+    "title": "API Service (detail)"
+  },
+  "schema_version": 1
+}

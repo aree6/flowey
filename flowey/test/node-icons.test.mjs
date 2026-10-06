@@ -28,7 +28,9 @@ for (const [mode, [example, collection]] of Object.entries(cases)) {
         return fs.readFileSync(output, 'utf8');
       };
       const baseline = render();
-      const sigil = /<g aria-hidden="true" data-semantic-sigil="[^"]+"[^>]*>[\s\S]*?<\/g>/;
+      // Vendored Phosphor stamps nest one <g> inside the sigil group; match the
+      // nested wrapper explicitly so the whole stamp is swapped, not just its head.
+      const sigil = /<g aria-hidden="true" data-semantic-sigil="[^"]+"[^>]*>(?:\s*<g class="sigil-fill"[^>]*>[\s\S]*?<\/g>\s*|[\s\S]*?)<\/g>/;
       const old = baseline.match(sigil)?.[0];
       assert.ok(old);
       const icons = JSON.parse(fs.readFileSync(path.join(root, 'schemas/common.schema.json'))).$defs.nodeIcon.enum;

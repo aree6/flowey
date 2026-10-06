@@ -2334,6 +2334,7 @@ function usage() {
   flowey links <input.html> [output.html] --map <links.json> [--json]
   flowey brands [name, alias, domain, or category] [--json]
   flowey brands capture <url> [--json]
+  flowey icons <words> [--emit] [--limit <n>] [--json]
   flowey examples
   flowey doctor
   flowey demo [output-directory]
@@ -6250,6 +6251,54 @@ async function commandMotion(args) {
   console.log(`bytes: ${identity.bytes}`);
 }
 
+async function commandIcons(args) {
+  const json = args.includes('--json');
+  const emit = args.includes('--emit');
+  let limit = 12;
+  const rest = [];
+  for (let index = 0; index < args.length; index += 1) {
+    const arg = args[index];
+    if (arg === '--limit') {
+      limit = Number(args[index + 1]);
+      if (!Number.isInteger(limit) || limit < 1) fail('Usage: flowey icons <words> [--emit] [--limit <n>] [--json]');
+      index += 1;
+    } else if (arg === '--json' || arg === '--emit') {
+      continue;
+    } else if (arg.startsWith('--')) {
+      fail(`Unknown icons option "${arg}".`);
+    } else {
+      rest.push(arg);
+    }
+  }
+  const query = rest.join(' ').trim();
+  const { searchIcons, emitIcon } = await import('./flow-icons.mjs');
+  if (emit) {
+    const matches = searchIcons(query).slice(0, limit);
+    if (!matches.length) fail(`No vendored icon matched "${query}". Try fewer words.`);
+    if (json) {
+      console.log(JSON.stringify({ schemaVersion: 1, ok: true, command: 'icons', query, matches }, null, 2));
+      return;
+    }
+    for (const match of matches) console.log(`icon: ${match.name}\n${emitIcon(match.name)}`);
+    return;
+  }
+  const matches = searchIcons(query).slice(0, limit);
+  if (json) {
+    console.log(JSON.stringify({
+      schemaVersion: 1, ok: true, command: 'icons',
+      query, count: matches.length,
+      matches: matches.map((m) => ({ icon: m.name, tone: m.tone, tags: m.tags })),
+      usage: 'Set node "icon" to the chosen name, e.g. {"id": "db", "type": "document", "icon": "database"}.',
+    }, null, 2));
+    return;
+  }
+  if (!matches.length) {
+    console.log(query ? `No vendored icon matched "${query}". Try fewer words.` : 'Vendored icons (50 Phosphor glyphs, MIT):');
+    return;
+  }
+  for (const match of matches) console.log(`${match.name} — ${(match.tags || []).join(', ')}`);
+}
+
 async function commandLinks(args) {
   const json = args.includes('--json');
   let mapPath;
@@ -7173,6 +7222,9 @@ try {
       break;
     case 'links':
       await commandLinks(args);
+      break;
+    case 'icons':
+      await commandIcons(args);
       break;
     default:
       fail(`Unknown command "${command}".\n\n${usage()}`);

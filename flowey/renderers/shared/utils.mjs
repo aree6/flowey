@@ -5,6 +5,15 @@ import {
   translateMessage,
   viewerCatalog,
 } from './i18n.mjs';
+import { GENERATED_SIGILS } from './generated-sigils.mjs';
+
+const GENERATED_SIGIL_LOOKUP = new Map(
+  GENERATED_SIGILS.map((entry) => [entry.name, entry]),
+);
+
+function lookupGeneratedSigil(name) {
+  return GENERATED_SIGIL_LOOKUP.get(name) || null;
+}
 
 export { esc };
 
@@ -98,6 +107,19 @@ export const SOURCE_BADGE_FOOTPRINT = 38;
 export function renderSemanticSigil(kind, { x, y, size = SEMANTIC_SIGIL_SIZE, icon } = {}) {
   if (icon === 'none') return '';
   const selected = icon ?? kind;
+  // Vendored Phosphor glyphs (scripts/generate-sigils.mjs) are 256-grid fill
+  // shapes: nest them scaled into the 16-grid sigil box with the fill class
+  // so they inherit the tone color.
+  if (!Object.hasOwn(SIGIL_SHAPE, selected)) {
+    const entry = lookupGeneratedSigil(selected);
+    if (entry) {
+      const tone = SIGIL_TONE[kind] || 'external';
+      const scale = size / 16;
+      return `<g aria-hidden="true" data-semantic-sigil="${esc(selected)}" class="semantic-sigil s-${tone}" transform="translate(${x} ${y}) scale(${scale})">
+            <g class="sigil-fill" transform="scale(0.0625)">${entry.inner}</g>
+          </g>`;
+    }
+  }
   const normalized = Object.hasOwn(SIGIL_SHAPE, selected) ? selected : 'neutral';
   const tone = SIGIL_TONE[kind] || 'external';
   const scale = size / 16;

@@ -61,6 +61,13 @@ and is distributed under the SIL Open Font License 1.1. The complete license
 text is preserved in `assets/JetBrainsMono-OFL.txt` in the packaged Skill and
 in the font CSS carried by standalone HTML and SVG exports.
 
+## Phosphor Icons
+
+Node corner stamps beyond the built-in set come from [Phosphor Icons](https://phosphoricons.com/),
+vendored unmodified under `icons/phosphor/` (see `icons/PHOSPHOR-LICENSE.txt`).
+Phosphor Icons is Copyright (c) 2020-2024 Phosphor Icons and is distributed
+under the MIT License. The full license text travels with the vendored files.
+
 ## No additional rights granted
 
 Brand names, logos, and trademarks remain the property of their respective
