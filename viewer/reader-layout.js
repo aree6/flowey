@@ -28,18 +28,16 @@
         : MIN_PROJECTED_NODE_TEXT_PX;
       var declaredPrimaryText = svg ? parseFloat(svg.getAttribute('data-reader-primary-text') || '') : null;
       var SAFE_BOTTOM_GAP = 12;
-      // Wide viewports move summary cards beside the diagram, so the height
-      // budget belongs to the diagram and spare width holds the notes.
-      var RAIL_MIN_VIEWPORT = 1280;
+      // Sidebar shell: notes, node details, and the node index dock on the
+      // left and the dotted canvas reflows to the remaining width. The rail
+      // never overlaps the canvas and never stacks below it.
       var RAIL_WIDTH = 288;
       var RAIL_GAP = 20;
-      // A default rail must leave primary node labels comfortably readable;
-      // otherwise it starts collapsed and the reader can still open it.
-      var RAIL_COMFORT_PRIMARY_PX = 12;
       var railPanel = shell && shell.querySelector('.reader-rail');
       var railReveal = document.getElementById('rail-reveal');
       var railCollapse = document.getElementById('rail-collapse');
       var railPlacement = document.getElementById('rail-placement');
+      var focusPanel = document.getElementById('focus-chip');
       var RAIL_COLLAPSED_KEY = 'flowey-rail-collapsed';
       var RAIL_PLACEMENT_KEY = 'flowey-rail-placement';
       // Memory is the page's source of truth; storage only carries the choice
@@ -106,19 +104,30 @@
         if (Number.isFinite(size) && size > 0) sourcePrimary = sourcePrimary == null ? size : Math.max(sourcePrimary, size);
       });
       // SVG width at which the largest node label renders at targetPx. Every
-      // renderer writes label font sizes, so the rail comfort check works for
-      // all diagram types; only the renderer-declared floor needs metadata.
+      // renderer writes label font sizes, so the width floor works for all
+      // diagram types; only the renderer-declared floor needs metadata.
       function labelWidth(targetPx) {
         return sourcePrimary == null || !viewBox ? 0 : viewBox.width * targetPx / sourcePrimary;
       }
       function primaryReadingWidth() {
         if (!measuredHeightFit || !Number.isFinite(declaredPrimaryText) || declaredPrimaryText <= 0) return 0;
-        // Primary labels should remain comfortable to read when cards or
-        // auxiliary rows make a one-screen fit too small. Ordinary page
-        // scroll preserves that reading size; viewport width still caps it.
-        // A long title may already use a smaller fitted font. Preserve that
-        // hierarchy rather than enlarging every other node to compensate.
+        // Primary labels should remain comfortable to read when auxiliary rows
+        // make a one-screen fit too small. Ordinary page scroll preserves that
+        // reading size; viewport width still caps it. A long title may already
+        // use a smaller fitted font. Preserve that hierarchy rather than
+        // enlarging every other node to compensate.
         return labelWidth(declaredPrimaryText);
+      }
+      function viewerModesBlocked() {
+        return html.getAttribute('data-embed') === 'true' ||
+          html.getAttribute('data-present') === 'true' ||
+          (window.matchMedia && window.matchMedia('print').matches);
+      }
+      // Sidebar availability never depends on viewport width or diagram ratio:
+      // whenever there is panel content the collapsed rail (and its reveal
+      // control) exists, so nothing ever renders below the canvas.
+      function railEligible() {
+        return Boolean(shell && diagram && svg && railPanel && !viewerModesBlocked());
       }
       function eligible() {
         return Boolean(
@@ -139,9 +148,11 @@
         lastWidth = 0;
         settledCap = 0;
       }
-      // Rail modes: "true" docks beside the diagram, "collapsed" leaves only the
-      // reveal control, "overlay" opens a drawer when docking would break the
-      // readable floor, and "bottom" stacks notes and index below the diagram.
+      // Rail modes: "true" docks the sidebar on the left and the canvas
+      // reflows to the remaining width; "collapsed" leaves only the
+      // "Notes & index" reveal control in the canvas corner. There is no
+      // overlay drawer and no below-canvas row: the sidebar never overlaps
+      // the canvas.
       function setRail(mode) {
         if (mode) {
           html.setAttribute('data-reader-rail', mode);
@@ -152,26 +163,34 @@
           html.style.removeProperty('--flowey-rail-width');
           html.style.removeProperty('--flowey-rail-gap');
         }
-        if (railReveal) railReveal.hidden = mode !== 'collapsed';
-        if (railCollapse) {
-          railCollapse.hidden = mode !== 'true' && mode !== 'overlay';
-          railCollapse.setAttribute('aria-expanded', String(mode === 'true' || mode === 'overlay'));
+        if (railReveal) {
+          railReveal.hidden = mode !== 'collapsed';
+          railReveal.setAttribute('aria-expanded', String(mode === 'true'));
         }
+        if (railCollapse) {
+          railCollapse.hidden = mode !== 'true';
+          railCollapse.setAttribute('aria-expanded', String(mode === 'true'));
+        }
+        // The placement toggle is retired: the sidebar always docks on the
+        // left. The element stays in the DOM (hidden) so its id contract
+        // never breaks for older artifacts or assistive tech.
         if (railPlacement) {
-          railPlacement.hidden = !mode || mode === 'collapsed' || (mode === 'bottom' && window.innerWidth < RAIL_MIN_VIEWPORT);
-          railPlacement.setAttribute('data-placement', mode === 'bottom' ? 'bottom' : 'right');
-          railPlacement.setAttribute('aria-label', viewerText(mode === 'bottom' ? 'viewer.rail.right' : 'viewer.rail.bottom'));
-          railPlacement.title = railPlacement.getAttribute('aria-label');
+          railPlacement.hidden = true;
+          railPlacement.setAttribute('data-placement', 'left');
         }
       }
       var outline = document.getElementById('node-outline');
       function hasCards() {
         return Boolean((cards && cards.children.length && !cards.hidden) || (outline && !outline.hidden));
       }
-      // Bottom notes and index are reading material below the fold: the first
-      // screen belongs to the interactive diagram and its controls.
+      function hasPanelContent() {
+        return Boolean(hasCards() || (focusPanel && !focusPanel.hidden));
+      }
+      // Nothing renders below the fold: notes, node details, and the index
+      // live inside the left sidebar, so the first screen belongs to the
+      // interactive diagram and its controls.
       function belowFold() {
-        return html.getAttribute('data-reader-rail') === 'bottom' ? outerHeight(railPanel) : 0;
+        return 0;
       }
       // A docked rail may run past a short diagram down to the viewport floor,
       // so the index uses that space instead of scrolling inside the diagram's
@@ -204,8 +223,8 @@
         var shellFloor = Math.min(MIN_READER_WIDTH, Math.max(0, window.innerWidth - chromeMetrics().bodyX));
         html.style.setProperty('--flowey-reader-width', Math.max(rounded, shellFloor) + 'px');
         if (rounded < shellFloor) {
-          // `rounded` already includes a docked rail and its gap; the SVG cap
-          // is only the diagram's share, not the space beside it.
+          // `rounded` already includes the docked left rail and its gap; the
+          // SVG cap is only the diagram's share, not the space beside it.
           var railShare = html.getAttribute('data-reader-rail') === 'true' ? RAIL_WIDTH + RAIL_GAP : 0;
           html.style.setProperty('--flowey-diagram-max-width', Math.max(1, rounded - railShare - chromeMetrics().diagramX) + 'px');
           html.setAttribute('data-reader-narrow', 'true');
@@ -237,10 +256,29 @@
           }
         });
       }
+      function railMode() {
+        if (!railEligible() || !hasPanelContent()) return false;
+        // Collapsed by default: only the reveal control is visible. An
+        // explicit open ('0') docks the sidebar on the left and reflows the
+        // canvas; it never overlays and never stacks below.
+        if (readPreference(RAIL_COLLAPSED_KEY) === '0') return 'true';
+        return 'collapsed';
+      }
       function measure() {
         frame = 0;
+        var mode = railMode();
         if (!eligible()) {
-          clear();
+          // Adaptive width is desktop-only, but the sidebar shell still
+          // applies on every viewport so cards never fall below the canvas.
+          html.style.removeProperty('--flowey-reader-width');
+          html.style.removeProperty('--flowey-diagram-max-width');
+          html.removeAttribute('data-reader-narrow');
+          html.removeAttribute('data-reader-layout');
+          html.removeAttribute('data-reader-overflow');
+          setRail(mode);
+          lastWidth = 0;
+          settledCap = 0;
+          if (mode === 'true') fitDockedRail();
           return null;
         }
         var chrome = chromeMetrics();
@@ -264,32 +302,13 @@
         }
         var primaryWidth = primaryReadingWidth();
         var railExtra = RAIL_WIDTH + RAIL_GAP;
-        var mode = null;
-        // Notes default below the diagram; the right rail is the reader's
-        // opt-in and needs a wide viewport.
-        if (hasCards() && (readPreference(RAIL_PLACEMENT_KEY) !== 'right' || window.innerWidth < RAIL_MIN_VIEWPORT)) {
-          mode = 'bottom';
-        } else if (hasCards()) {
-          var fitsReadable = readableMinimumWidth + railExtra <= maxWidth;
-          var comfortWidth = labelWidth(RAIL_COMFORT_PRIMARY_PX);
-          var comfortable = fitsReadable && (!comfortWidth || comfortWidth + chrome.diagramX + railExtra <= maxWidth);
-          var collapsedPreference = readPreference(RAIL_COLLAPSED_KEY);
-          if (collapsedPreference === '1' || (collapsedPreference !== '0' && !comfortable)) mode = 'collapsed';
-          else mode = fitsReadable ? 'true' : 'overlay';
-        }
-        // With notes below the fold, the first screen belongs to the whole
-        // diagram and its controls: it may shrink past the comfortable primary
-        // size down to the renderer's readable text floor, and zoom restores
-        // detail. Only a graph taller than that floor allows still scrolls.
-        if (mode === 'bottom') primaryWidth = 0;
         if (primaryWidth > 0) minWidth = Math.max(minWidth, Math.min(maxWidth, primaryWidth + chrome.diagramX));
         var docked = mode === 'true';
         setRail(mode);
         chrome = chromeMetrics();
         if (docked) minWidth = Math.min(maxWidth, minWidth + railExtra);
-        var stackedBelow = mode === 'bottom' ? 0 : docked ? 0 : outerHeight(cards);
         var fixedHeight = chrome.bodyY + chrome.diagramY + SAFE_BOTTOM_GAP +
-          outerHeight(header) + stackedBelow;
+          outerHeight(header);
         var availableSvgHeight = Math.max(1, window.innerHeight - fixedHeight);
         var desiredWidth = availableSvgHeight * ratio + chrome.diagramX + (docked ? railExtra : 0);
         var width = Math.max(minWidth, Math.min(maxWidth, desiredWidth, settledCap || desiredWidth));
@@ -312,6 +331,7 @@
         return [
           lastWidth,
           html.getAttribute('data-reader-layout') || '',
+          html.getAttribute('data-reader-rail') || '',
           html.getAttribute('data-reader-overflow') || '',
           Math.ceil(document.documentElement.scrollWidth),
           Math.ceil(document.documentElement.scrollHeight),
@@ -347,6 +367,7 @@
       if (typeof MutationObserver === 'function') {
         var contentObserver = new MutationObserver(schedule);
         if (cards) contentObserver.observe(cards, { attributes: true, childList: true, subtree: true });
+        if (focusPanel) contentObserver.observe(focusPanel, { attributes: true, attributeFilter: ['hidden'] });
         contentObserver.observe(html, { attributes: true, attributeFilter: ['data-embed', 'data-present'] });
       }
       // Reader choices persist across artifacts; a resize-style remeasure
@@ -360,20 +381,11 @@
         chooseRail(RAIL_COLLAPSED_KEY, '1');
         if (railReveal) requestAnimationFrame(function () { try { railReveal.focus({ preventScroll: true }); } catch (_) {} });
       }
+      function openRail() {
+        chooseRail(RAIL_COLLAPSED_KEY, '0');
+      }
       if (railReveal) railReveal.addEventListener('click', function () { chooseRail(RAIL_COLLAPSED_KEY, '0'); });
       if (railCollapse) railCollapse.addEventListener('click', collapseRail);
-      if (railPlacement) railPlacement.addEventListener('click', function () {
-        var toBottom = html.getAttribute('data-reader-rail') !== 'bottom';
-        if (!toBottom) writePreference(RAIL_COLLAPSED_KEY, '0');
-        chooseRail(RAIL_PLACEMENT_KEY, toBottom ? 'bottom' : 'right');
-      });
-      document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape' && html.getAttribute('data-reader-rail') === 'overlay') collapseRail();
-      });
-      document.addEventListener('pointerdown', function (event) {
-        if (html.getAttribute('data-reader-rail') !== 'overlay' || !railPanel) return;
-        if (!railPanel.contains(event.target) && !(railReveal && railReveal.contains(event.target))) chooseRail(RAIL_COLLAPSED_KEY, '1');
-      });
       if (typeof ResizeObserver === 'function' && railPanel) new ResizeObserver(schedule).observe(railPanel);
       schedule();
 
@@ -381,6 +393,8 @@
         measure: measure,
         schedule: schedule,
         whenStable: whenStable,
+        openRail: openRail,
+        collapseRail: collapseRail,
         active: function () { return html.getAttribute('data-reader-layout') === 'adaptive'; },
         receipt: function () { return { ratio: ratio, width: lastWidth }; }
       };

@@ -1038,7 +1038,11 @@
         };
       }
       function manualLensPlacementAvailable() {
-        return window.innerWidth > 720 && (!finePointerQuery || finePointerQuery.matches);
+        // Sidebar shell: node details live as a static section inside the
+        // left sidebar, never as a floating modal, so manual drag placement
+        // is retired. The move handle stays in the DOM (hidden) for its id
+        // contract.
+        return false;
       }
       function clampLensPosition(position, bounds) {
         if (!position || !bounds) return null;
@@ -1155,7 +1159,18 @@
           cancelAnimationFrame(lensFrame);
           lensFrame = 0;
         }
+        // Sidebar shell: node details are a static section inside the left
+        // rail (roughly canvas height via the rail's max-height), never a
+        // floating modal. Clear any modal coordinates and let the rail own
+        // the layout; opening the rail reflows the canvas instead of
+        // overlapping it.
+        chip.removeAttribute('data-manual-placement');
+        chip.style.removeProperty('left');
+        chip.style.removeProperty('top');
         if (chip.hidden || activeIds.length !== 1) return;
+        if (Flowey.readerLayout && typeof Flowey.readerLayout.schedule === 'function') Flowey.readerLayout.schedule();
+        if (Flowey.radar && typeof Flowey.radar.sync === 'function') Flowey.radar.sync();
+        return;
         var node = svg.querySelector('[data-node-id="' + activeIds[0] + '"]');
         if (!node) return;
         var containerRect = container.getBoundingClientRect();
@@ -1367,6 +1382,10 @@
         chip.hidden = options.hideChip === true || normalized.length !== 1 || selectionMode;
         if (!chip.hidden) {
           renderRelationshipLens(normalized[0], byId);
+          // Sidebar shell: node details live in the left rail. Opening the
+          // rail reflows the canvas aside (never overlaps); Esc clears via
+          // the global shortcut and Flowey.focus.clear.
+          if (Flowey.readerLayout && typeof Flowey.readerLayout.openRail === 'function') Flowey.readerLayout.openRail();
           placeRelationshipLens();
         }
         if (options.updateUrl !== false) {
@@ -1535,7 +1554,9 @@
         var target = event.target;
         if (chip.hidden || !target || typeof target.closest !== 'function' || chip.contains(target)) return;
         if (container.getAttribute('data-just-panned') === 'true') return;
-        if (target.closest('[data-node-id], [data-relationship-hit-key], .overview-map')) return;
+        // Sidebar shell: interacting with the left rail (notes, index, node
+        // details) never dismisses the selection; only canvas background does.
+        if (target.closest('[data-node-id], [data-relationship-hit-key], .overview-map, .reader-rail, .rail-reveal')) return;
         clear();
       }, true);
       window.addEventListener('scroll', requestLensPlacement, { passive: true });
