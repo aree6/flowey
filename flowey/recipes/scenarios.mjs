@@ -34,7 +34,7 @@ const RAW_RECIPES = [
       useWhen: 'Cloud reviews, production readiness, multi-region planning, or infrastructure ownership handoffs.',
       avoidWhen: 'Deployment facts are unknown or the real question is application behavior rather than placement.',
       include: ['regions and networks', 'workload ownership', 'stateful services', 'named boundary crossings'],
-      prompt: 'Use Flowey to draw the production deployment topology. Group resources by region, network, cluster, and owner; show workloads and stateful services; label every cross-boundary mechanism. Do not invent deployment facts—mark unknown areas explicitly. If the user wants a fail-closed deployment review, ask before setting meta.engineering_profile to deployment-ownership; otherwise leave the engineering profile unset.',
+      prompt: 'Use Flowey to draw the production deployment topology. Group resources by region, network, cluster, and owner; show workloads and stateful services; label every cross-boundary mechanism. Do not invent deployment facts—mark unknown areas explicitly. Use kind "scope" for trust boundaries that group components.',
     },
     zh: {
       title: '部署与归属', question: '每个工作负载运行在哪里，哪些连接跨越了边界？',
@@ -42,7 +42,7 @@ const RAW_RECIPES = [
       useWhen: '适合云上评审、生产就绪、多区域规划和基础设施交接。',
       avoidWhen: '部署事实不清楚，或真正问题是应用行为而不是资源位置时不要使用。',
       include: ['区域与网络', '工作负载归属', '有状态服务', '明确的跨边界机制'],
-      prompt: '用 Flowey 绘制生产部署拓扑。按区域、网络、集群和负责人分组，展示工作负载与有状态服务，并标注每一种跨边界机制。不要编造部署事实，不确定的区域要明确标出。如果用户需要失败即阻断的部署评审，先征得确认，再把 meta.engineering_profile 设为 deployment-ownership；否则不要启用工程画像。',
+      prompt: '用 Flowey 绘制生产部署拓扑。按区域、网络、集群和负责人分组，展示工作负载与有状态服务，并标注每一种跨边界机制。不要编造部署事实，不确定的区域要明确标出。承担信任边界分组作用的边界使用 kind "scope"。',
     },
   },
   {
@@ -251,6 +251,52 @@ const RAW_RECIPES = [
     },
   },
   {
+    id: 'org-chart', type: 'hierarchy', proof: 'org-chart',
+    presentation: { preset: 'classic', motion: 'static' },
+    start: {
+      en: { descriptionPrompt: 'Use Flowey hierarchy mode to draw this org chart: [paste the people or units, their roles/titles, and who reports to whom, including dotted-line advisory relationships]. Every non-root member needs exactly one parent link; advisory lines use variant dashed. No repository is required.' },
+      zh: { descriptionPrompt: '用 Flowey 层级模式绘制这张组织架构图：[粘贴人员或单位、职务/头衔、汇报关系，包括虚线顾问关系]。每个非根成员必须有且仅有一条父级连线；顾问线使用 variant dashed。不需要代码库。' },
+    },
+    signals: [['org chart', 16], ['organisation chart', 14], ['organization chart', 14], ['reports to', 12], ['reporting line', 12], ['dotted line', 11], ['team structure', 9], ['hierarchy', 8], ['组织架构', 16], ['汇报关系', 13], ['汇报线', 12], ['虚线汇报', 11], ['团队结构', 9], ['层级图', 10]],
+    en: {
+      title: 'Org chart', question: 'Who reports to whom, and which relationships are advisory?',
+      summary: 'A top-down tree of people or units with roles, solid reporting lines, and dashed advisory lines.',
+      useWhen: 'Team pages, onboarding decks, governance reviews, or explaining reporting vs advisory relationships.',
+      avoidWhen: 'The real question is process order, message timing, or state — or members have multiple solid-line managers.',
+      include: ['one root', 'role per member', 'solid reporting lines', 'dashed advisory lines'],
+      prompt: 'Use Flowey hierarchy mode to draw this org chart. Give every person or unit a role, connect each non-root member to exactly one parent with a labelled reporting line, and draw advisory relationships as variant dashed with a "dotted line" label. Keep labels short; put background in cards.',
+    },
+    zh: {
+      title: '组织架构图', question: '谁向谁汇报，哪些关系只是顾问性质？',
+      summary: '自上而下的人或单位树，包含职务、实线汇报和虚线顾问关系。',
+      useWhen: '适合团队介绍、新人上手、治理评审，以及解释汇报线与顾问线的区别。',
+      avoidWhen: '如果真正问题是流程顺序、消息时序或状态，或者有人有多条实线上级，请换其他模式。',
+      include: ['唯一的根', '每人一个职务', '实线汇报', '虚线顾问关系'],
+      prompt: '用 Flowey 层级模式绘制这张组织架构图。为每个人或单位写明职务；每个非根成员用带标签的连线连接到唯一父级；顾问关系使用 variant dashed 并标注“虚线”。标签保持简短，背景信息放进卡片。',
+    },
+  },
+  {
+    id: 'site-map', type: 'hierarchy', proof: 'org-chart',
+    presentation: { preset: 'classic', motion: 'static' },
+    signals: [['site map', 15], ['page tree', 13], ['website structure', 12], ['navigation tree', 11], ['content hierarchy', 10], ['网站地图', 15], ['页面树', 13], ['网站结构', 12], ['导航树', 11], ['内容层级', 10]],
+    en: {
+      title: 'Site map', question: 'How is the site or document set organized top-down?',
+      summary: 'A navigation tree of sections and pages with ownership or status tags.',
+      useWhen: 'Website redesigns, documentation IA, portal navigation, or content audits.',
+      avoidWhen: 'The audience needs user flows across pages rather than the containment tree.',
+      include: ['one root section', 'page per node', 'ownership or status tags', 'short labels'],
+      prompt: 'Use Flowey hierarchy mode to draw this site map. Nest sections under exactly one parent each, tag owners or page status where known, and keep labels to page names. Put migration notes in cards, not in the tree.',
+    },
+    zh: {
+      title: '网站地图', question: '站点或文档集自上而下如何组织？',
+      summary: '展示栏目与页面的导航树，可标注负责人或状态。',
+      useWhen: '适合网站改版、文档信息架构、门户导航和内容盘点。',
+      avoidWhen: '如果受众需要的是跨页面的用户动线，而不是包含关系树，请用工作流。',
+      include: ['唯一的根栏目', '每页一个节点', '负责人或状态标签', '简短标签'],
+      prompt: '用 Flowey 层级模式绘制这张网站地图。每个栏目只挂在一个父级下；已知负责人或页面状态就打上标签；标签只写页面名。迁移说明放进卡片，不要塞进树里。',
+    },
+  },
+  {
     id: 'layout-repair', type: 'architecture', proof: 'web-app',
     presentation: { preset: 'classic', motion: 'static' },
     signals: [
@@ -265,7 +311,7 @@ const RAW_RECIPES = [
     en: {
       title: 'Layout repair', question: 'Why does the existing diagram overflow, overlap, or route through nodes, and what should be fixed first?',
       summary: 'Repair an existing diagram in its current mode using validation diagnostics, explicit waypoint semantics, and a measured desktop viewport budget.',
-      useWhen: 'An existing architecture, workflow, sequence, dataflow, or lifecycle diagram needs layout repair; keep its diagram type and presentation settings.',
+      useWhen: 'An existing architecture, workflow, sequence, dataflow, lifecycle, or hierarchy diagram needs layout repair; keep its diagram type and presentation settings.',
       avoidWhen: 'The task is choosing a new diagram type. Do not change topology, delete meaningful labels, or hide overflow just to pass checks.',
       include: [
         'repair order: schema → overlap → direction → crossings → labels',
@@ -317,8 +363,8 @@ export function startPromptsFor(recipe, lang = 'en') {
   const repositoryPrompt = recipe.type === 'architecture'
     ? copy.prompt
     : language === 'zh'
-      ? `先检查这个仓库里的相关证据，然后${copy.prompt}不要编造代码无法支持的行为。`
-      : `Inspect this repository for evidence, then ${copy.prompt.charAt(0).toLowerCase()}${copy.prompt.slice(1)} Do not invent behavior that the code does not support.`;
+      ? `先收集相关的引用来源（笔记、链接、文档、受访人），然后${copy.prompt}不要编造来源不支持的内容。`
+      : `Gather the cited sources (notes, links, documents, people) first, then ${copy.prompt.charAt(0).toLowerCase()}${copy.prompt.slice(1)} Do not invent anything the sources do not support.`;
   return { descriptionPrompt, repositoryPrompt };
 }
 
