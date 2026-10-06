@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Legacy narrow workflow",
+    "output": "v1-workflow-700x400.html",
+    "viewBox": [700, 400]
+  },
+  "lanes": [
+    { "id": "first", "label": "First" },
+    { "id": "second", "label": "Second" }
+  ],
+  "nodes": [
+    { "id": "node_0", "lane": "first", "col": 0, "type": "actor", "label": "actor" },
+    { "id": "node_1", "lane": "first", "col": 2, "type": "action", "label": "action" },
+    { "id": "node_2", "lane": "first", "col": 4, "type": "document", "label": "document" },
+    { "id": "node_3", "lane": "second", "col": 0, "type": "milestone", "label": "milestone" },
+    { "id": "node_4", "lane": "second", "col": 2, "type": "decision", "label": "decision" },
+    { "id": "node_5", "lane": "second", "col": 4, "type": "record", "label": "record" },
+    { "id": "node_6", "lane": "second", "col": 5, "type": "external", "label": "external" }
+  ],
+  "edges": []
+}

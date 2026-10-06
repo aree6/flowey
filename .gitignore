@@ -1,0 +1,7 @@
+node_modules/
+.archify/
+.flowey/
+*.delivery-lock.json
+.archify-delivery-lock.json
+*.delivery-pending.json
+.DS_Store
