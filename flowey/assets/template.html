@@ -632,7 +632,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     }
     @media (min-width: 768px) and (max-height: 920px) {
       .header { margin-bottom: 1rem; }
-      .diagram-container { padding: 1rem; }
       .cards { margin-top: 1rem; }
       .card { padding: 1rem; }
     }
@@ -758,8 +757,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       border-radius: 1rem;
       border: 1px solid var(--panel-border);
       box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 16px 40px -20px rgba(15, 23, 42, 0.18);
-      padding: 0.75rem;
-      padding-bottom: calc(0.75rem + var(--flowey-nav-reserve));
+      padding: 0 0 var(--flowey-nav-reserve, 0px);
       overflow: hidden;
       position: relative;
       min-width: 0;
@@ -4252,16 +4250,16 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     svg[data-preset="blueprint"] [data-legend-hit],
     svg[data-preset="blueprint"] [data-legend-count-badge] rect { rx: 0; filter: none; }
     svg[data-legend-preview-active] [data-node-id],
-    svg[data-legend-preview-active] [data-edge-from] { opacity: 0.38; }
+    svg[data-legend-preview-active] [data-edge-from] { opacity: 0.11; }
     svg[data-legend-preview-active] [data-legend-preview-match] { opacity: 1; }
-    svg[data-legend-preview-active] [data-legend-preview-peer] { opacity: 0.72; }
+    svg[data-legend-preview-active] [data-legend-preview-peer] { opacity: 0.62; }
     svg[data-legend-preview-active] [data-legend-preview-selected] {
       filter: drop-shadow(0 0 8px var(--document-stroke));
     }
     svg[data-lens-active] [data-node-id],
-    svg[data-lens-active] [data-edge-from] { opacity: 0.38; }
+    svg[data-lens-active] [data-edge-from] { opacity: 0.11; }
     svg[data-lens-active] [data-lens-match] { opacity: 1; }
-    svg[data-lens-active] [data-lens-peer] { opacity: 0.72; }
+    svg[data-lens-active] [data-lens-peer] { opacity: 0.62; }
     svg[data-lens-active] [data-lens-selected] {
       filter: drop-shadow(0 0 10px var(--document-stroke));
     }
@@ -4318,14 +4316,14 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
        export still observe exactly one edge, then mirror reader emphasis from
        the paired foreground path in this presentation-only wrapper. */
     svg[data-legend-preview-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"],
-    svg[data-lens-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { opacity: 0.38; }
+    svg[data-lens-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { opacity: 0.11; }
     svg[data-legend-preview-active] [data-graph-role="automatic-crossover"]:has(> [data-legend-preview-match]) > [data-graph-role="automatic-crossover-underlay"],
     svg[data-lens-active] [data-graph-role="automatic-crossover"]:has(> [data-lens-match]) > [data-graph-role="automatic-crossover-underlay"] { opacity: 1; }
     svg[data-legend-preview-active] [data-graph-role="automatic-crossover"]:has(> [data-legend-preview-peer]) > [data-graph-role="automatic-crossover-underlay"],
     svg[data-lens-active] [data-graph-role="automatic-crossover"]:has(> [data-lens-peer]) > [data-graph-role="automatic-crossover-underlay"] { opacity: 0.62; }
     svg[data-focus-active] [data-node-id],
-    svg[data-focus-active] [data-edge-from] { opacity: 0.38; }
-    svg[data-focus-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { opacity: 0.38; }
+    svg[data-focus-active] [data-edge-from] { opacity: 0.13; }
+    svg[data-focus-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { opacity: 0.13; }
     svg[data-focus-active] [data-lifecycle-rail] { opacity: 0; }
     svg[data-focus-active] [data-focus-match] { opacity: 1; }
     svg[data-focus-active] [data-graph-role="automatic-crossover"]:has(> [data-focus-match]) > [data-graph-role="automatic-crossover-underlay"] { opacity: 1; }
@@ -4338,8 +4336,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
        downstream walks outgoing edges. It never claims runtime causality and
        changes only viewer emphasis, not canonical geometry or export bytes. */
     svg[data-reach-active] [data-node-id],
-    svg[data-reach-active] [data-edge-from] { opacity: 0.35; }
-    svg[data-reach-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { opacity: 0.35; }
+    svg[data-reach-active] [data-edge-from] { opacity: 0.09; }
+    svg[data-reach-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { opacity: 0.09; }
     svg[data-reach-active] [data-reach-match] { opacity: 1; }
     svg[data-reach-active] [data-graph-role="automatic-crossover"]:has(> [data-reach-match]) > [data-graph-role="automatic-crossover-underlay"] { opacity: 1; }
     svg[data-reach-active="upstream"] [data-reach-origin] {
@@ -4511,11 +4509,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     /* Keep the node's opaque backing mask intact while unrelated ink dims softly.
        Fading only ink (not the group) keeps the mask hiding arrows routed
        underneath the node. */
-    svg[data-intent-trace-active] [data-node-id] { fill-opacity: 0.45; stroke-opacity: 0.45; }
+    svg[data-intent-trace-active] [data-node-id] { fill-opacity: 0.2; stroke-opacity: 0.2; }
     svg [data-node-id] > .c-mask { fill-opacity: 1; }
     svg[data-intent-trace-active] [data-node-id][data-intent-trace-match] { fill-opacity: 1; stroke-opacity: 1; }
-    svg[data-intent-trace-active] [data-edge-from] { opacity: 0.45; }
-    svg[data-intent-trace-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { opacity: 0.45; }
+    svg[data-intent-trace-active] [data-edge-from] { opacity: 0.2; }
+    svg[data-intent-trace-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { opacity: 0.2; }
     svg[data-intent-trace-active] [data-lifecycle-rail] { opacity: 0; }
     svg[data-intent-trace-active] [data-intent-trace-match] { opacity: 1; }
     svg[data-intent-trace-active] [data-graph-role="automatic-crossover"]:has(> [data-intent-trace-match]) > [data-graph-role="automatic-crossover-underlay"] { opacity: 1; }
@@ -4580,8 +4578,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       filter: drop-shadow(0 0 10px var(--actor-stroke));
     }
     svg[data-route-active] [data-node-id],
-    svg[data-route-active] [data-edge-from] { opacity: 0.38; }
-    svg[data-route-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { opacity: 0.38; }
+    svg[data-route-active] [data-edge-from] { opacity: 0.11; }
+    svg[data-route-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { opacity: 0.11; }
     svg[data-route-active] [data-route-match] { opacity: 1; }
     svg[data-route-active] [data-graph-role="automatic-crossover"]:has(> [data-route-match]) > [data-graph-role="automatic-crossover-underlay"] { opacity: 1; }
     svg[data-route-active] [data-route-start] {
@@ -9382,11 +9380,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       // layout cycle re-learns convergence from scratch.
       var settlePrevOverflow = null;
       var WIDE_RATIO = 1.55;
-      // Never reflow the whole canvas to chase a residual scroll smaller
-      // than this: below it the page scrolls as authored and readability is
-      // preserved. Only a material overflow (a genuinely taller-than-viewport
-      // diagram) is worth shrinking for.
-      var SHRINK_OVERFLOW_MIN_PX = 96;
       var MIN_DESKTOP_WIDTH = 1024;
       var MIN_READER_WIDTH = 960;
       var MAX_READER_WIDTH = 1920;
@@ -9615,21 +9608,15 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             document.documentElement.scrollHeight,
             document.body.scrollHeight
           ) - window.innerHeight - belowFold();
-          // A shrink step that does not reduce the overflow is chasing fixed
-          // chrome or non-responsive content: hold the width instead of
-          // ratcheting down to the floor. Tracked across frames so genuine
-          // slow convergence still proceeds while a plateau stops it.
-          // Separately, never reflow the whole canvas to chase a residual
-          // scroll smaller than SHRINK_OVERFLOW_MIN_PX: below that the page
-          // scrolls as authored and readability is preserved. Only a
-          // material overflow (a genuinely taller-than-viewport diagram)
-          // is worth shrinking for. The overflow must also persist across
-          // two consecutive passes so single-frame transients (fonts,
-          // theme toggles) never ratchet the width down.
+          // Shrink while any overflow persists: the canvas must fit the
+          // viewport instead of scrolling. Two guards keep the loop honest:
+          // persistence (a single-frame transient never ratchets) and
+          // improvement (a shrink that does not reduce the overflow holds
+          // instead of grinding to the floor).
           var improving = settlePrevOverflow === null || overflow < settlePrevOverflow - 1;
-          var persistent = settlePrevOverflow !== null && settlePrevOverflow > SHRINK_OVERFLOW_MIN_PX;
+          var persistent = settlePrevOverflow !== null && settlePrevOverflow > 1;
           settlePrevOverflow = overflow;
-          if (overflow > SHRINK_OVERFLOW_MIN_PX && persistent && lastWidth > Math.ceil(minWidth) && improving) {
+          if (overflow > 1 && persistent && lastWidth > Math.ceil(minWidth) && improving) {
             applyWidth(Math.max(minWidth, lastWidth - overflow * ratio - 4), minWidth);
             settledCap = lastWidth;
             html.setAttribute('data-reader-overflow', 'reduced');
@@ -9667,7 +9654,12 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           return null;
         }
         var chrome = chromeMetrics();
-        var viewportCap = Math.max(0, window.innerWidth - chrome.bodyX);
+        // The dotted canvas takes up to 95% of the viewport in both axes so
+        // the page never scrolls: readers get maximum diagram, minimum chrome.
+        var viewportCap = Math.min(
+          Math.max(0, window.innerWidth - chrome.bodyX),
+          Math.floor(window.innerWidth * 0.95)
+        );
         var readableWidth = viewBox && viewBox.width > 0
           ? viewBox.width * minimumReadableScale() + chrome.diagramX
           : MIN_READER_WIDTH;
@@ -9687,6 +9679,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         }
         var primaryWidth = primaryReadingWidth();
         var railExtra = RAIL_WIDTH + RAIL_GAP;
+        // Fit beats comfort: the floor is text readability, not the comfort
+        // size, so tall or wide diagrams shrink to the viewport instead of
+        // scrolling. Only a docked rail (which consumes width beside the
+        // canvas) enforces the comfort floor.
+        if (mode !== 'true') primaryWidth = 0;
         if (primaryWidth > 0) minWidth = Math.max(minWidth, Math.min(maxWidth, primaryWidth + chrome.diagramX));
         var docked = mode === 'true';
         setRail(mode);
@@ -9694,7 +9691,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         if (docked) minWidth = Math.min(maxWidth, minWidth + railExtra);
         var fixedHeight = chrome.bodyY + chrome.diagramY + SAFE_BOTTOM_GAP +
           outerHeight(header);
-        var availableSvgHeight = Math.max(1, window.innerHeight - fixedHeight);
+        var availableSvgHeight = Math.max(1, Math.floor(window.innerHeight * 0.95) - fixedHeight);
         var desiredWidth = availableSvgHeight * ratio + chrome.diagramX + (docked ? railExtra : 0);
         var width = Math.max(minWidth, Math.min(maxWidth, desiredWidth, settledCap || desiredWidth));
         applyWidth(width, minWidth);

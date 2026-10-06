@@ -22,11 +22,6 @@
       // layout cycle re-learns convergence from scratch.
       var settlePrevOverflow = null;
       var WIDE_RATIO = 1.55;
-      // Never reflow the whole canvas to chase a residual scroll smaller
-      // than this: below it the page scrolls as authored and readability is
-      // preserved. Only a material overflow (a genuinely taller-than-viewport
-      // diagram) is worth shrinking for.
-      var SHRINK_OVERFLOW_MIN_PX = 96;
       var MIN_DESKTOP_WIDTH = 1024;
       var MIN_READER_WIDTH = 960;
       var MAX_READER_WIDTH = 1920;
@@ -255,21 +250,15 @@
             document.documentElement.scrollHeight,
             document.body.scrollHeight
           ) - window.innerHeight - belowFold();
-          // A shrink step that does not reduce the overflow is chasing fixed
-          // chrome or non-responsive content: hold the width instead of
-          // ratcheting down to the floor. Tracked across frames so genuine
-          // slow convergence still proceeds while a plateau stops it.
-          // Separately, never reflow the whole canvas to chase a residual
-          // scroll smaller than SHRINK_OVERFLOW_MIN_PX: below that the page
-          // scrolls as authored and readability is preserved. Only a
-          // material overflow (a genuinely taller-than-viewport diagram)
-          // is worth shrinking for. The overflow must also persist across
-          // two consecutive passes so single-frame transients (fonts,
-          // theme toggles) never ratchet the width down.
+          // Shrink while any overflow persists: the canvas must fit the
+          // viewport instead of scrolling. Two guards keep the loop honest:
+          // persistence (a single-frame transient never ratchets) and
+          // improvement (a shrink that does not reduce the overflow holds
+          // instead of grinding to the floor).
           var improving = settlePrevOverflow === null || overflow < settlePrevOverflow - 1;
-          var persistent = settlePrevOverflow !== null && settlePrevOverflow > SHRINK_OVERFLOW_MIN_PX;
+          var persistent = settlePrevOverflow !== null && settlePrevOverflow > 1;
           settlePrevOverflow = overflow;
-          if (overflow > SHRINK_OVERFLOW_MIN_PX && persistent && lastWidth > Math.ceil(minWidth) && improving) {
+          if (overflow > 1 && persistent && lastWidth > Math.ceil(minWidth) && improving) {
             applyWidth(Math.max(minWidth, lastWidth - overflow * ratio - 4), minWidth);
             settledCap = lastWidth;
             html.setAttribute('data-reader-overflow', 'reduced');
@@ -307,7 +296,12 @@
           return null;
         }
         var chrome = chromeMetrics();
-        var viewportCap = Math.max(0, window.innerWidth - chrome.bodyX);
+        // The dotted canvas takes up to 95% of the viewport in both axes so
+        // the page never scrolls: readers get maximum diagram, minimum chrome.
+        var viewportCap = Math.min(
+          Math.max(0, window.innerWidth - chrome.bodyX),
+          Math.floor(window.innerWidth * 0.95)
+        );
         var readableWidth = viewBox && viewBox.width > 0
           ? viewBox.width * minimumReadableScale() + chrome.diagramX
           : MIN_READER_WIDTH;
@@ -327,6 +321,11 @@
         }
         var primaryWidth = primaryReadingWidth();
         var railExtra = RAIL_WIDTH + RAIL_GAP;
+        // Fit beats comfort: the floor is text readability, not the comfort
+        // size, so tall or wide diagrams shrink to the viewport instead of
+        // scrolling. Only a docked rail (which consumes width beside the
+        // canvas) enforces the comfort floor.
+        if (mode !== 'true') primaryWidth = 0;
         if (primaryWidth > 0) minWidth = Math.max(minWidth, Math.min(maxWidth, primaryWidth + chrome.diagramX));
         var docked = mode === 'true';
         setRail(mode);
@@ -334,7 +333,7 @@
         if (docked) minWidth = Math.min(maxWidth, minWidth + railExtra);
         var fixedHeight = chrome.bodyY + chrome.diagramY + SAFE_BOTTOM_GAP +
           outerHeight(header);
-        var availableSvgHeight = Math.max(1, window.innerHeight - fixedHeight);
+        var availableSvgHeight = Math.max(1, Math.floor(window.innerHeight * 0.95) - fixedHeight);
         var desiredWidth = availableSvgHeight * ratio + chrome.diagramX + (docked ? railExtra : 0);
         var width = Math.max(minWidth, Math.min(maxWidth, desiredWidth, settledCap || desiredWidth));
         applyWidth(width, minWidth);
