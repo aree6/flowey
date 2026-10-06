@@ -897,9 +897,9 @@ test('packaged skill keeps first-draft rules inline and repair contracts behind 
   const repository = read('references/citations-authoring.md');
   const fastPath = skill.slice(skill.indexOf('## Fast authoring path'), skill.indexOf('## Update awareness'));
   assert.match(skill, /## Existing candidate handoff[\s\S]*run `finalize` first as one CLI invocation/);
-  assert.match(fastPath, /exact schema and example paths in the Type router without listing their directories/);
+  assert.match(fastPath, /exact schema and example paths in the Type router/);
   assert.match(fastPath, /references\/authoring-defaults\.md/);
-  assert.match(fastPath, /bounded batch separate from project documents and complete schemas/);
+  assert.match(fastPath, /bounded batch \(at most 3 files per message\), separate from project documents and complete schemas/);
   assert.match(fastPath, /recover any missing section before writing/);
   assert.match(fastPath, /write the complete candidate directly without planning coordinates in prose/);
   assert.match(fastPath, /Set `meta\.quality_profile` to `"showcase"`/);

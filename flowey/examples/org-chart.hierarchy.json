@@ -11,7 +11,7 @@
     {
       "id": "dean",
       "type": "actor",
-      "label": "Prof. A. Rahman",
+      "label": "Dean's Office",
       "role": "Dean",
       "tag": "appointed 2024",
       "citations": [
@@ -21,31 +21,31 @@
     {
       "id": "deputy_academic",
       "type": "actor",
-      "label": "Dr. S. Lim",
+      "label": "Academic Affairs",
       "role": "Deputy Dean (Academic)"
     },
     {
       "id": "deputy_research",
       "type": "actor",
-      "label": "Dr. M. Ong",
+      "label": "Research Office",
       "role": "Deputy Dean (Research)"
     },
     {
       "id": "registrar",
       "type": "actor",
-      "label": "N. Ahmad",
+      "label": "Registrar's Office",
       "role": "Registrar"
     },
     {
       "id": "cs_head",
       "type": "actor",
-      "label": "Dr. K. Tan",
+      "label": "Computer Science",
       "role": "Head, Computer Science"
     },
     {
       "id": "se_head",
       "type": "actor",
-      "label": "Dr. J. Wu",
+      "label": "Software Engineering",
       "role": "Head, Software Engineering"
     },
     {
@@ -63,11 +63,11 @@
     }
   ],
   "links": [
-    { "id": "l_academic", "parent": "dean", "child": "deputy_academic", "label": "reports to" },
-    { "id": "l_research", "parent": "dean", "child": "deputy_research", "label": "reports to" },
-    { "id": "l_registrar", "parent": "dean", "child": "registrar", "label": "reports to" },
-    { "id": "l_cs", "parent": "deputy_academic", "child": "cs_head", "label": "reports to" },
-    { "id": "l_se", "parent": "deputy_academic", "child": "se_head", "label": "reports to" },
+    { "id": "l_academic", "parent": "dean", "child": "deputy_academic", "label": "supervises" },
+    { "id": "l_research", "parent": "dean", "child": "deputy_research", "label": "supervises" },
+    { "id": "l_registrar", "parent": "dean", "child": "registrar", "label": "supervises" },
+    { "id": "l_cs", "parent": "deputy_academic", "child": "cs_head", "label": "directs" },
+    { "id": "l_se", "parent": "deputy_academic", "child": "se_head", "label": "directs" },
     { "id": "l_lab", "parent": "deputy_research", "child": "ai_lab", "label": "supervises" },
     { "id": "l_panel", "parent": "dean", "child": "industry_panel", "label": "dotted line", "variant": "dashed" }
   ],

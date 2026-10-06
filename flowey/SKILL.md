@@ -12,7 +12,7 @@ metadata:
 
 Create an interactive HTML diagram from typed JSON. Static output is the default; enable motion only when requested.
 
-Run commands from your working directory. Unless the user names another location, give each new diagram request its own folder `.flowey/<type>-<slug>-<YYYYMMDD-HHMMSS>/` there (local time, chosen once when the request starts): keep `candidate.json` and `<slug>.html` in it, set `meta.output` to that relative HTML path, and reuse the folder for every repair rerun. A later request gets a new folder, so earlier versions stay intact. Replace `bin/flowey.mjs` in the commands below with the installed package's absolute path, or its path relative to your working directory; input and output paths resolve from that working directory.
+Run commands from your working directory. Unless the user names another location, give each new diagram request its own folder `.flowey/<type>-<slug>-<YYYYMMDD-HHMMSS>/` there (local time, chosen once when the request starts): keep `candidate.json` and `<slug>.html` in it, set `meta.output` to that relative HTML path, and reuse the folder for every repair rerun. The CLI `<output.html>` argument and `meta.output` must be the same relative path. A later request gets a new folder, so earlier versions stay intact. Replace `bin/flowey.mjs` in the commands below with the installed package's absolute path, or its path relative to your working directory; input and output paths resolve from that working directory.
 
 For facts that come from outside the request, read [Citations authoring](references/citations-authoring.md) while gathering sources. A plain description uses the steps below; an existing JSON uses the handoff path.
 
@@ -27,8 +27,8 @@ When the user supplies a frozen candidate, run `finalize` first as one CLI invoc
 Use this path for ordinary generation. Read branch references only when their stated trigger applies.
 
 1. Choose `hierarchy`, `architecture`, `workflow`, `sequence`, `dataflow`, or `lifecycle` from the question.
-2. Use the exact schema and example paths in the Type router without listing their directories. Read [Authoring defaults](references/authoring-defaults.md) and the mode's example in a bounded batch separate from project documents and complete schemas so neither is truncated; recover any missing section before writing. For Architecture, use the matching showcase example. For Sequence, Dataflow, Lifecycle, and Hierarchy, also read the mode and common schemas. Read the relevant schema definition before choosing any new field, enum, or constrained text, especially boundary kinds and node types. Examples teach shape, not facts. Use fresh IDs, wording, and layout. Go directly to the candidate without preliminary help, doctor, starter validation, temporary diagrams, or output-path listing. Query brands only for an explicitly requested mark; read [Brand marks](references/brand-marks.md) for an unknown mark with a user-provided URL.
-3. Once the requested scope and [citations](references/citations-authoring.md) are covered, write the complete candidate directly without planning coordinates in prose. Choose Architecture abstraction and connected placement using Authoring defaults before coordinates: show the main user journey and necessary branches, preserve control roles and behavior-changing conditions, and leave enough room for actual relationship labels. No node, relationship, citation, view, card, or boundary count is a target or ceiling. Use automatic routes first; add explicit routing only for necessary branch, return, supplied geometry, or measured repair. Set `meta.quality_profile` to `"showcase"` unless the user requests dense `standard`.
+2. Use the exact schema and example paths in the Type router. Read [Authoring defaults](references/authoring-defaults.md) and the mode's example in a bounded batch (at most 3 files per message), separate from project documents and complete schemas so neither is truncated; recover any missing section before writing. For Architecture, use the matching showcase example. For Sequence, Dataflow, Lifecycle, and Hierarchy, also read the mode and common schemas. Read the relevant schema definition before choosing any new field, enum, or constrained text, especially boundary kinds and node types. Examples teach shape, not facts. Use fresh IDs, wording, and layout. Run `doctor` once when setting up a new environment; otherwise go directly to the candidate without preliminary help, starter validation, temporary diagrams, or output-path listing. Query brands only for an explicitly requested mark; read [Brand marks](references/brand-marks.md) for an unknown mark with a user-provided URL.
+3. Once the requested scope and [citations](references/citations-authoring.md) are covered, write the complete candidate directly without planning coordinates in prose. Choose Architecture abstraction and connected placement using Authoring defaults before coordinates: show the main user journey and necessary branches, preserve control roles and behavior-changing conditions, and leave enough room for actual relationship labels. No node, relationship, citation, view, card, or boundary count is a target or ceiling. Keep the source JSON free of duplicate keys: the parser keeps the last value silently and the gates will not flag it. Cards answer extra reader questions but must not introduce new facts; citations live on nodes only. Use automatic routes first; add explicit routing only for necessary branch, return, supplied geometry, or measured repair. Set `meta.quality_profile` to `"showcase"` unless the user requests dense `standard`.
 4. Once the complete first candidate is written, run `finalize` directly. Its first gate is showcase validation; successful first drafts need no separate pre-validation. Keep the candidate unchanged while the command runs:
 
    ```bash
@@ -37,7 +37,7 @@ Use this path for ordinary generation. Read branch references only when their st
 
    A passing receipt proves the included `validate`, `deliver`, strict `check`, and real-browser `browser-check` gates passed. Use its compact summary; run standalone commands only for a separate request or focused failure diagnosis.
 
-5. A non-zero exit is never success. Read compact stdout or `evidence.summaryReceipt`, then [repair the failed gate](references/delivery-contract.md#failed-finalize-and-candidate-repair), including its repair limit. Preserve requested meaning and citations. For several tangled Architecture routes, read [Architecture layout repair](references/architecture-layout-repair.md); for measured field or geometry failures, read [Authoring contract](references/authoring-contract.md). Edit the connected neighborhood and rerun the complete `finalize` command from step 4. Apply at most two repair rounds; if the second still fails, report the receipt honestly instead of a third guess.
+5. A non-zero exit is never success. Read compact stdout or `evidence.summaryReceipt`, then [repair the failed gate](references/delivery-contract.md#failed-finalize-and-candidate-repair), including its repair limit. Preserve requested meaning and citations. For several tangled Architecture routes, read [Architecture layout repair](references/architecture-layout-repair.md); for measured field or geometry failures, read [Authoring contract](references/authoring-contract.md). Edit the connected neighborhood and rerun the complete `finalize` command from step 4. A repair round is one edit plus one `finalize` rerun; apply at most two repair rounds. If the second still fails, report the receipt honestly instead of a third guess.
 
 ## Update awareness
 
@@ -54,7 +54,9 @@ Before the first candidate, use the authoring references and relevant sources, n
 | `workflow` | Processes, approvals, runbooks; plans and step-by-step everyday or operational flows | `schemas/workflow.schema.json` | Everyday: `examples/leave-approval.workflow.json`; operations: `examples/incident-response.workflow.json` |
 | `sequence` | Back-and-forth exchanges over time: people, offices, services; who contacts whom, in what order | `schemas/sequence.schema.json` | Everyday: `examples/clinic-visit.sequence.json`; services: `examples/cache-miss-request.sequence.json` |
 | `dataflow` | Where money, documents, or data go: stages, stores, consumers; lineage and handoffs | `schemas/dataflow.schema.json` | Everyday: `examples/scholarship-disbursement.dataflow.json`; analytics: `examples/product-analytics.dataflow.json` |
-| `lifecycle` | State/status transitions, waits, retries, terminal states; where an application or order stands | `schemas/lifecycle.schema.json` | Everyday: `examples/visa-application.lifecycle.json`; releases: `examples/deployment-release.lifecycle.json` |
+| `lifecycle` | State/status transitions, waits, retries, terminal states; where an application or order stands | `schemas/lifecycle.schema.json` | Everyday: `examples/visa-application.lifecycle.json` (schema v1); releases: `examples/deployment-release.lifecycle.json` (schema v2) |
+
+A lifecycle diagram keeps a `main` lane first and a `terminal` lane last, with any other populated lanes between them in `lanes[]` order. A hierarchy parent stays readable with about six leaves at default widths; beyond that, narrow roles or split the chart (see [Mode placement](references/authoring-contract.md#mode-placement)).
 
 When ambiguous, run `node bin/flowey.mjs guide "<scenario>" --json`. Scenario proof examples are structural references, not facts to copy.
 
@@ -72,7 +74,7 @@ Read Mermaid for topology and meaning, then author fresh Flowey JSON; do not mec
 
 Use the `finalize` command above for the first candidate and after a repair.
 
-`finalize` stops at the first non-passing gate. Its compact stdout and `<output-stem>.finalize-summary.json` are ordinary evidence. A passing run creates no screenshots and reports `visualReview: "not-requested"`.
+`finalize` stops at the first non-passing gate. Its compact stdout and `<output-stem>.finalize-summary.json` are ordinary evidence; the summary sidecar carries that same compact selection, so when stdout reports `diagnosticSummary.truncated: true`, read the complete diagnostics list in the `<output-stem>.finalize.json` full receipt. A passing run creates no screenshots and reports `visualReview: "not-requested"`.
 
 When a passing Architecture receipt reports `visualReviewRecommendation.signals.resolvedCrossovers`, copy the candidate aside and apply the hints in one edit that changes only node positions and sizes: every node, relationship (including its `from` and `to`), label, and citation stays as it was. Rerun the complete `finalize` once with `--out-dir <folder>/review-2`, because the previous HTML already owns its browser evidence. If that run fails or reports more crossings, restore the copy and finalize it with `--out-dir <folder>/review-3`. Do not start a second placement round. Hints about extra bends alone are optional.
 
@@ -101,7 +103,7 @@ Read `references/viewer-runtime.md` only when the user explicitly asks for Share
 
 ## Setup and fallback
 
-No install is required inside the skill package. For setup diagnosis, verify with:
+No install is required inside the skill package. Run this setup diagnosis once for a new environment (not before every candidate):
 
 ```bash
 node bin/flowey.mjs doctor
