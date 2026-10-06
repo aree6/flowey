@@ -611,11 +611,19 @@
         motion.setAttribute('dur', options.duration || '1.2s');
         motion.setAttribute('begin', '0s');
         motion.setAttribute('fill', 'freeze');
+        motion.setAttribute('repeatCount', 'indefinite');
         motion.setAttribute('rotate', 'auto');
         motion.setAttribute('calcMode', 'spline');
         motion.setAttribute('keyTimes', '0;1');
         motion.setAttribute('keySplines', '.2 0 .2 1');
-        token.appendChild(motion);
+        // Reduced-motion and hidden-document states get a static token:
+        // CSS `animation: none` cannot stop SMIL, so do not start it.
+        var motionStill = false;
+        try {
+          motionStill = document.documentElement.getAttribute('data-motion') === 'still'
+            || document.documentElement.getAttribute('data-document-hidden') === 'true';
+        } catch (e) { motionStill = false; }
+        if (!motionStill) token.appendChild(motion);
         return token;
       }
       function createSemanticFlowToken(edge, shape, options) {
