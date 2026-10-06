@@ -322,6 +322,11 @@
         var primaryWidth = primaryReadingWidth();
         var railExtra = RAIL_WIDTH + RAIL_GAP;
         // Fit beats comfort: the floor is text readability, not the comfort
+        // size, so diagrams shrink to the viewport instead of scrolling.
+        // Only a docked rail (which consumes width beside the canvas)
+        // enforces the comfort floor.
+        if (mode !== 'true') primaryWidth = 0;
+        // Fit beats comfort: the floor is text readability, not the comfort
         // size, so tall or wide diagrams shrink to the viewport instead of
         // scrolling. Only a docked rail (which consumes width beside the
         // canvas) enforces the comfort floor.

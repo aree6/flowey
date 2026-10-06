@@ -9680,6 +9680,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         var primaryWidth = primaryReadingWidth();
         var railExtra = RAIL_WIDTH + RAIL_GAP;
         // Fit beats comfort: the floor is text readability, not the comfort
+        // size, so diagrams shrink to the viewport instead of scrolling.
+        // Only a docked rail (which consumes width beside the canvas)
+        // enforces the comfort floor.
+        if (mode !== 'true') primaryWidth = 0;
+        // Fit beats comfort: the floor is text readability, not the comfort
         // size, so tall or wide diagrams shrink to the viewport instead of
         // scrolling. Only a docked rail (which consumes width beside the
         // canvas) enforces the comfort floor.
@@ -9880,7 +9885,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       }
       function writeReserve(next, options) {
         options = options || {};
-        next = Math.max(0, Math.ceil(next));
+        // Cap the reserve at one toolbar height plus the safe gap: beyond
+        // that the stage-gap feedback cannot converge (padding growth moves
+        // both the nav and the measured gap), so an unbounded reserve only
+        // inflates the page. Genuine legend/nav collisions resolve far below.
+        next = Math.min(72, Math.max(0, Math.ceil(next)));
         if (Math.abs(next - reserve) < 1) return false;
         reserve = next;
         if (reserve) {

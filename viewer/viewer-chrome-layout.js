@@ -94,7 +94,11 @@
       }
       function writeReserve(next, options) {
         options = options || {};
-        next = Math.max(0, Math.ceil(next));
+        // Cap the reserve at one toolbar height plus the safe gap: beyond
+        // that the stage-gap feedback cannot converge (padding growth moves
+        // both the nav and the measured gap), so an unbounded reserve only
+        // inflates the page. Genuine legend/nav collisions resolve far below.
+        next = Math.min(72, Math.max(0, Math.ceil(next)));
         if (Math.abs(next - reserve) < 1) return false;
         reserve = next;
         if (reserve) {

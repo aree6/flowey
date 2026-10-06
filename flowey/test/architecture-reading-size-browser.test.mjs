@@ -47,6 +47,7 @@ test('automatic architectures preserve primary reading size when fitting the ful
             toolbarBottom: toolbar.bottom, guideTop: guide.top, guideWidth: guide.width,
             primaryFont: Math.min(...Array.from(svg.querySelectorAll('text[data-node-label]')).map(text => parseFloat(text.getAttribute('font-size')) * svg.getBoundingClientRect().width / svg.viewBox.baseVal.width)),
             scrollWidth: document.documentElement.scrollWidth,
+            scrollHeight: document.documentElement.scrollHeight,
             geometry: [svg.getAttribute('viewBox'), ...Array.from(svg.querySelectorAll('[data-node-id]')).map(node =>
               [node.getAttribute('transform'), ...Array.from(node.querySelectorAll('text')).map(text => text.getAttribute('font-size'))])] };
         })()`);
@@ -55,9 +56,11 @@ test('automatic architectures preserve primary reading size when fitting the ful
         assert.ok(observed.guideWidth > 0, label + ': diagram must be visible');
         assert.ok(observed.guideTop >= observed.toolbarBottom + 4, label + ': toolbar overlaps diagram ' + JSON.stringify(observed));
         assert.ok(observed.scrollWidth <= width, label + ': horizontal overflow');
-        // A docked or bottom summary rail may trade comfort down to its 12px
-        // floor; without one (collapsed or unavailable) the 13.5px comfort holds.
-        const primaryFloor = observed.summaryRail === 'true' || observed.summaryRail === 'bottom' ? 12 : 13.5;
+        assert.ok(observed.scrollHeight <= height + 1, label + ': page must not scroll vertically ' + JSON.stringify({ scrollHeight: observed.scrollHeight }));
+        // Fit beats comfort: the canvas takes up to 95% of the viewport in
+        // both axes without scrolling. Text may go below the docked comfort
+        // size but never below readability.
+        const primaryFloor = observed.summaryRail === 'true' ? 12 : 11.5;
         assert.ok(observed.primaryFont >= primaryFloor, label + ': full-page fitting made primary text too small: ' + observed.primaryFont + ' (rail ' + observed.summaryRail + ')');
         if (geometry) assert.deepEqual(observed.geometry, geometry, label + ': authored node geometry/font changed');
         else geometry = observed.geometry;
@@ -69,7 +72,7 @@ test('automatic architectures preserve primary reading size when fitting the ful
   }
 });
 
-test('a narrow tall architecture scrolls as authored without undershooting readability', async (t) => {
+test('a narrow tall architecture fits without undershooting readability', async (t) => {
   if (!Object.hasOwn(process.env, 'FLOWEY_CHROME')) return t.skip('Set FLOWEY_CHROME for real browser checks');
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'flowey-reading-size-stress-'));
   const input = path.join(dir, 'input.json');
@@ -109,14 +112,13 @@ test('a narrow tall architecture scrolls as authored without undershooting reada
     assert.ok(shellWidth >= 960 && svgWidth < shellWidth - 200, JSON.stringify({ shellWidth, svgWidth }));
     assert.equal(titleLines, 1, 'the diagram title must not wrap in a narrow reader');
     assert.ok(sizes[0].source < sizes[1].source, 'fixture must contain a fitted long title');
-    // A graph taller than the viewport at comfortable reading size scrolls as
-    // authored instead of shrinking past the comfort floor: text may not
-    // undershoot the readability floor, and hierarchy still holds.
+    // The tall graph fits the viewport by shrinking to the readability
+    // floor instead of scrolling: text may go below comfort size but never
+    // below the floor, and hierarchy still holds.
     assert.ok(sizes[0].projected < sizes[1].projected, JSON.stringify(sizes));
     assert.ok(sizes.every((size) => size.projected >= 6), JSON.stringify(sizes));
     assert.ok(metrics.scrollWidth <= 1440);
-    assert.ok(diagramBottom > 900, 'this tall graph is expected to scroll as authored');
-    assert.equal(overflow, 'authored');
+    assert.ok(diagramBottom <= 900, `the tall graph must fit the first screen (diagram bottom ${diagramBottom})`);
   } finally {
     await browser.close();
     fs.rmSync(dir, { recursive: true, force: true });
