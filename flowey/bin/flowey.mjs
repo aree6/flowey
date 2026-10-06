@@ -2187,6 +2187,8 @@ function usage() {
   flowey browser-check <output.html> [--json|--summary] [--require-provenance] [--out-dir <dir>]
   flowey visual-check <output.html> [--json|--summary] [--require-provenance] [--out-dir <dir>]
   flowey guide [scenario or question] [--json] [--lang en|zh]
+  flowey motion <input.html> [output.html] [--json]
+  flowey links <input.html> [output.html] --map <links.json> [--json]
   flowey brands [name, alias, domain, or category] [--json]
   flowey brands capture <url> [--json]
   flowey examples
@@ -6031,6 +6033,110 @@ function commandDemo(args) {
   console.log('  flowey render architecture <input.json> <output.html>');
 }
 
+function readStageInput(inputPath) {
+  let html;
+  try {
+    html = fs.readFileSync(inputPath, 'utf8');
+  } catch (error) {
+    fail(`Could not read "${inputPath}": ${error.message}`, 1);
+  }
+  return html;
+}
+
+function writeStageOutput(outputPath, html) {
+  try {
+    fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+    fs.writeFileSync(outputPath, html, 'utf8');
+  } catch (error) {
+    fail(`Could not write "${outputPath}": ${error.message}`, 1);
+  }
+  return { sha256: createHash('sha256').update(html, 'utf8').digest('hex'), bytes: Buffer.byteLength(html, 'utf8') };
+}
+
+async function commandMotion(args) {
+  const json = args.includes('--json');
+  const positional = args.filter((arg) => !arg.startsWith('--'));
+  const unknown = args.find((arg) => arg.startsWith('--') && arg !== '--json');
+  if (unknown) fail(`Unknown motion option "${unknown}".`);
+  if (positional.length < 1 || positional.length > 2) fail('Usage: flowey motion <input.html> [output.html] [--json]');
+  const inputPath = path.resolve(positional[0]);
+  const outputPath = path.resolve(positional[1] || positional[0]);
+  const { applyFlowMotion } = await import('./flow-motion.mjs');
+  const html = readStageInput(inputPath);
+  let staged;
+  try {
+    staged = applyFlowMotion(html);
+  } catch (error) {
+    fail(error.message, 1);
+  }
+  const identity = writeStageOutput(outputPath, staged);
+  if (json) {
+    console.log(JSON.stringify({
+      schemaVersion: 1, ok: true, command: 'motion',
+      input: inputPath, output: outputPath, artifact: identity,
+    }, null, 2));
+    return;
+  }
+  console.log(`flow-motion -> ${outputPath}`);
+  console.log(`sha256: ${identity.sha256}`);
+  console.log(`bytes: ${identity.bytes}`);
+}
+
+async function commandLinks(args) {
+  const json = args.includes('--json');
+  let mapPath;
+  const positional = [];
+  for (let index = 0; index < args.length; index += 1) {
+    const arg = args[index];
+    if (arg === '--map') {
+      mapPath = args[index + 1];
+      if (!mapPath || mapPath.startsWith('--')) fail('Usage: flowey links <input.html> [output.html] --map <links.json> [--json]');
+      index += 1;
+    } else if (arg.startsWith('--map=')) {
+      mapPath = arg.slice('--map='.length);
+      if (!mapPath) fail('Usage: flowey links <input.html> [output.html] --map <links.json> [--json]');
+    } else if (arg.startsWith('--') && arg !== '--json') {
+      fail(`Unknown links option "${arg}".`);
+    } else if (arg !== '--json') {
+      positional.push(arg);
+    }
+  }
+  if (positional.length < 1 || positional.length > 2 || !mapPath) {
+    fail('Usage: flowey links <input.html> [output.html] --map <links.json> [--json]');
+  }
+  const inputPath = path.resolve(positional[0]);
+  const outputPath = path.resolve(positional[1] || positional[0]);
+  let linkMap;
+  try {
+    linkMap = JSON.parse(fs.readFileSync(path.resolve(mapPath), 'utf8'));
+  } catch (error) {
+    fail(`Could not read link map "${mapPath}": ${error.message}`, 1);
+  }
+  if (!linkMap || typeof linkMap !== 'object' || Array.isArray(linkMap)) {
+    fail(`Link map "${mapPath}" must be a JSON object of node id to URL.`, 1);
+  }
+  const { applyNodeLinks } = await import('./node-links.mjs');
+  const html = readStageInput(inputPath);
+  let staged;
+  try {
+    staged = applyNodeLinks(html, linkMap);
+  } catch (error) {
+    fail(error.message, 1);
+  }
+  const identity = writeStageOutput(outputPath, staged);
+  const wired = Object.keys(linkMap).length;
+  if (json) {
+    console.log(JSON.stringify({
+      schemaVersion: 1, ok: true, command: 'links',
+      input: inputPath, output: outputPath, artifact: identity, wired,
+    }, null, 2));
+    return;
+  }
+  console.log(`wired ${wired} nodes -> ${outputPath}`);
+  console.log(`sha256: ${identity.sha256}`);
+  console.log(`bytes: ${identity.bytes}`);
+}
+
 function migrationPathDiagnostics(error, sourcePath, destinationPath) {
   if (Array.isArray(error?.floweyDiagnostics) && error.floweyDiagnostics.length) {
     return error.floweyDiagnostics.map((entry) => ({
@@ -6893,6 +6999,12 @@ try {
       break;
     case 'demo':
       commandDemo(args);
+      break;
+    case 'motion':
+      await commandMotion(args);
+      break;
+    case 'links':
+      await commandLinks(args);
       break;
     default:
       fail(`Unknown command "${command}".\n\n${usage()}`);
