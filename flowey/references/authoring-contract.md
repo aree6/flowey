@@ -16,11 +16,11 @@ For a disproportionate sublabel, keep its exact role or protocol concise and pla
 
 Read both the mode schema and `schemas/common.schema.json`. The mode schemas use `$ref`, so the common file is where shared enums live.
 
-- `componentType`: `frontend`, `backend`, `database`, `cloud`, `security`, `messagebus`, `external`
-- `variant`: `default`, `emphasis`, `security`, `dashed`
+- `componentType`: `actor`, `action`, `decision`, `milestone`, `place`, `document`, `record`, `outcome`, `group`, `external`
+- `variant`: `default`, `emphasis`, `alert`, `dashed`
 - Relationship IDs use the shared identifier pattern and must be unique in their collection.
 
-Do not invent fields. Before writing any new field, enum, or constrained text, read its schema definition, including common `$ref` targets. In particular, check boundary kinds, repository identity, and source-reference shapes. An example demonstrates structure; it does not enumerate every valid value. Author fresh IDs, wording, facts, and layout.
+Do not invent fields. Before writing any new field, enum, or constrained text, read its schema definition, including common `$ref` targets. In particular, check boundary kinds, node types, and citation shapes. An example demonstrates structure; it does not enumerate every valid value. Author fresh IDs, wording, facts, and layout.
 
 ## Workflow layout contracts
 
@@ -115,16 +115,6 @@ Omit `meta.visual_preset` by default. The renderer then opens the diagram in
 independent viewer state: switching Light / Dark must preserve the current
 preset. Author `signal-flow`, `blueprint`, or `editorial` only when the user
 explicitly requests that visual style.
-
-## Engineering profile default
-
-Omit `meta.engineering_profile` for an ordinary system architecture. Region,
-cluster, and security boundary wording do not by themselves enable an
-engineering profile. Enable `deployment-ownership` only when the user
-explicitly asks for a production deployment topology, ownership handoff, or
-fail-closed deployment review and the source facts are known. Once enabled,
-do not remove the engineering profile merely to pass validation; repair the
-authored facts or report the diagnostics truthfully.
 
 ## Title hierarchy
 
@@ -302,7 +292,7 @@ not settle viewport fit. These are repair directions, not guaranteed coordinates
 
 ### Sequence
 
-Participants are ordered by conversation role. Messages own their vertical order. Use return/async/security variants for meaning, not decoration; sequence does not use Automatic Port Spread.
+Participants are ordered by conversation role. Messages own their vertical order. Use return/async/alert variants for meaning, not decoration; sequence does not use Automatic Port Spread.
 
 ### Dataflow
 
@@ -326,74 +316,31 @@ states in the same column there need distinct `yOffset` values.
 In both versions a recoverable failure needs a real transition back to an
 active state. A card saying “retry” is not topology.
 
-## Repository evidence
+## Citations
 
-When the diagram must reflect real code, inspect repository entrypoints,
-runtime boundaries, storage, transports, and deployment configuration before
-authoring. Record only evidence you actually verified. `--repo-root <path>` is
-accepted by `render`, `validate`, `deliver`, and `preview` for every diagram
-type, by architecture `compare`, and by workflow `migrate`; every mode verifies `meta.repository` and
-node `sources` the same way. Migrating a source-backed workflow requires the same
-`--repo-root` so its candidate is verified before replacing the destination.
-Never infer runtime causality from file proximity
-or naming alone.
+When facts come from outside the request, gather the sources before
+authoring: notes, URLs, PDFs, people, documents. Record only what you
+actually consulted. Flowey citations are never verified against external
+systems; they record provenance so readers can judge it themselves.
+`--repo-root` does not exist: there is no repository verification step.
 
-Declare `meta.repository.url` and one full 40-character `revision`, then attach
-`sources` to the mode's node collection (Architecture `components[]`, Workflow
-and Data Flow `nodes[]`, Sequence `participants[]`, Lifecycle `states[]`) with
-repository-relative `path`, optional `line`, `end_line`, and `label`.
-Verification reads blobs at that commit, independently of working-tree edits.
-Verification ignores local Git replacement refs, including those selected by
-`GIT_REPLACE_REF_BASE`, and always reads the original objects at the pinned SHA.
-It does not change repository configuration or delete replacement refs.
-A matching local origin, available commit, bounded path,
-blob, and valid line range are required in every link mode. Verification is
-local and makes no remote requests; it establishes neither public availability
-nor the current reader's access rights.
-
-`link_mode` defaults to `web`. GitHub and Gitee HTTPS repository URLs generate
-revision-pinned links; their public hosts select the provider automatically.
-Optional `provider: "github"` or `"gitee"` must agree with the host. Existing
-GitHub declarations and default delivery receipt fields remain compatible.
+Attach `citations` to the mode's node collection (Architecture
+`components[]`, Workflow and Data Flow `nodes[]`, Sequence
+`participants[]`, Lifecycle `states[]`, Hierarchy `nodes[]`). Each
+citation needs a `label` plus optional `detail` and `ref`:
 
 ```json
 {
-  "url": "https://gitee.com/team/service",
-  "revision": "0123456789abcdef0123456789abcdef01234567",
-  "provider": "gitee"
+  "label": "Faculty handbook",
+  "detail": "p. 4, section 2",
+  "ref": "https://example.edu/handbook.pdf"
 }
 ```
 
-For an internal or unsupported forge, select `link_mode: "local-only"`. The
-Viewer retains SRC markers, searchable file paths, line ranges, and revision
-labels without repository or source hyperlinks. The evidence receipt adds
-`linkMode: "local-only"`. `url` remains required as the expected origin identity;
-local-only disables links, not identity verification. A repository without an
-origin is not supported.
-
-```json
-{
-  "url": "http://git.internal:3000/Platform/Services/service",
-  "revision": "0123456789abcdef0123456789abcdef01234567",
-  "link_mode": "local-only"
-}
-```
-
-Local-only accepts HTTP(S), `git@host:path`, and `ssh://git@host[:port]/path`
-addresses, including nested namespaces. Declare a credential-free address;
-HTTP(S) credentials on the checkout's origin are ignored for identity and
-redacted from diagnostics. Hostnames compare case-insensitively; repository
-paths retain case except for the existing GitHub behavior. A trailing slash
-normalizes away. Only GitHub and Gitee normalize a terminal `.git` and match
-standard HTTPS/443 with Git SSH/22. For other hosts, use the actual clone address:
-transport, port, `.git` suffix, and remote-relative versus absolute paths must
-match. For example, `git@host:Team/repo` differs from
-`ssh://git@host/Team/repo`; `git@host:/Team/repo` matches the latter. SCP-style
-paths preserve literal percent escapes, while URI paths decode them. SSH host
-aliases and forge-specific browse/clone prefixes are not guessed.
-GitLab/Gitea/Forgejo/Bitbucket web links are not implemented in this version;
-use local-only until a tested link provider is available. Unknown web providers
-fail with a diagnostic rather than emitting a guessed link.
+Keep 1–3 citations per node: the ones a skeptic would actually check.
+Never infer causality from proximity or naming alone. A guessed citation
+is worse than none: mark the unknown explicitly and keep the node
+uncited.
 
 ## Hand-placed fallback
 
@@ -412,7 +359,7 @@ renderer-owned and export with the diagram; URLs and raw SVG are not accepted.
 Icon selection changes only the corner symbol. The node's type still determines
 color and semantic grouping; brand marks remain independent. For a holiday
 workflow, pair `type: "action", icon: "calendar"` with
-`meta.legend.entries.backend.label: "假期"`, and use `icon: "briefcase"` plus
+`meta.legend.entries.action.label: "假期"`, and use `icon: "briefcase"` plus
 an appropriate legend label for make-up work. Keep the node label meaningful:
 icons are decorative and are hidden from assistive technology.
 

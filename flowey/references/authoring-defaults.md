@@ -26,7 +26,7 @@ Start with automatic routes and endpoint sides. Pin a side only for a necessary 
 
 ## Evidence and schema
 
-For a real repository, follow [Repository authoring](repository-authoring.md) while inspecting source. Freeze its credential-free origin and 40-character commit in `meta.repository`, attach inspected repository-relative `sources` to each key semantic node, and pass `--repo-root` to the first `finalize`. Each reference proves only the fact visible at that location. Follow material relationships and conditions to their actual source; do not reuse a startup citation as protocol or persistence evidence.
+For facts that come from outside the request, follow [Citations authoring](citations-authoring.md) while gathering sources: notes, URLs, PDFs, people, documents. Attach `citations` to each key node whose facts came from elsewhere. Each citation proves only the fact its source states. Follow material relationships and conditions to their actual source; do not reuse one citation as evidence for an unrelated claim.
 
 Examples show field shape, not legal values or source facts. Read the mode schema and shared definition before adding a field, enum, or constrained text. In particular, inspect Architecture boundary kinds. Keep longer evidence in a card while retaining the fact. See [Schema lookup](authoring-contract.md#schema-lookup) for details.
 

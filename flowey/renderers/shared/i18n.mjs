@@ -81,7 +81,6 @@ const MESSAGE_PAIRS = {
 
   'viewer.kind.actor': ['Actor', '参与者'],
   'viewer.kind.action': ['Action', '行动步骤'],
-  'viewer.kind.decision': ['Decision', '决策'],
   'viewer.kind.milestone': ['Milestone', '里程碑'],
   'viewer.kind.place': ['Place', '地点'],
   'viewer.kind.document': ['Document', '文档'],

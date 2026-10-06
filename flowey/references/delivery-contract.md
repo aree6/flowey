@@ -4,11 +4,11 @@
 
 `finalize` stops at the first non-passing gate. Use compact stdout or `evidence.summaryReceipt`; read its full sidecar only when the summary lacks evidence needed for a coherent repair. A receipt with four artifact checks is basic validation, not showcase acceptance: require all nine checks, zero composition errors, and zero warnings. Fix `meta.quality_profile` and schema errors before geometry.
 
-For a validation failure, edit the existing JSON in the connected neighborhood named by diagnostics before rerunning a command. Preserve requested semantics, meaningful labels, source evidence, and fixed or agreed topology. Several routes sharing nodes call for one placement repair; read [Architecture layout repair](architecture-layout-repair.md) for that case. Reflow a blocked main path rather than nudging unrelated labels. Keep unrelated geometry when its composition already reads clearly. Use `--layout-json` before editing only when compact evidence lacks needed measurements. Workflow v2 uses its stable compiler receipt, not solver internals, as authoring evidence.
+For a validation failure, edit the existing JSON in the connected neighborhood named by diagnostics before rerunning a command. Preserve requested semantics, meaningful labels, citations, and fixed or agreed topology. Several routes sharing nodes call for one placement repair; read [Architecture layout repair](architecture-layout-repair.md) for that case. Reflow a blocked main path rather than nudging unrelated labels. Keep unrelated geometry when its composition already reads clearly. Use `--layout-json` before editing only when compact evidence lacks needed measurements. Workflow v2 uses its stable compiler receipt, not solver internals, as authoring evidence.
 
-After the edit, rerun the complete `finalize` command with `--quality showcase` and, for repository-backed work, `--repo-root <repo-root>`. If the output path already has browser evidence from another candidate, use a fresh `--out-dir <output-stem>.review-<revision>` for both the new `finalize` and any `visual-check`. Omit an earlier `--candidate-sha256` after editing because it binds the previous candidate. Compare diagnostics by code, subject, stage, and evidence, never by declining error count alone. If an issue survives two focused repairs, inspect measured geometry or the relevant contract; after one evidence-based retry, report the concrete gap.
+After the edit, rerun the complete `finalize` command with `--quality showcase`. If the output path already has browser evidence from another candidate, use a fresh `--out-dir <output-stem>.review-<revision>` for both the new `finalize` and any `visual-check`. Omit an earlier `--candidate-sha256` after editing because it binds the previous candidate. Compare diagnostics by code, subject, stage, and evidence, never by declining error count alone. If an issue survives two focused repairs, inspect measured geometry or the relevant contract; after one evidence-based retry, report the concrete gap.
 
-Use standalone `validate` only for focused diagnosis, passing `--repo-root` for repository-backed work. Its passing receipt marks `candidateFrozen: true`; run `nextAction.arguments`, replacing only `<output.html>`, without editing, revalidating, or rereading the candidate. Retry later environmental or evidence failures against those frozen bytes. A measured reason to edit creates a new candidate and calls for the complete `finalize` without the old hash.
+Use standalone `validate` only for focused diagnosis. Its passing receipt marks `candidateFrozen: true`; run `nextAction.arguments`, replacing only `<output.html>`, without editing, revalidating, or rereading the candidate. Retry later environmental or evidence failures against those frozen bytes. A measured reason to edit creates a new candidate and calls for the complete `finalize` without the old hash.
 
 ## Validate and deliver
 
@@ -493,11 +493,11 @@ a capable environment.
 Browser evidence belongs to exact artifact bytes. After editing a candidate whose previous HTML already has browser evidence, choose a fresh evidence directory before running the next `finalize`; this preserves the old receipts and captures without an avoidable ownership-conflict retry:
 
 ```bash
-node bin/flowey.mjs finalize architecture candidate.json diagram.html --quality showcase --repo-root <root> --out-dir diagram.review-2 --json
+node bin/flowey.mjs finalize architecture candidate.json diagram.html --quality showcase --out-dir diagram.review-2 --json
 node bin/flowey.mjs visual-check diagram.html --out-dir diagram.review-2 --summary --require-provenance
 ```
 
-Keep the requested HTML path stable. Use a new revision directory for each changed candidate, and retain the same directory for retries of unchanged bytes. For a diagram without repository evidence, omit `--repo-root`. Let the commands create their output directory. A prior validation failure that produced no HTML or browser evidence needs no new directory. Never remove unknown evidence to make a retry pass.
+Keep the requested HTML path stable. Use a new revision directory for each changed candidate, and retain the same directory for retries of unchanged bytes. Let the commands create their output directory. A prior validation failure that produced no HTML or browser evidence needs no new directory. Never remove unknown evidence to make a retry pass.
 
 ## Optional opening
 

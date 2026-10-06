@@ -912,7 +912,7 @@ for (const locale of ['fr', 'pt', 'ja', 'de', 'it', 'ru']) {
 }
 
 test('runtime labels stay localized after composition', () => {
-  assert.equal(translateMessage('zh-CN', 'viewer.kind.backend'), '后端');
+  assert.equal(translateMessage('zh-CN', 'viewer.kind.action'), '行动步骤');
   assert.equal(translateMessage('zh-CN', 'viewer.kind.decision'), '决策');
   assert.equal(translateMessage('zh-CN', 'viewer.passport.relationship.connectsFrom'), '连接自');
   assert.equal(translateMessage('zh-CN', 'viewer.nav.level.auto'), '自动');
@@ -929,7 +929,7 @@ test('runtime labels stay localized after composition', () => {
     '2 nodes · 1 step · shortest path',
   );
 
-  assert.equal(translateMessage('ko', 'viewer.kind.backend'), '백엔드');
+  assert.equal(translateMessage('ko', 'viewer.kind.action'), '작업');
   assert.equal(translateMessage('ko', 'viewer.kind.decision'), '판단');
   assert.equal(translateMessage('ko', 'viewer.passport.relationship.connectsFrom'), '연결 출처');
   assert.equal(translateMessage('ko', 'viewer.nav.level.auto'), '자동');

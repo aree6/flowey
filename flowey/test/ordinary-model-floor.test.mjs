@@ -894,7 +894,7 @@ test('packaged skill keeps first-draft rules inline and repair contracts behind 
   const defaults = read('references/authoring-defaults.md');
   const authoring = read('references/authoring-contract.md');
   const delivery = read('references/delivery-contract.md');
-  const repository = read('references/repository-authoring.md');
+  const repository = read('references/citations-authoring.md');
   const fastPath = skill.slice(skill.indexOf('## Fast authoring path'), skill.indexOf('## Update awareness'));
   assert.match(skill, /## Existing candidate handoff[\s\S]*run `finalize` first as one CLI invocation/);
   assert.match(fastPath, /exact schema and example paths in the Type router without listing their directories/);
@@ -905,7 +905,7 @@ test('packaged skill keeps first-draft rules inline and repair contracts behind 
   assert.match(fastPath, /Set `meta\.quality_profile` to `"showcase"`/);
   assert.match(fastPath, /successful first drafts need no separate pre-validation/);
   assert.match(fastPath, /Keep the candidate unchanged while the command runs/);
-  assert.match(fastPath, /finalize <type> <candidate\.json> <output\.html> --repo-root <repo-root> --quality showcase --json/);
+  assert.match(fastPath, /finalize <type> <candidate\.json> <output\.html> --quality showcase --json/);
   assert.match(fastPath, /standalone commands only for a separate request or focused failure diagnosis/);
   assert.match(fastPath, /A non-zero exit is never success/);
   assert.match(fastPath, /references\/delivery-contract\.md#failed-finalize-and-candidate-repair/);
@@ -922,8 +922,8 @@ test('packaged skill keeps first-draft rules inline and repair contracts behind 
   assert.match(defaults, /Before writing positions[\s\S]*6\.5px × ASCII units \+ 21px/);
   assert.match(defaults, /9px[\s\S]*5\.4px × text units \+ 8px/);
   assert.match(defaults, /card alone cannot qualify an otherwise unconditional arrow/);
-  assert.match(repository, /local-only[\s\S]*SSH origin, unsupported forge/);
-  assert.match(repository, /actual write or execution\s+site and the conditions/);
+  assert.match(repository, /never verified against external systems/);
+  assert.match(repository, /mark the unknown\s+explicitly and keep the node/);
   for (const instructions of [skill, defaults]) {
     assert.doesNotMatch(instructions, /(?:at most|no more than|maximum of|cap(?:ped)? at|limit(?:ed)? to)\s+\d+\s+(?:nodes?|components?|relationships?)/i);
   }
