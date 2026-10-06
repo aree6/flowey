@@ -144,10 +144,10 @@ test('Semantic Lens preserves selection, legend preview and panel contracts', {
   await t.test('trusted buttons, selection transitions, return values and three cleanup operations stay distinct', async () => {
     await load(); await click('#btn-semantic-lens');
     await run(`lensWait(()=>document.activeElement.matches('#semantic-lens-kinds button'))`);
-    await click('#semantic-lens-kinds [data-kind="action]');
+    await click('#semantic-lens-kinds [data-kind="action"]');
     let s = await snapshot('one-kind'); assert.deepEqual(s.active, ['action']); assert.equal(s.open, true);
     assert.deepEqual(s.selected, ['api', 'worker']); assert.ok(s.peers.length > 0); assert.ok(s.edges.length > 0);
-    await click('#semantic-lens-kinds [data-kind="document]');
+    await click('#semantic-lens-kinds [data-kind="document"]');
     s = await snapshot('two-kinds'); assert.deepEqual(s.active, ['action', 'document']);
     assert.ok(s.buttons.filter(n => !s.active.includes(n.kind)).every(n => n.disabled));
     assert.equal(await run('Flowey.semanticLens.clearPreview()===undefined'), true);
@@ -227,7 +227,7 @@ test('Semantic Lens preserves selection, legend preview and panel contracts', {
     await load();
     const data = await run(`(()=>{
       const svg=document.querySelector('.diagram-container > svg'),p=Flowey.semanticLens;
-      svg.innerHTML='<g data-edge-from="a" data-edge-to="b" data-edge-key="ab" transform="translate(3 4)"><path id="source-path" d="M0 0 L10 10" class="author" style="opacity:.7" marker-end="url(#arrow)"/><line x1="1" y1="2" x2="3" y2="4"/></g><path data-edge-from="a" data-edge-to="b" data-edge-key="ab" d="M1 1 L2 2"/><polyline data-edge-from="b" data-edge-to="a" points="1,2 3,4"/><path data-edge-from="b" data-edge-to="a" d="M3 3 L5 5"/><path data-edge-from="a" data-edge-to="a" d="M0 0 C1 2 3 4 0 0"/><g data-node-id="a" data-node-kind="action/><g data-node-id="b" data-node-kind="document/><g data-node-id="a" data-node-kind="ignored"/><g data-node-id="missing-kind"/><g data-node-id="" data-node-kind="ignored"/><g data-node-id="solo" data-node-kind=""/>';
+      svg.innerHTML='<g data-edge-from="a" data-edge-to="b" data-edge-key="ab" transform="translate(3 4)"><path id="source-path" d="M0 0 L10 10" class="author" style="opacity:.7" marker-end="url(#arrow)"/><line x1="1" y1="2" x2="3" y2="4"/></g><path data-edge-from="a" data-edge-to="b" data-edge-key="ab" d="M1 1 L2 2"/><polyline data-edge-from="b" data-edge-to="a" points="1,2 3,4"/><path data-edge-from="b" data-edge-to="a" d="M3 3 L5 5"/><path data-edge-from="a" data-edge-to="a" d="M0 0 C1 2 3 4 0 0"/><g data-node-id="a" data-node-kind="action"/><g data-node-id="b" data-node-kind="document"/><g data-node-id="a" data-node-kind="ignored"/><g data-node-id="missing-kind"/><g data-node-id="" data-node-kind="ignored"/><g data-node-id="solo" data-node-kind=""/>';
       const before=svg.querySelector('#source-path').outerHTML;p.select('action');
       const overlay=svg.querySelector('[data-semantic-lens-overlay]'),shapes=[...overlay.querySelectorAll('.semantic-lens-flow')];
       const result={kinds:p.kinds(),single:{count:svg.dataset.lensFlowCount,matched:svg.querySelectorAll('[data-edge-from][data-lens-match]').length,directions:shapes.map(n=>n.dataset.direction),status:document.getElementById('semantic-lens-status').textContent},
@@ -246,11 +246,11 @@ test('Semantic Lens preserves selection, legend preview and panel contracts', {
     assert.deepEqual(data.reverse, ['reverse', 'reverse', 'forward']); assert.deepEqual(data.zero, { count: '0', overlays: 0 });
     records.push({ scenario: 'geometry-fixture', ...data });
     for (const count of [24, 25, 24, 0]) {
-      await run(`(()=>{const svg=document.querySelector('.diagram-container > svg');Flowey.semanticLens.clear({preserveView:true});svg.innerHTML=Array.from({length:${count}},(_,i)=>'<path data-edge-from="a" data-edge-to="b" data-edge-key="e'+i+'" d="M0 0 L10 10"/>').join('')+'<g data-node-id="a" data-node-kind="action/><g data-node-id="b" data-node-kind="document/>';Flowey.semanticLens.select('action');})()`);
+      await run(`(()=>{const svg=document.querySelector('.diagram-container > svg');Flowey.semanticLens.clear({preserveView:true});svg.innerHTML=Array.from({length:${count}},(_,i)=>'<path data-edge-from="a" data-edge-to="b" data-edge-key="e'+i+'" d="M0 0 L10 10"/>').join('')+'<g data-node-id="a" data-node-kind="action"/><g data-node-id="b" data-node-kind="document"/>';Flowey.semanticLens.select('action');})()`);
       const s = await snapshot('threshold-' + count); assert.equal(s.count, String(count)); assert.equal(s.edges.length, count);
       assert.equal(s.overlays, count > 0 && count <= 24 ? 1 : 0); assert.equal(s.density, count > 24 ? 'quiet' : null);
     }
-    await run(`(()=>{const svg=document.querySelector('.diagram-container > svg');Flowey.semanticLens.clear({preserveView:true});svg.innerHTML='<g data-edge-from="a" data-edge-to="b"><text>No shape</text></g><g data-node-id="a" data-node-kind="action/><g data-node-id="b" data-node-kind="document/>';Flowey.semanticLens.select('action');})()`);
+    await run(`(()=>{const svg=document.querySelector('.diagram-container > svg');Flowey.semanticLens.clear({preserveView:true});svg.innerHTML='<g data-edge-from="a" data-edge-to="b"><text>No shape</text></g><g data-node-id="a" data-node-kind="action"/><g data-node-id="b" data-node-kind="document"/>';Flowey.semanticLens.select('action');})()`);
     const s = await snapshot('no-shape'); assert.equal(s.count, '1'); assert.equal(s.overlays, 0);
   });
 
@@ -311,7 +311,7 @@ test('Semantic Lens preserves selection, legend preview and panel contracts', {
   await t.test('panel events, pending frames and controlled docking geometry preserve responsive branches', async () => {
     await load(); await key('l', 'KeyL', 76);
     await run(`lensWait(()=>document.activeElement.matches('#semantic-lens-kinds button'))`);
-    await click('#semantic-lens-kinds [data-kind="action]'); assert.equal(await run('Flowey.semanticLens.isOpen()'), true);
+    await click('#semantic-lens-kinds [data-kind="action"]'); assert.equal(await run('Flowey.semanticLens.isOpen()'), true);
     await click('h1'); assert.equal(await run('Flowey.semanticLens.isOpen()'), false);
     await click('#btn-semantic-lens'); await click('#btn-semantic-lens'); assert.equal(await run('Flowey.semanticLens.isOpen()'), false);
     const quick = await run(`new Promise(resolve=>{const p=Flowey.semanticLens;const values=[p.open(),p.open(),p.close({restoreFocus:false})];requestAnimationFrame(()=>resolve({values,open:p.isOpen(),dock:document.getElementById('semantic-lens').getAttribute('data-dock-side')}));})`);

@@ -419,7 +419,7 @@ try {
 
     await navigateReady(outputs.dataflow, '!!(window.Flowey && Flowey.semanticLens && Flowey.exportMenu)', 'Dataflow database legend runtime');
     const databaseRuntime = await evaluate(cdp, sessionId, String.raw`(async function () {
-      var entry = document.querySelector('[data-legend-kind="document]');
+      var entry = document.querySelector('[data-legend-kind="document"]');
       entry.focus();
       entry.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
       var originalCreateObjectURL = URL.createObjectURL;

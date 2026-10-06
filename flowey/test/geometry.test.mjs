@@ -363,7 +363,7 @@ test('cleanFlowProblems reports collection index, ids, segment, clearance, and f
     routeHint: 'set route/via'
   });
   assert.equal(problems.length, 1);
-  assert.match(problems[0], /\[clean-flow\/edge-through-node\] architecture connections\[0\] id "checkout" "client" -> "document/);
+  assert.match(problems[0], /\[clean-flow\/edge-through-node\] architecture connections\[0\] id "checkout" "client" -> "document"/);
   assert.match(problems[0], /crosses component "proxy"/);
   assert.match(problems[0], /segment 0 \[20, 10\] -> \[80, 10\] \(2px clearance\)/);
   assert.match(problems[0], /set route\/via/);

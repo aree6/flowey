@@ -284,7 +284,7 @@ test('label overrides preserve stable kinds and exact Semantic Legend boundaries
   assert.match(svg, />Future integration</);
   assert.deepEqual(attrValues(svg, 'data-legend-semantic-kind'), ['actor', 'document', 'external']);
   assert.deepEqual(attrValues(svg, 'data-legend-kind'), ['actor', 'document']);
-  assert.match(svg, /data-legend-kind="actor[^>]+data-legend-label="Reader &lt;UI&gt; &amp; &quot;ops&quot;"/);
+  assert.match(svg, /data-legend-kind="actor"[^>]+data-legend-label="Reader &lt;UI&gt; &amp; &quot;ops&quot;"/);
   assert.match(architecture, /entry\.getAttribute\('data-legend-label'\)/);
 
   for (const type of ['sequence', 'dataflow']) {
