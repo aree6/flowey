@@ -17,7 +17,16 @@
       // from fixed heights alone would widen again and oscillate; only a
       // resize lifts the cap.
       var settledCap = 0;
+      // Previous settle pass overflow; null means no baseline yet. Reset
+      // alongside settledCap whenever the width state is discarded, so a new
+      // layout cycle re-learns convergence from scratch.
+      var settlePrevOverflow = null;
       var WIDE_RATIO = 1.55;
+      // Never reflow the whole canvas to chase a residual scroll smaller
+      // than this: below it the page scrolls as authored and readability is
+      // preserved. Only a material overflow (a genuinely taller-than-viewport
+      // diagram) is worth shrinking for.
+      var SHRINK_OVERFLOW_MIN_PX = 96;
       var MIN_DESKTOP_WIDTH = 1024;
       var MIN_READER_WIDTH = 960;
       var MAX_READER_WIDTH = 1920;
@@ -147,6 +156,7 @@
         setRail(false);
         lastWidth = 0;
         settledCap = 0;
+        settlePrevOverflow = null;
       }
       // Rail modes: "true" docks the sidebar on the left and the canvas
       // reflows to the remaining width; "collapsed" leaves only the
@@ -245,7 +255,21 @@
             document.documentElement.scrollHeight,
             document.body.scrollHeight
           ) - window.innerHeight - belowFold();
-          if (overflow > 1 && lastWidth > Math.ceil(minWidth)) {
+          // A shrink step that does not reduce the overflow is chasing fixed
+          // chrome or non-responsive content: hold the width instead of
+          // ratcheting down to the floor. Tracked across frames so genuine
+          // slow convergence still proceeds while a plateau stops it.
+          // Separately, never reflow the whole canvas to chase a residual
+          // scroll smaller than SHRINK_OVERFLOW_MIN_PX: below that the page
+          // scrolls as authored and readability is preserved. Only a
+          // material overflow (a genuinely taller-than-viewport diagram)
+          // is worth shrinking for. The overflow must also persist across
+          // two consecutive passes so single-frame transients (fonts,
+          // theme toggles) never ratchet the width down.
+          var improving = settlePrevOverflow === null || overflow < settlePrevOverflow - 1;
+          var persistent = settlePrevOverflow !== null && settlePrevOverflow > SHRINK_OVERFLOW_MIN_PX;
+          settlePrevOverflow = overflow;
+          if (overflow > SHRINK_OVERFLOW_MIN_PX && persistent && lastWidth > Math.ceil(minWidth) && improving) {
             applyWidth(Math.max(minWidth, lastWidth - overflow * ratio - 4), minWidth);
             settledCap = lastWidth;
             html.setAttribute('data-reader-overflow', 'reduced');
@@ -278,6 +302,7 @@
           setRail(mode);
           lastWidth = 0;
           settledCap = 0;
+          settlePrevOverflow = null;
           if (mode === 'true') fitDockedRail();
           return null;
         }
@@ -356,6 +381,7 @@
 
       window.addEventListener('resize', function () {
         settledCap = 0;
+        settlePrevOverflow = null;
         schedule();
       }, { passive: true });
       window.addEventListener('load', schedule, { once: true });
@@ -375,6 +401,7 @@
       function chooseRail(key, value) {
         writePreference(key, value);
         settledCap = 0;
+        settlePrevOverflow = null;
         schedule();
       }
       function collapseRail() {

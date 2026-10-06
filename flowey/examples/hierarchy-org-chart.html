@@ -492,12 +492,14 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      --flowey-page-top: 2rem;
+      --flowey-page-top: 1rem;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans', Roboto, 'Helvetica Neue', Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
       background: var(--bg);
       min-height: 100vh;
-      padding: var(--flowey-page-top) 2rem 2rem;
+      /* The dotted canvas takes most of the viewport width: minimal side
+         padding maximizes diagram space instead of chrome. */
+      padding: var(--flowey-page-top) 0.75rem 1rem;
       color: var(--text);
       /* Theme surfaces change together; animating the page background leaves it
          visibly out of sync with the SVG and panel for the first 200ms. */
@@ -619,6 +621,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       width: 100%;
       max-width: var(--flowey-reader-width, 1440px);
       margin: 0 auto;
+      /* Sidebar glide: when the left rail opens the canvas reflows to the
+         remaining width instead of being overlapped. */
+      transition: max-width 0.24s ease;
     }
     html[data-reader-narrow="true"]:not([data-present="true"]) .diagram-container > svg {
       min-width: 0;
@@ -753,10 +758,13 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       border-radius: 1rem;
       border: 1px solid var(--panel-border);
       box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 16px 40px -20px rgba(15, 23, 42, 0.18);
-      padding: 1.5rem;
-      padding-bottom: calc(1.5rem + var(--flowey-nav-reserve));
+      padding: 0.75rem;
+      padding-bottom: calc(0.75rem + var(--flowey-nav-reserve));
       overflow: hidden;
       position: relative;
+      min-width: 0;
+      /* Glide with the sidebar instead of being overlapped by it. */
+      transition: margin 0.24s ease, padding 0.24s ease;
     }
 
     html[data-preset="signal-flow"] .diagram-container {
@@ -873,12 +881,16 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     html[data-motion="still"] .route-probe-flow,
     html[data-motion="still"] .route-journey-flow,
     html[data-motion="still"] .semantic-lens-flow,
+    html[data-motion="still"] .relationship-flow-pulse,
+    html[data-motion="still"] .relationship-flow-token,
     html[data-motion="still"] .diagram-guide,
     html[data-motion="still"] .overview-map-live,
     html[data-document-hidden="true"] .intent-trace-flow,
     html[data-document-hidden="true"] .route-probe-flow,
     html[data-document-hidden="true"] .route-journey-flow,
     html[data-document-hidden="true"] .semantic-lens-flow,
+    html[data-document-hidden="true"] .relationship-flow-pulse,
+    html[data-document-hidden="true"] .relationship-flow-token,
     html[data-document-hidden="true"] .diagram-guide,
     html[data-document-hidden="true"] .overview-map-live {
       animation: none !important;
@@ -1728,6 +1740,24 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       font-size: 0.6875rem;
     }
     .focus-chip[hidden] { display: none; }
+    /* Sidebar shell: node details are a static section at the top of the left
+       rail (roughly canvas height via the rail's max-height), never a floating
+       modal. No drag handle, no absolute coordinates. */
+    .reader-rail .focus-chip {
+      position: static;
+      z-index: auto;
+      width: auto;
+      max-width: none;
+      flex: none;
+      max-height: min(32rem, var(--flowey-rail-max, 60vh));
+      overflow-y: auto;
+      border-radius: 0.75rem;
+      box-shadow: none;
+      backdrop-filter: none;
+    }
+    .reader-rail .focus-chip[hidden] { display: none; }
+    .reader-rail .relationship-lens-drag-handle,
+    .reader-rail #btn-focus-move { display: none !important; }
     html[data-preset="blueprint"] .focus-chip { border-radius: 0.3rem; }
     .focus-chip button {
       flex: none;
@@ -2539,31 +2569,37 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     }
     html[data-preset="editorial"] .card-dot { border-radius: 0; transform: rotate(45deg) scale(0.78); }
 
-    /* Summary rail: the reader measures the viewport and enables it only when the
-       diagram keeps its readable width beside the notes. */
+    /* Sidebar shell: notes, node details, and the index dock on the left and the
+       dotted canvas reflows to the remaining width. The sidebar never overlaps
+       the canvas and never stacks below it; collapsed leaves only the reveal. */
     .reader-rail { display: contents; }
     html[data-reader-rail="true"] .container {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) var(--flowey-rail-width);
+      grid-template-columns: var(--flowey-rail-width) minmax(0, 1fr);
       grid-auto-flow: row dense;
       column-gap: var(--flowey-rail-gap);
       align-items: start;
     }
-    html[data-reader-rail="true"] .container > .header { grid-column: 1 / -1; }
-    html[data-reader-rail="true"] .container > .diagram-container { grid-column: 1; }
+    html[data-reader-rail="true"] .container > .header { grid-column: 1 / -1; grid-row: 1; }
+    html[data-reader-rail="true"] .container > .diagram-container { grid-column: 2; grid-row: 2; min-width: 0; }
     /* The rail is at least the diagram's height and may run on to the viewport
        floor (--flowey-rail-max, set by the reader); past that, notes scroll and
        the index keeps a usable share instead of collapsing to its header. */
     html[data-reader-rail="true"] .reader-rail {
       display: flex;
       flex-direction: column;
-      grid-column: 2;
+      grid-column: 1;
+      grid-row: 2;
       align-self: stretch;
       min-height: 0;
       max-height: var(--flowey-rail-max, none);
+      min-width: 0;
+      overflow-y: auto;
+      /* Glide aside instead of overlapping: the canvas reflows to the rest. */
+      transition: transform 0.24s ease, opacity 0.24s ease;
     }
-    html:is([data-reader-rail="true"], [data-reader-rail="overlay"]) .cards:empty { display: none; }
-    html:is([data-reader-rail="true"], [data-reader-rail="overlay"]) .cards {
+    html[data-reader-rail="true"] .cards:empty { display: none; }
+    html[data-reader-rail="true"] .cards {
       display: flex;
       flex: 0 1 auto;
       flex-direction: column;
@@ -2576,26 +2612,26 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 1.25rem), transparent);
       mask-image: linear-gradient(to bottom, #000 calc(100% - 1.25rem), transparent);
     }
-    html:is([data-reader-rail="true"], [data-reader-rail="overlay"]) .cards::-webkit-scrollbar { display: none; }
-    html:is([data-reader-rail="true"], [data-reader-rail="overlay"]) .cards .card { flex: none; }
-    html:is([data-reader-rail="true"], [data-reader-rail="overlay"]) .cards .card {
+    html[data-reader-rail="true"] .cards::-webkit-scrollbar { display: none; }
+    html[data-reader-rail="true"] .cards .card { flex: none; }
+    html[data-reader-rail="true"] .cards .card {
       padding: 0 0.25rem 1.125rem;
       border: 0;
       border-radius: 0;
       background: transparent;
       box-shadow: none;
     }
-    html:is([data-reader-rail="true"], [data-reader-rail="overlay"]) .cards .card + .card {
+    html[data-reader-rail="true"] .cards .card + .card {
       padding-top: 1.125rem;
       border-top: 1px solid var(--panel-border);
     }
-    html:is([data-reader-rail="true"], [data-reader-rail="overlay"]) .cards .card::before { display: none; }
-    html:is([data-reader-rail="true"], [data-reader-rail="overlay"]) .card-header { gap: 0.55rem; margin-bottom: 0.45rem; }
-    html:is([data-reader-rail="true"], [data-reader-rail="overlay"]) .cards .card h3 { font-size: 0.875rem; letter-spacing: -0.005em; }
-    html:is([data-reader-rail="true"], [data-reader-rail="overlay"]) .cards .card ul { font-size: 0.8125rem; line-height: 1.6; }
+    html[data-reader-rail="true"] .cards .card::before { display: none; }
+    html[data-reader-rail="true"] .card-header { gap: 0.55rem; margin-bottom: 0.45rem; }
+    html[data-reader-rail="true"] .cards .card h3 { font-size: 0.875rem; letter-spacing: -0.005em; }
+    html[data-reader-rail="true"] .cards .card ul { font-size: 0.8125rem; line-height: 1.6; }
 
     .node-outline { display: none; }
-    html:is([data-reader-rail="true"], [data-reader-rail="overlay"]) .node-outline:not([hidden]) {
+    html[data-reader-rail="true"] .node-outline:not([hidden]) {
       display: flex;
       flex: 1 0 min(13rem, 55%);
       flex-direction: column;
@@ -2604,74 +2640,13 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       overflow: hidden;
       border-top: 1px solid var(--panel-border);
     }
-    html:is([data-reader-rail="true"], [data-reader-rail="overlay"]) .cards:empty + .node-outline:not([hidden]) { margin-top: 0; border-top: 0; }
+    html[data-reader-rail="true"] .cards:empty + .node-outline:not([hidden]) { margin-top: 0; border-top: 0; }
     /* Collapsed: only the reveal control remains, so the diagram takes the width. */
     html[data-reader-rail="collapsed"] .reader-rail { display: none; }
-    /* Overlay: a drawer for diagrams whose readable floor leaves no room to dock. */
-    html[data-reader-rail="overlay"] .reader-rail {
-      position: fixed;
-      z-index: 150;
-      top: 1rem;
-      right: 1rem;
-      bottom: 1rem;
-      display: flex;
-      flex-direction: column;
-      width: var(--flowey-rail-width);
-      padding: 0.75rem 1rem 0.5rem;
-      border: 1px solid color-mix(in srgb, var(--panel-border) 90%, transparent);
-      border-radius: 1rem;
-      background: var(--toolbar-menu-bg);
-      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 28px 64px -18px rgba(15, 23, 42, 0.38);
-      animation: rail-drawer-in 0.2s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-    @keyframes rail-drawer-in {
-      from { opacity: 0; transform: translateX(0.75rem); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-    /* Bottom (default): the notes keep their full-width card row and the index
-       follows as one panel whose groups flow into columns, so nothing scrolls
-       inside it. The placement toggle sits in the index header. */
-    html[data-reader-rail="bottom"] .reader-rail {
-      display: grid;
-      grid-template-areas: "cards" "index";
-      grid-template-columns: minmax(0, 1fr);
-      row-gap: 1rem;
-      margin-top: 1rem;
-    }
-    html[data-reader-rail="bottom"] .cards { grid-area: cards; margin-top: 0; }
-    html[data-reader-rail="bottom"] .cards:empty { display: none; }
-    html[data-reader-rail="bottom"] .node-outline:not([hidden]) {
-      display: block;
-      grid-area: index;
-      padding: 0 1.25rem 0.75rem;
-      border: 1px solid var(--panel-border);
-      border-radius: 0.75rem;
-      background: var(--panel);
-    }
-    html[data-reader-rail="bottom"] .reader-rail > .rail-controls {
-      z-index: 1;
-      grid-area: index;
-      align-self: start;
-      justify-self: end;
-      margin: 0.625rem 0.625rem 0 0;
-    }
-    html[data-reader-rail="bottom"] .node-outline-head { padding: 1rem 2.5rem 0.375rem 0.25rem; }
-    html[data-reader-rail="bottom"] .node-outline-list {
-      columns: 15rem;
-      column-gap: 1.75rem;
-      padding: 0;
-      overflow: visible;
-      -webkit-mask-image: none;
-      mask-image: none;
-    }
-    /* Named groups stay whole; a single unnamed group may split across columns,
-       where a continuous spine would read as a broken line. */
-    html[data-reader-rail="bottom"] .node-outline-group + .node-outline-group { margin-top: 0; }
-    html[data-reader-rail="bottom"] .node-outline-group:has(> .node-outline-heading) { break-inside: avoid; padding-bottom: 0.25rem; }
-    html[data-reader-rail="bottom"] .node-outline-group:not(:has(> .node-outline-heading)) > ul::before { display: none; }
-    html[data-reader-rail="bottom"] .node-outline-group li { break-inside: avoid; }
+    /* No overlay drawer and no below-canvas row: the sidebar only ever docks on
+       the left and reflows the canvas, so it can never cover diagram content. */
     .rail-controls { display: none; }
-    html:is([data-reader-rail="true"], [data-reader-rail="overlay"], [data-reader-rail="bottom"]) .rail-controls {
+    html[data-reader-rail="true"] .rail-controls {
       display: flex;
       flex: none;
       justify-content: flex-end;
@@ -2736,6 +2711,14 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     .rail-reveal:focus-visible { color: var(--text); background: var(--panel); }
     .rail-reveal:focus-visible { outline: 1.5px solid color-mix(in srgb, var(--actor-stroke) 60%, transparent); outline-offset: 2px; }
     html[data-motion="still"] .reader-rail { animation: none !important; }
+    html[data-motion="still"] .container,
+    html[data-motion="still"] .diagram-container,
+    html[data-motion="still"] .reader-rail { transition: none !important; }
+    @media (prefers-reduced-motion: reduce) {
+      .container,
+      .diagram-container,
+      .reader-rail { transition: none !important; }
+    }
     .node-outline-head {
       display: flex;
       align-items: center;
@@ -2805,9 +2788,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     }
     /* The rail frees the vertical budget, so compact viewports keep the normal
        title spacing instead of the stacked layout's tight stage rail. */
-    html[data-reader-rail]:not([data-reader-rail="bottom"]) body { --flowey-page-top: 1.5rem; padding-block: 1.5rem; }
-    html[data-reader-rail]:not([data-reader-rail="bottom"]) .toolbar { top: calc(var(--flowey-page-top) - 0.1875rem); }
-    html[data-reader-rail]:not([data-reader-rail="bottom"]) .header { min-height: 0; margin-bottom: 1.125rem; }
+    html[data-reader-rail] body { --flowey-page-top: 1rem; padding-block: 1rem; }
+    html[data-reader-rail] .toolbar { top: calc(var(--flowey-page-top) - 0.1875rem); }
+    html[data-reader-rail] .header { min-height: 0; margin-bottom: 1rem; }
     .node-outline-item {
       position: relative;
       display: grid;
@@ -4269,15 +4252,15 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     svg[data-preset="blueprint"] [data-legend-hit],
     svg[data-preset="blueprint"] [data-legend-count-badge] rect { rx: 0; filter: none; }
     svg[data-legend-preview-active] [data-node-id],
-    svg[data-legend-preview-active] [data-edge-from] { opacity: 0.11; }
-    svg[data-legend-preview-active] [data-legend-preview-match] { opacity: 1; }
+    svg[data-legend-preview-active] [data-edge-from] { filter: saturate(0) brightness(0.7); }
+    svg[data-legend-preview-active] [data-legend-preview-match] { opacity: 1; filter: none; }
     svg[data-legend-preview-active] [data-legend-preview-peer] { opacity: 0.62; }
     svg[data-legend-preview-active] [data-legend-preview-selected] {
       filter: drop-shadow(0 0 8px var(--document-stroke));
     }
     svg[data-lens-active] [data-node-id],
-    svg[data-lens-active] [data-edge-from] { opacity: 0.11; }
-    svg[data-lens-active] [data-lens-match] { opacity: 1; }
+    svg[data-lens-active] [data-edge-from] { filter: saturate(0) brightness(0.7); }
+    svg[data-lens-active] [data-lens-match] { opacity: 1; filter: none; }
     svg[data-lens-active] [data-lens-peer] { opacity: 0.62; }
     svg[data-lens-active] [data-lens-selected] {
       filter: drop-shadow(0 0 10px var(--document-stroke));
@@ -4291,7 +4274,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       stroke-dashoffset: 0;
       vector-effect: non-scaling-stroke;
       opacity: 0.9;
-      animation: flowey-semantic-lens-flow 1.35s linear 1 both;
+      animation: flowey-semantic-lens-flow 1.35s linear infinite;
       animation-delay: var(--lens-flow-delay, 0s);
     }
     .semantic-lens-flow[data-direction="out"],
@@ -4335,16 +4318,16 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
        export still observe exactly one edge, then mirror reader emphasis from
        the paired foreground path in this presentation-only wrapper. */
     svg[data-legend-preview-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"],
-    svg[data-lens-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { opacity: 0.11; }
+    svg[data-lens-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { filter: saturate(0) brightness(0.7); }
     svg[data-legend-preview-active] [data-graph-role="automatic-crossover"]:has(> [data-legend-preview-match]) > [data-graph-role="automatic-crossover-underlay"],
     svg[data-lens-active] [data-graph-role="automatic-crossover"]:has(> [data-lens-match]) > [data-graph-role="automatic-crossover-underlay"] { opacity: 1; }
     svg[data-legend-preview-active] [data-graph-role="automatic-crossover"]:has(> [data-legend-preview-peer]) > [data-graph-role="automatic-crossover-underlay"],
     svg[data-lens-active] [data-graph-role="automatic-crossover"]:has(> [data-lens-peer]) > [data-graph-role="automatic-crossover-underlay"] { opacity: 0.62; }
     svg[data-focus-active] [data-node-id],
-    svg[data-focus-active] [data-edge-from] { opacity: 0.13; }
-    svg[data-focus-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { opacity: 0.13; }
+    svg[data-focus-active] [data-edge-from] { filter: saturate(0) brightness(0.7); }
+    svg[data-focus-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { filter: saturate(0) brightness(0.7); }
     svg[data-focus-active] [data-lifecycle-rail] { opacity: 0; }
-    svg[data-focus-active] [data-focus-match] { opacity: 1; }
+    svg[data-focus-active] [data-focus-match] { opacity: 1; filter: none; }
     svg[data-focus-active] [data-graph-role="automatic-crossover"]:has(> [data-focus-match]) > [data-graph-role="automatic-crossover-underlay"] { opacity: 1; }
     svg[data-focus-active] [data-focus-selected] {
       filter: drop-shadow(0 0 10px var(--actor-stroke));
@@ -4355,9 +4338,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
        downstream walks outgoing edges. It never claims runtime causality and
        changes only viewer emphasis, not canonical geometry or export bytes. */
     svg[data-reach-active] [data-node-id],
-    svg[data-reach-active] [data-edge-from] { opacity: 0.09; }
-    svg[data-reach-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { opacity: 0.09; }
-    svg[data-reach-active] [data-reach-match] { opacity: 1; }
+    svg[data-reach-active] [data-edge-from] { filter: saturate(0) brightness(0.7); }
+    svg[data-reach-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { filter: saturate(0) brightness(0.7); }
+    svg[data-reach-active] [data-reach-match] { opacity: 1; filter: none; }
     svg[data-reach-active] [data-graph-role="automatic-crossover"]:has(> [data-reach-match]) > [data-graph-role="automatic-crossover-underlay"] { opacity: 1; }
     svg[data-reach-active="upstream"] [data-reach-origin] {
       filter: drop-shadow(0 0 11px var(--document-stroke));
@@ -4462,7 +4445,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       vector-effect: non-scaling-stroke;
       opacity: 0;
       filter: drop-shadow(0 0 4px var(--arrow-emphasis));
-      animation: flowey-relationship-pulse 1.2s linear 1 both;
+      animation: flowey-relationship-pulse 1.2s linear infinite;
     }
     svg[data-preset="signal-flow"] .relationship-flow-pulse {
       stroke: var(--actor-stroke);
@@ -4485,7 +4468,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       pointer-events: none;
     }
     .relationship-flow-token {
-      animation: flowey-relationship-token-life 1.2s linear 1 both;
+      animation: flowey-relationship-token-life 1.2s linear infinite;
     }
 
     .semantic-flow-token-halo {
@@ -4525,16 +4508,16 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     /* Intent Trace is a temporary, pre-click exploration layer. Related
        topology stays readable while a short viewer-only signal runs over
        cloned edge geometry; the authored edge remains untouched underneath. */
-    /* Keep the node's opaque backing mask intact while its visible ink dims.
-       Fading the whole group also fades that mask and briefly exposes arrows
-       routed underneath the node when the pointer leaves. */
-    svg[data-intent-trace-active] [data-node-id] { fill-opacity: 0.2; stroke-opacity: 0.2; }
+    /* Keep the node's opaque backing mask intact while unrelated ink goes
+       monochrome. A group-level filter desaturates without touching alpha, so
+       the mask still hides arrows routed underneath the node. */
+    svg[data-intent-trace-active] [data-node-id] { filter: saturate(0) brightness(0.7); }
     svg [data-node-id] > .c-mask { fill-opacity: 1; }
-    svg[data-intent-trace-active] [data-node-id][data-intent-trace-match] { fill-opacity: 1; stroke-opacity: 1; }
-    svg[data-intent-trace-active] [data-edge-from] { opacity: 0.2; }
-    svg[data-intent-trace-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { opacity: 0.2; }
+    svg[data-intent-trace-active] [data-node-id][data-intent-trace-match] { filter: none; }
+    svg[data-intent-trace-active] [data-edge-from] { filter: saturate(0) brightness(0.7); }
+    svg[data-intent-trace-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { filter: saturate(0) brightness(0.7); }
     svg[data-intent-trace-active] [data-lifecycle-rail] { opacity: 0; }
-    svg[data-intent-trace-active] [data-intent-trace-match] { opacity: 1; }
+    svg[data-intent-trace-active] [data-intent-trace-match] { opacity: 1; filter: none; }
     svg[data-intent-trace-active] [data-graph-role="automatic-crossover"]:has(> [data-intent-trace-match]) > [data-graph-role="automatic-crossover-underlay"] { opacity: 1; }
     svg[data-intent-trace-active] [data-intent-trace-selected] {
       filter: drop-shadow(0 0 10px var(--actor-stroke));
@@ -4548,7 +4531,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       stroke-dashoffset: 0;
       vector-effect: non-scaling-stroke;
       opacity: 0.94;
-      animation: flowey-intent-trace-flow 1.15s linear 1 both;
+      animation: flowey-intent-trace-flow 1.15s linear infinite;
     }
     /* Direction names describe each edge relative to the focused node only.
        The cloned geometry already runs from the authored source to target, so
@@ -4597,9 +4580,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       filter: drop-shadow(0 0 10px var(--actor-stroke));
     }
     svg[data-route-active] [data-node-id],
-    svg[data-route-active] [data-edge-from] { opacity: 0.11; }
-    svg[data-route-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { opacity: 0.11; }
-    svg[data-route-active] [data-route-match] { opacity: 1; }
+    svg[data-route-active] [data-edge-from] { filter: saturate(0) brightness(0.7); }
+    svg[data-route-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { filter: saturate(0) brightness(0.7); }
+    svg[data-route-active] [data-route-match] { opacity: 1; filter: none; }
     svg[data-route-active] [data-graph-role="automatic-crossover"]:has(> [data-route-match]) > [data-graph-role="automatic-crossover-underlay"] { opacity: 1; }
     svg[data-route-active] [data-route-start] {
       filter: drop-shadow(0 0 11px var(--actor-stroke));
@@ -4635,7 +4618,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       vector-effect: non-scaling-stroke;
       opacity: 0.96;
       filter: drop-shadow(0 0 5px var(--action-stroke));
-      animation: flowey-route-probe-flow 1.1s cubic-bezier(0.22, 1, 0.36, 1) 1 both;
+      animation: flowey-route-probe-flow 1.1s cubic-bezier(0.22, 1, 0.36, 1) infinite;
       animation-delay: calc(var(--route-step, 0) * 0.16s);
     }
     .route-journey-flow {
@@ -4648,7 +4631,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       vector-effect: non-scaling-stroke;
       opacity: 0;
       filter: drop-shadow(0 0 6px var(--action-stroke));
-      animation: flowey-route-journey-flow 780ms cubic-bezier(0.22, 1, 0.36, 1) 1 both;
+      animation: flowey-route-journey-flow 780ms cubic-bezier(0.22, 1, 0.36, 1) infinite;
     }
     svg[data-preset="blueprint"] [data-route-start],
     svg[data-preset="blueprint"] [data-route-end],
@@ -5004,7 +4987,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     <!-- Main Diagram -->
     <div class="diagram-container" data-detail-level="read"
          data-preset-badge-editorial-plate="FLOWEY / PLATE 04">
-      <svg viewBox="0 0 952 626" data-reader-fit="intrinsic-height" role="img" lang="en" aria-labelledby="flowey-diagram-title flowey-diagram-description" data-preset="classic" data-quality-profile="showcase">
+      <svg viewBox="0 0 961 626" data-reader-fit="intrinsic-height" role="img" lang="en" aria-labelledby="flowey-diagram-title flowey-diagram-description" data-preset="classic" data-quality-profile="showcase">
         <title id="flowey-diagram-title">Faculty of Computing</title>
         <desc id="flowey-diagram-description">Who reports to whom, plus advisory lines</desc>
         <!-- Definitions -->
@@ -5030,80 +5013,80 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <rect width="100%" height="100%" fill="url(#grid)" />
 
         <!-- Reporting lines -->
-        <path data-edge-from="dean" data-edge-to="deputy_academic" data-edge-label="reports to" data-edge-key="0" data-edge-id="l_academic" data-composition-points="525.25,137;525.25,161;214.5,161;214.5,265" d="M 525.3 137 L 525.3 153 Q 525.3 161 517.3 161 L 222.5 161 Q 214.5 161 214.5 169 L 214.5 265" class="a-default" stroke-width="1.1" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="dean" data-edge-to="deputy_research" data-edge-label="reports to" data-edge-key="1" data-edge-id="l_research" data-composition-points="525.25,137;525.25,161;495,161;495,265" d="M 525.3 137 L 525.3 153 Q 525.3 161 517.3 161 L 503 161 Q 495 161 495 169 L 495 265" class="a-default" stroke-width="1.1" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="dean" data-edge-to="registrar" data-edge-label="reports to" data-edge-key="2" data-edge-id="l_registrar" data-composition-points="525.25,137;525.25,161;668,161;668,265" d="M 525.3 137 L 525.3 153 Q 525.3 161 533.3 161 L 660 161 Q 668 161 668 169 L 668 265" class="a-default" stroke-width="1.1" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="deputy_academic" data-edge-to="cs_head" data-edge-label="reports to" data-edge-key="3" data-edge-id="l_cs" data-composition-points="214.5,325;214.5,349;121,349;121,457" d="M 214.5 325 L 214.5 341 Q 214.5 349 206.5 349 L 129 349 Q 121 349 121 357 L 121 457" class="a-default" stroke-width="1.1" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="deputy_academic" data-edge-to="se_head" data-edge-label="reports to" data-edge-key="4" data-edge-id="l_se" data-composition-points="214.5,325;214.5,349;308,349;308,457" d="M 214.5 325 L 214.5 341 Q 214.5 349 222.5 349 L 300 349 Q 308 349 308 357 L 308 457" class="a-default" stroke-width="1.1" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="dean" data-edge-to="deputy_academic" data-edge-label="supervises" data-edge-key="0" data-edge-id="l_academic" data-composition-points="529.75,137;529.75,161;214.5,161;214.5,265" d="M 529.8 137 L 529.8 153 Q 529.8 161 521.8 161 L 222.5 161 Q 214.5 161 214.5 169 L 214.5 265" class="a-default" stroke-width="1.1" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="dean" data-edge-to="deputy_research" data-edge-label="supervises" data-edge-key="1" data-edge-id="l_research" data-composition-points="529.75,137;529.75,161;495,161;495,265" d="M 529.8 137 L 529.8 153 Q 529.8 161 521.8 161 L 503 161 Q 495 161 495 169 L 495 265" class="a-default" stroke-width="1.1" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="dean" data-edge-to="registrar" data-edge-label="supervises" data-edge-key="2" data-edge-id="l_registrar" data-composition-points="529.75,137;529.75,161;672.5,161;672.5,265" d="M 529.8 137 L 529.8 153 Q 529.8 161 537.8 161 L 664.5 161 Q 672.5 161 672.5 169 L 672.5 265" class="a-default" stroke-width="1.1" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="deputy_academic" data-edge-to="cs_head" data-edge-label="directs" data-edge-key="3" data-edge-id="l_cs" data-composition-points="214.5,325;214.5,349;121,349;121,457" d="M 214.5 325 L 214.5 341 Q 214.5 349 206.5 349 L 129 349 Q 121 349 121 357 L 121 457" class="a-default" stroke-width="1.1" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="deputy_academic" data-edge-to="se_head" data-edge-label="directs" data-edge-key="4" data-edge-id="l_se" data-composition-points="214.5,325;214.5,349;308,349;308,457" d="M 214.5 325 L 214.5 341 Q 214.5 349 222.5 349 L 300 349 Q 308 349 308 357 L 308 457" class="a-default" stroke-width="1.1" marker-end="url(#arrowhead)"/>
         <path data-edge-from="deputy_research" data-edge-to="ai_lab" data-edge-label="supervises" data-edge-key="5" data-edge-id="l_lab" data-composition-points="495,325;495,457" d="M 495 325 L 495 457" class="a-default" stroke-width="1.1" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="dean" data-edge-to="industry_panel" data-edge-label="dotted line" data-edge-key="6" data-edge-id="l_panel" data-composition-points="525.25,137;525.25,161;836,161;836,265" d="M 525.3 137 L 525.3 153 Q 525.3 161 533.3 161 L 828 161 Q 836 161 836 169 L 836 265" class="a-dashed" stroke-width="1.1" marker-end="url(#arrowhead-dashed)"/>
+        <path data-edge-from="dean" data-edge-to="industry_panel" data-edge-label="dotted line" data-edge-key="6" data-edge-id="l_panel" data-composition-points="529.75,137;529.75,161;845,161;845,265" d="M 529.8 137 L 529.8 153 Q 529.8 161 537.8 161 L 837 161 Q 845 161 845 169 L 845 265" class="a-dashed" stroke-width="1.1" marker-end="url(#arrowhead-dashed)"/>
 
         <!-- People and units -->
-        <g id="node-dean" data-node-id="dean" data-node-label="Prof. A. Rahman" tabindex="0" role="button" aria-label="Focus Prof. A. Rahman, Dean, Hierarchy member" aria-pressed="false" data-node-kind="actor" data-node-sublabel="Dean" data-node-tag="appointed 2024" data-node-context="Hierarchy member">
-          <title>Prof. A. Rahman · Dean · Hierarchy member · appointed 2024</title>
-          <rect x="465.25" y="64" width="120" height="73" rx="7" class="c-mask"/>
-          <rect x="465.25" y="64" width="120" height="73" rx="7" class="c-actor" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="actor" class="semantic-sigil s-actor" transform="translate(471.25 70) scale(0.6875)">
+        <g id="node-dean" data-node-id="dean" data-node-label="Dean&#39;s Office" tabindex="0" role="button" aria-label="Focus Dean&#39;s Office, Dean, Hierarchy member" aria-pressed="false" data-node-kind="actor" data-node-sublabel="Dean" data-node-tag="appointed 2024" data-node-context="Hierarchy member">
+          <title>Dean&#39;s Office · Dean · Hierarchy member · appointed 2024</title>
+          <rect x="469.75" y="64" width="120" height="73" rx="7" class="c-mask"/>
+          <rect x="469.75" y="64" width="120" height="73" rx="7" class="c-actor" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="actor" class="semantic-sigil s-actor" transform="translate(475.75 70) scale(0.6875)">
             <circle cx="8" cy="5" r="2.6"/><path d="M2.8 14v-1.6a5.2 5.2 0 0 1 10.4 0V14"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="525.25" y="96.2" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Prof. A. Rahman</text>
-          <text data-detail="context" x="525.25" y="111.1" class="t-muted" font-size="8" text-anchor="middle">Dean</text>
-        <text data-detail="fine" x="525.25" y="125.1" class="t-actor" font-size="8" text-anchor="middle">appointed 2024</text>
+          <text data-node-label="" data-detail-anchor="" x="531.65" y="87" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Dean&#39;s Office</text>
+          <text data-detail="context" x="529.75" y="104" class="t-muted" font-size="8" text-anchor="middle">Dean</text>
+        <text data-detail="fine" x="529.75" y="125" class="t-actor" font-size="8" text-anchor="middle">appointed 2024</text>
         </g>
 
-        <g id="node-deputy_academic" data-node-id="deputy_academic" data-node-label="Dr. S. Lim" tabindex="0" role="button" aria-label="Focus Dr. S. Lim, Deputy Dean (Academic), Hierarchy member" aria-pressed="false" data-node-kind="actor" data-node-sublabel="Deputy Dean (Academic)" data-node-context="Hierarchy member">
-          <title>Dr. S. Lim · Deputy Dean (Academic) · Hierarchy member</title>
+        <g id="node-deputy_academic" data-node-id="deputy_academic" data-node-label="Academic Affairs" tabindex="0" role="button" aria-label="Focus Academic Affairs, Deputy Dean (Academic), Hierarchy member" aria-pressed="false" data-node-kind="actor" data-node-sublabel="Deputy Dean (Academic)" data-node-context="Hierarchy member">
+          <title>Academic Affairs · Deputy Dean (Academic) · Hierarchy member</title>
           <rect x="149.5" y="265" width="130" height="60" rx="7" class="c-mask"/>
           <rect x="149.5" y="265" width="130" height="60" rx="7" class="c-actor" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="actor" class="semantic-sigil s-actor" transform="translate(155.5 271) scale(0.6875)">
             <circle cx="8" cy="5" r="2.6"/><path d="M2.8 14v-1.6a5.2 5.2 0 0 1 10.4 0V14"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="214.5" y="288" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Dr. S. Lim</text>
+          <text data-node-label="" data-detail-anchor="" x="221.3" y="288" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Academic Affairs</text>
           <text data-detail="context" x="214.5" y="305" class="t-muted" font-size="8" text-anchor="middle">Deputy Dean (Academic)</text>
         </g>
 
-        <g id="node-deputy_research" data-node-id="deputy_research" data-node-label="Dr. M. Ong" tabindex="0" role="button" aria-label="Focus Dr. M. Ong, Deputy Dean (Research), Hierarchy member" aria-pressed="false" data-node-kind="actor" data-node-sublabel="Deputy Dean (Research)" data-node-context="Hierarchy member">
-          <title>Dr. M. Ong · Deputy Dean (Research) · Hierarchy member</title>
+        <g id="node-deputy_research" data-node-id="deputy_research" data-node-label="Research Office" tabindex="0" role="button" aria-label="Focus Research Office, Deputy Dean (Research), Hierarchy member" aria-pressed="false" data-node-kind="actor" data-node-sublabel="Deputy Dean (Research)" data-node-context="Hierarchy member">
+          <title>Research Office · Deputy Dean (Research) · Hierarchy member</title>
           <rect x="430" y="265" width="130" height="60" rx="7" class="c-mask"/>
           <rect x="430" y="265" width="130" height="60" rx="7" class="c-actor" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="actor" class="semantic-sigil s-actor" transform="translate(436 271) scale(0.6875)">
             <circle cx="8" cy="5" r="2.6"/><path d="M2.8 14v-1.6a5.2 5.2 0 0 1 10.4 0V14"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="495" y="288" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Dr. M. Ong</text>
+          <text data-node-label="" data-detail-anchor="" x="498.5" y="288" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Research Office</text>
           <text data-detail="context" x="495" y="305" class="t-muted" font-size="8" text-anchor="middle">Deputy Dean (Research)</text>
         </g>
 
-        <g id="node-registrar" data-node-id="registrar" data-node-label="N. Ahmad" tabindex="0" role="button" aria-label="Focus N. Ahmad, Registrar, Hierarchy member" aria-pressed="false" data-node-kind="actor" data-node-sublabel="Registrar" data-node-context="Hierarchy member">
-          <title>N. Ahmad · Registrar · Hierarchy member</title>
-          <rect x="608" y="265" width="120" height="60" rx="7" class="c-mask"/>
-          <rect x="608" y="265" width="120" height="60" rx="7" class="c-actor" stroke-width="1.5"/>
+        <g id="node-registrar" data-node-id="registrar" data-node-label="Registrar&#39;s Office" tabindex="0" role="button" aria-label="Focus Registrar&#39;s Office, Registrar, Hierarchy member" aria-pressed="false" data-node-kind="actor" data-node-sublabel="Registrar" data-node-context="Hierarchy member">
+          <title>Registrar&#39;s Office · Registrar · Hierarchy member</title>
+          <rect x="608" y="265" width="129" height="60" rx="7" class="c-mask"/>
+          <rect x="608" y="265" width="129" height="60" rx="7" class="c-actor" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="actor" class="semantic-sigil s-actor" transform="translate(614 271) scale(0.6875)">
             <circle cx="8" cy="5" r="2.6"/><path d="M2.8 14v-1.6a5.2 5.2 0 0 1 10.4 0V14"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="668" y="288" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">N. Ahmad</text>
-          <text data-detail="context" x="668" y="305" class="t-muted" font-size="8" text-anchor="middle">Registrar</text>
+          <text data-node-label="" data-detail-anchor="" x="672.5" y="297.2" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Registrar&#39;s Office</text>
+          <text data-detail="context" x="672.5" y="312.1" class="t-muted" font-size="8" text-anchor="middle">Registrar</text>
         </g>
 
-        <g id="node-cs_head" data-node-id="cs_head" data-node-label="Dr. K. Tan" tabindex="0" role="button" aria-label="Focus Dr. K. Tan, Head, Computer Science, Hierarchy member" aria-pressed="false" data-node-kind="actor" data-node-sublabel="Head, Computer Science" data-node-context="Hierarchy member">
-          <title>Dr. K. Tan · Head, Computer Science · Hierarchy member</title>
+        <g id="node-cs_head" data-node-id="cs_head" data-node-label="Computer Science" tabindex="0" role="button" aria-label="Focus Computer Science, Head, Computer Science, Hierarchy member" aria-pressed="false" data-node-kind="actor" data-node-sublabel="Head, Computer Science" data-node-context="Hierarchy member">
+          <title>Computer Science · Head, Computer Science · Hierarchy member</title>
           <rect x="56" y="457" width="130" height="60" rx="7" class="c-mask"/>
           <rect x="56" y="457" width="130" height="60" rx="7" class="c-actor" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="actor" class="semantic-sigil s-actor" transform="translate(62 463) scale(0.6875)">
             <circle cx="8" cy="5" r="2.6"/><path d="M2.8 14v-1.6a5.2 5.2 0 0 1 10.4 0V14"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="121" y="480" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Dr. K. Tan</text>
+          <text data-node-label="" data-detail-anchor="" x="127.8" y="480" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Computer Science</text>
           <text data-detail="context" x="121" y="497" class="t-muted" font-size="8" text-anchor="middle">Head, Computer Science</text>
         </g>
 
-        <g id="node-se_head" data-node-id="se_head" data-node-label="Dr. J. Wu" tabindex="0" role="button" aria-label="Focus Dr. J. Wu, Head, Software Engineering, Hierarchy member" aria-pressed="false" data-node-kind="actor" data-node-sublabel="Head, Software Engineering" data-node-context="Hierarchy member">
-          <title>Dr. J. Wu · Head, Software Engineering · Hierarchy member</title>
+        <g id="node-se_head" data-node-id="se_head" data-node-label="Software Engineering" tabindex="0" role="button" aria-label="Focus Software Engineering, Head, Software Engineering, Hierarchy member" aria-pressed="false" data-node-kind="actor" data-node-sublabel="Head, Software Engineering" data-node-context="Hierarchy member">
+          <title>Software Engineering · Head, Software Engineering · Hierarchy member</title>
           <rect x="234" y="457" width="148" height="60" rx="7" class="c-mask"/>
           <rect x="234" y="457" width="148" height="60" rx="7" class="c-actor" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="actor" class="semantic-sigil s-actor" transform="translate(240 463) scale(0.6875)">
             <circle cx="8" cy="5" r="2.6"/><path d="M2.8 14v-1.6a5.2 5.2 0 0 1 10.4 0V14"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="308" y="480" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Dr. J. Wu</text>
-          <text data-detail="context" x="308" y="497" class="t-muted" font-size="8" text-anchor="middle">Head, Software Engineering</text>
+          <text data-node-label="" data-detail-anchor="" x="308" y="489.2" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Software Engineering</text>
+          <text data-detail="context" x="308" y="504.1" class="t-muted" font-size="8" text-anchor="middle">Head, Software Engineering</text>
         </g>
 
         <g id="node-ai_lab" data-node-id="ai_lab" data-node-label="AI Lab" tabindex="0" role="button" aria-label="Focus AI Lab, 7 researchers, Hierarchy member" aria-pressed="false" data-node-kind="group" data-node-sublabel="7 researchers" data-node-tag="vacant lead" data-node-context="Hierarchy member">
@@ -5120,44 +5103,44 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 
         <g id="node-industry_panel" data-node-id="industry_panel" data-node-label="Industry panel" tabindex="0" role="button" aria-label="Focus Industry panel, advisory only, Hierarchy member" aria-pressed="false" data-node-kind="external" data-node-sublabel="advisory only" data-node-context="Hierarchy member">
           <title>Industry panel · advisory only · Hierarchy member</title>
-          <rect x="776" y="265" width="120" height="60" rx="7" class="c-mask"/>
-          <rect x="776" y="265" width="120" height="60" rx="7" class="c-external" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(782 271) scale(0.6875)">
+          <rect x="785" y="265" width="120" height="60" rx="7" class="c-mask"/>
+          <rect x="785" y="265" width="120" height="60" rx="7" class="c-external" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(791 271) scale(0.6875)">
             <rect x="2.5" y="5" width="8.5" height="8" rx="1.5"/>
             <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="841.2" y="288" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Industry panel</text>
-          <text data-detail="context" x="836" y="305" class="t-muted" font-size="8" text-anchor="middle">advisory only</text>
+          <text data-node-label="" data-detail-anchor="" x="850.2" y="288" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Industry panel</text>
+          <text data-detail="context" x="845" y="305" class="t-muted" font-size="8" text-anchor="middle">advisory only</text>
         </g>
 
         <!-- Link labels -->
-        <g data-detail="context" data-edge-from="dean" data-edge-to="deputy_academic" data-edge-label="reports to" data-edge-key="0" data-edge-id="l_academic">
-          <rect x="339.375" y="142" width="61" height="16" rx="4" class="c-mask"/>
-          <text x="369.875" y="153" class="t-edge-default" font-size="8" text-anchor="middle">reports to</text>
+        <g data-detail="context" data-edge-from="dean" data-edge-to="deputy_academic" data-edge-label="supervises" data-edge-key="0" data-edge-id="l_academic">
+          <rect x="341.625" y="142" width="61" height="16" rx="4" class="c-mask"/>
+          <text x="372.125" y="153" class="t-edge-default" font-size="8" text-anchor="middle">supervises</text>
         </g>
-        <g data-detail="context" data-edge-from="dean" data-edge-to="deputy_research" data-edge-label="reports to" data-edge-key="1" data-edge-id="l_research">
+        <g data-detail="context" data-edge-from="dean" data-edge-to="deputy_research" data-edge-label="supervises" data-edge-key="1" data-edge-id="l_research">
           <rect x="428" y="205" width="61" height="16" rx="4" class="c-mask"/>
-          <text x="458.5" y="216" class="t-edge-default" font-size="8" text-anchor="middle">reports to</text>
+          <text x="458.5" y="216" class="t-edge-default" font-size="8" text-anchor="middle">supervises</text>
         </g>
-        <g data-detail="context" data-edge-from="dean" data-edge-to="registrar" data-edge-label="reports to" data-edge-key="2" data-edge-id="l_registrar">
-          <rect x="566.125" y="140" width="61" height="16" rx="4" class="c-mask"/>
-          <text x="596.625" y="151" class="t-edge-default" font-size="8" text-anchor="middle">reports to</text>
+        <g data-detail="context" data-edge-from="dean" data-edge-to="registrar" data-edge-label="supervises" data-edge-key="2" data-edge-id="l_registrar">
+          <rect x="570.625" y="140" width="61" height="16" rx="4" class="c-mask"/>
+          <text x="601.125" y="151" class="t-edge-default" font-size="8" text-anchor="middle">supervises</text>
         </g>
-        <g data-detail="context" data-edge-from="deputy_academic" data-edge-to="cs_head" data-edge-label="reports to" data-edge-key="3" data-edge-id="l_cs">
-          <rect x="137.25" y="330" width="61" height="16" rx="4" class="c-mask"/>
-          <text x="167.75" y="341" class="t-edge-default" font-size="8" text-anchor="middle">reports to</text>
+        <g data-detail="context" data-edge-from="deputy_academic" data-edge-to="cs_head" data-edge-label="directs" data-edge-key="3" data-edge-id="l_cs">
+          <rect x="144.6" y="330" width="46.300000000000004" height="16" rx="4" class="c-mask"/>
+          <text x="167.75" y="341" class="t-edge-default" font-size="8" text-anchor="middle">directs</text>
         </g>
-        <g data-detail="context" data-edge-from="deputy_academic" data-edge-to="se_head" data-edge-label="reports to" data-edge-key="4" data-edge-id="l_se">
-          <rect x="230.75" y="330" width="61" height="16" rx="4" class="c-mask"/>
-          <text x="261.25" y="341" class="t-edge-default" font-size="8" text-anchor="middle">reports to</text>
+        <g data-detail="context" data-edge-from="deputy_academic" data-edge-to="se_head" data-edge-label="directs" data-edge-key="4" data-edge-id="l_se">
+          <rect x="238.1" y="330" width="46.300000000000004" height="16" rx="4" class="c-mask"/>
+          <text x="261.25" y="341" class="t-edge-default" font-size="8" text-anchor="middle">directs</text>
         </g>
         <g data-detail="context" data-edge-from="deputy_research" data-edge-to="ai_lab" data-edge-label="supervises" data-edge-key="5" data-edge-id="l_lab">
           <rect x="428" y="383" width="61" height="16" rx="4" class="c-mask"/>
           <text x="458.5" y="394" class="t-edge-default" font-size="8" text-anchor="middle">supervises</text>
         </g>
         <g data-detail="context" data-edge-from="dean" data-edge-to="industry_panel" data-edge-label="dotted line" data-edge-key="6" data-edge-id="l_panel">
-          <rect x="647.675" y="140" width="65.9" height="16" rx="4" class="c-mask"/>
-          <text x="680.625" y="151" class="t-edge-dashed" font-size="8" text-anchor="middle">dotted line</text>
+          <rect x="654.425" y="140" width="65.9" height="16" rx="4" class="c-mask"/>
+          <text x="687.375" y="151" class="t-edge-dashed" font-size="8" text-anchor="middle">dotted line</text>
         </g>
 
         <!-- Legend -->
@@ -5218,48 +5201,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <div class="node-finder-results" id="node-finder-results" role="group" aria-label="Diagram nodes"></div>
         <p class="node-finder-empty" id="node-finder-empty" hidden>No matching nodes</p>
         <p class="node-finder-status" id="node-finder-status" aria-live="polite"></p>
-      </div>
-      <div class="focus-chip relationship-lens no-print" id="focus-chip" hidden role="region" aria-labelledby="relationship-lens-title">
-        <div class="relationship-lens-head">
-          <button class="relationship-lens-drag-handle" id="btn-focus-move" type="button" data-focus-drag-handle aria-label="Move semantic passport. Drag, use arrow keys, or press Home to reset." title="Move semantic passport. Drag, use arrow keys, or press Home to reset."></button>
-          <div class="relationship-lens-copy">
-            <span class="relationship-lens-eyebrow">Semantic passport</span>
-            <strong class="relationship-lens-title" id="relationship-lens-title"><span id="focus-label"></span></strong>
-            <span class="semantic-passport-detail" id="focus-detail" hidden></span>
-            <div class="semantic-passport-meta" id="focus-passport-meta" aria-label="Node metadata">
-              <span id="focus-kind" data-passport="kind"></span>
-              <span id="focus-context" data-passport="context" hidden></span>
-              <span id="focus-tag" data-passport="tag" hidden></span>
-              <span id="focus-brand" data-passport="brand" hidden></span>
-              <code id="focus-id" data-passport="id"></code>
-            </div>
-            <div class="semantic-passport-evidence" id="focus-evidence" hidden aria-label="Cited sources">
-              <div class="semantic-passport-evidence-head">
-                <span class="semantic-passport-evidence-status">Cited sources</span>
-              </div>
-              <div class="semantic-passport-evidence-links" id="focus-evidence-links"></div>
-            </div>
-            <span class="relationship-lens-summary" id="focus-summary" aria-live="polite"></span>
-            <div class="semantic-passport-reach" id="focus-reach" hidden>
-              <span class="semantic-passport-reach-label">Authored reach</span>
-              <div class="semantic-passport-reach-actions" role="group" aria-label="Trace authored reachability">
-                <button id="btn-reach-upstream" type="button" aria-label="Trace upstream authored reachability" aria-pressed="false">
-                  <span>Upstream</span><strong id="focus-reach-upstream-count">0</strong>
-                </button>
-                <button id="btn-reach-downstream" type="button" aria-label="Trace downstream authored reachability" aria-pressed="false">
-                  <span>Downstream</span><strong id="focus-reach-downstream-count">0</strong>
-                </button>
-              </div>
-              <small class="semantic-passport-reach-status" id="focus-reach-status" hidden aria-live="polite"></small>
-            </div>
-          </div>
-          <div class="relationship-lens-actions">
-            <button id="btn-focus-clear" type="button" aria-label="Close semantic passport" title="Close">&#215;</button>
-            <button id="btn-focus-copy" type="button" aria-label="Copy link to focused node">Copy link</button>
-            <button id="btn-focus-relations" type="button" aria-label="Show connected relationships" aria-expanded="false" aria-controls="relationship-lens-list">Relations</button>
-          </div>
-        </div>
-        <div class="relationship-lens-list" id="relationship-lens-list" aria-label="Connected relationships"></div>
       </div>
       <div class="route-probe no-print" id="route-probe" hidden role="region" aria-labelledby="route-probe-title" data-state="idle">
         <div class="route-probe-head">
@@ -5334,6 +5275,48 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     <div class="rail-controls no-print" role="toolbar" aria-label="Side panel">
       <button class="rail-control" id="rail-placement" type="button" hidden aria-label="Move panel below the diagram" title="Move panel below the diagram" data-placement="right"><span class="rail-control-icon placement" aria-hidden="true"></span></button>
       <button class="rail-control" id="rail-collapse" type="button" hidden aria-controls="reader-rail" aria-expanded="true" aria-label="Collapse side panel" title="Collapse side panel"><span class="rail-control-icon collapse" aria-hidden="true"></span></button>
+    </div>
+    <div class="focus-chip relationship-lens no-print" id="focus-chip" hidden role="region" aria-labelledby="relationship-lens-title">
+      <div class="relationship-lens-head">
+        <button class="relationship-lens-drag-handle" id="btn-focus-move" type="button" data-focus-drag-handle aria-label="Move semantic passport. Drag, use arrow keys, or press Home to reset." title="Move semantic passport. Drag, use arrow keys, or press Home to reset."></button>
+        <div class="relationship-lens-copy">
+          <span class="relationship-lens-eyebrow">Semantic passport</span>
+          <strong class="relationship-lens-title" id="relationship-lens-title"><span id="focus-label"></span></strong>
+          <span class="semantic-passport-detail" id="focus-detail" hidden></span>
+          <div class="semantic-passport-meta" id="focus-passport-meta" aria-label="Node metadata">
+            <span id="focus-kind" data-passport="kind"></span>
+            <span id="focus-context" data-passport="context" hidden></span>
+            <span id="focus-tag" data-passport="tag" hidden></span>
+            <span id="focus-brand" data-passport="brand" hidden></span>
+            <code id="focus-id" data-passport="id"></code>
+          </div>
+          <div class="semantic-passport-evidence" id="focus-evidence" hidden aria-label="Cited sources">
+            <div class="semantic-passport-evidence-head">
+              <span class="semantic-passport-evidence-status">Cited sources</span>
+            </div>
+            <div class="semantic-passport-evidence-links" id="focus-evidence-links"></div>
+          </div>
+          <span class="relationship-lens-summary" id="focus-summary" aria-live="polite"></span>
+          <div class="semantic-passport-reach" id="focus-reach" hidden>
+            <span class="semantic-passport-reach-label">Authored reach</span>
+            <div class="semantic-passport-reach-actions" role="group" aria-label="Trace authored reachability">
+              <button id="btn-reach-upstream" type="button" aria-label="Trace upstream authored reachability" aria-pressed="false">
+                <span>Upstream</span><strong id="focus-reach-upstream-count">0</strong>
+              </button>
+              <button id="btn-reach-downstream" type="button" aria-label="Trace downstream authored reachability" aria-pressed="false">
+                <span>Downstream</span><strong id="focus-reach-downstream-count">0</strong>
+              </button>
+            </div>
+            <small class="semantic-passport-reach-status" id="focus-reach-status" hidden aria-live="polite"></small>
+          </div>
+        </div>
+        <div class="relationship-lens-actions">
+          <button id="btn-focus-clear" type="button" aria-label="Close semantic passport" title="Close">&#215;</button>
+          <button id="btn-focus-copy" type="button" aria-label="Copy link to focused node">Copy link</button>
+          <button id="btn-focus-relations" type="button" aria-label="Show connected relationships" aria-expanded="false" aria-controls="relationship-lens-list">Relations</button>
+        </div>
+      </div>
+      <div class="relationship-lens-list" id="relationship-lens-list" aria-label="Connected relationships"></div>
     </div>
     <!-- Info Cards -->
     <div class="cards">
@@ -8076,11 +8059,19 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         motion.setAttribute('dur', options.duration || '1.2s');
         motion.setAttribute('begin', '0s');
         motion.setAttribute('fill', 'freeze');
+        motion.setAttribute('repeatCount', 'indefinite');
         motion.setAttribute('rotate', 'auto');
         motion.setAttribute('calcMode', 'spline');
         motion.setAttribute('keyTimes', '0;1');
         motion.setAttribute('keySplines', '.2 0 .2 1');
-        token.appendChild(motion);
+        // Reduced-motion and hidden-document states get a static token:
+        // CSS `animation: none` cannot stop SMIL, so do not start it.
+        var motionStill = false;
+        try {
+          motionStill = document.documentElement.getAttribute('data-motion') === 'still'
+            || document.documentElement.getAttribute('data-document-hidden') === 'true';
+        } catch (e) { motionStill = false; }
+        if (!motionStill) token.appendChild(motion);
         return token;
       }
       function createSemanticFlowToken(edge, shape, options) {
@@ -8495,7 +8486,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         };
       }
       function manualLensPlacementAvailable() {
-        return window.innerWidth > 720 && (!finePointerQuery || finePointerQuery.matches);
+        // Sidebar shell: node details live as a static section inside the
+        // left sidebar, never as a floating modal, so manual drag placement
+        // is retired. The move handle stays in the DOM (hidden) for its id
+        // contract.
+        return false;
       }
       function clampLensPosition(position, bounds) {
         if (!position || !bounds) return null;
@@ -8612,7 +8607,18 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           cancelAnimationFrame(lensFrame);
           lensFrame = 0;
         }
+        // Sidebar shell: node details are a static section inside the left
+        // rail (roughly canvas height via the rail's max-height), never a
+        // floating modal. Clear any modal coordinates and let the rail own
+        // the layout; opening the rail reflows the canvas instead of
+        // overlapping it.
+        chip.removeAttribute('data-manual-placement');
+        chip.style.removeProperty('left');
+        chip.style.removeProperty('top');
         if (chip.hidden || activeIds.length !== 1) return;
+        if (Flowey.readerLayout && typeof Flowey.readerLayout.schedule === 'function') Flowey.readerLayout.schedule();
+        if (Flowey.radar && typeof Flowey.radar.sync === 'function') Flowey.radar.sync();
+        return;
         var node = svg.querySelector('[data-node-id="' + activeIds[0] + '"]');
         if (!node) return;
         var containerRect = container.getBoundingClientRect();
@@ -8824,6 +8830,10 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         chip.hidden = options.hideChip === true || normalized.length !== 1 || selectionMode;
         if (!chip.hidden) {
           renderRelationshipLens(normalized[0], byId);
+          // Sidebar shell: node details live in the left rail. Opening the
+          // rail reflows the canvas aside (never overlaps); Esc clears via
+          // the global shortcut and Flowey.focus.clear.
+          if (Flowey.readerLayout && typeof Flowey.readerLayout.openRail === 'function') Flowey.readerLayout.openRail();
           placeRelationshipLens();
         }
         if (options.updateUrl !== false) {
@@ -8992,7 +9002,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         var target = event.target;
         if (chip.hidden || !target || typeof target.closest !== 'function' || chip.contains(target)) return;
         if (container.getAttribute('data-just-panned') === 'true') return;
-        if (target.closest('[data-node-id], [data-relationship-hit-key], .overview-map')) return;
+        // Sidebar shell: interacting with the left rail (notes, index, node
+        // details) never dismisses the selection; only canvas background does.
+        if (target.closest('[data-node-id], [data-relationship-hit-key], .overview-map, .reader-rail, .rail-reveal')) return;
         clear();
       }, true);
       window.addEventListener('scroll', requestLensPlacement, { passive: true });
@@ -9359,18 +9371,16 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         : MIN_PROJECTED_NODE_TEXT_PX;
       var declaredPrimaryText = svg ? parseFloat(svg.getAttribute('data-reader-primary-text') || '') : null;
       var SAFE_BOTTOM_GAP = 12;
-      // Wide viewports move summary cards beside the diagram, so the height
-      // budget belongs to the diagram and spare width holds the notes.
-      var RAIL_MIN_VIEWPORT = 1280;
+      // Sidebar shell: notes, node details, and the node index dock on the
+      // left and the dotted canvas reflows to the remaining width. The rail
+      // never overlaps the canvas and never stacks below it.
       var RAIL_WIDTH = 288;
       var RAIL_GAP = 20;
-      // A default rail must leave primary node labels comfortably readable;
-      // otherwise it starts collapsed and the reader can still open it.
-      var RAIL_COMFORT_PRIMARY_PX = 12;
       var railPanel = shell && shell.querySelector('.reader-rail');
       var railReveal = document.getElementById('rail-reveal');
       var railCollapse = document.getElementById('rail-collapse');
       var railPlacement = document.getElementById('rail-placement');
+      var focusPanel = document.getElementById('focus-chip');
       var RAIL_COLLAPSED_KEY = 'flowey-rail-collapsed';
       var RAIL_PLACEMENT_KEY = 'flowey-rail-placement';
       // Memory is the page's source of truth; storage only carries the choice
@@ -9437,19 +9447,30 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         if (Number.isFinite(size) && size > 0) sourcePrimary = sourcePrimary == null ? size : Math.max(sourcePrimary, size);
       });
       // SVG width at which the largest node label renders at targetPx. Every
-      // renderer writes label font sizes, so the rail comfort check works for
-      // all diagram types; only the renderer-declared floor needs metadata.
+      // renderer writes label font sizes, so the width floor works for all
+      // diagram types; only the renderer-declared floor needs metadata.
       function labelWidth(targetPx) {
         return sourcePrimary == null || !viewBox ? 0 : viewBox.width * targetPx / sourcePrimary;
       }
       function primaryReadingWidth() {
         if (!measuredHeightFit || !Number.isFinite(declaredPrimaryText) || declaredPrimaryText <= 0) return 0;
-        // Primary labels should remain comfortable to read when cards or
-        // auxiliary rows make a one-screen fit too small. Ordinary page
-        // scroll preserves that reading size; viewport width still caps it.
-        // A long title may already use a smaller fitted font. Preserve that
-        // hierarchy rather than enlarging every other node to compensate.
+        // Primary labels should remain comfortable to read when auxiliary rows
+        // make a one-screen fit too small. Ordinary page scroll preserves that
+        // reading size; viewport width still caps it. A long title may already
+        // use a smaller fitted font. Preserve that hierarchy rather than
+        // enlarging every other node to compensate.
         return labelWidth(declaredPrimaryText);
+      }
+      function viewerModesBlocked() {
+        return html.getAttribute('data-embed') === 'true' ||
+          html.getAttribute('data-present') === 'true' ||
+          (window.matchMedia && window.matchMedia('print').matches);
+      }
+      // Sidebar availability never depends on viewport width or diagram ratio:
+      // whenever there is panel content the collapsed rail (and its reveal
+      // control) exists, so nothing ever renders below the canvas.
+      function railEligible() {
+        return Boolean(shell && diagram && svg && railPanel && !viewerModesBlocked());
       }
       function eligible() {
         return Boolean(
@@ -9470,9 +9491,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         lastWidth = 0;
         settledCap = 0;
       }
-      // Rail modes: "true" docks beside the diagram, "collapsed" leaves only the
-      // reveal control, "overlay" opens a drawer when docking would break the
-      // readable floor, and "bottom" stacks notes and index below the diagram.
+      // Rail modes: "true" docks the sidebar on the left and the canvas
+      // reflows to the remaining width; "collapsed" leaves only the
+      // "Notes & index" reveal control in the canvas corner. There is no
+      // overlay drawer and no below-canvas row: the sidebar never overlaps
+      // the canvas.
       function setRail(mode) {
         if (mode) {
           html.setAttribute('data-reader-rail', mode);
@@ -9483,26 +9506,34 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           html.style.removeProperty('--flowey-rail-width');
           html.style.removeProperty('--flowey-rail-gap');
         }
-        if (railReveal) railReveal.hidden = mode !== 'collapsed';
-        if (railCollapse) {
-          railCollapse.hidden = mode !== 'true' && mode !== 'overlay';
-          railCollapse.setAttribute('aria-expanded', String(mode === 'true' || mode === 'overlay'));
+        if (railReveal) {
+          railReveal.hidden = mode !== 'collapsed';
+          railReveal.setAttribute('aria-expanded', String(mode === 'true'));
         }
+        if (railCollapse) {
+          railCollapse.hidden = mode !== 'true';
+          railCollapse.setAttribute('aria-expanded', String(mode === 'true'));
+        }
+        // The placement toggle is retired: the sidebar always docks on the
+        // left. The element stays in the DOM (hidden) so its id contract
+        // never breaks for older artifacts or assistive tech.
         if (railPlacement) {
-          railPlacement.hidden = !mode || mode === 'collapsed' || (mode === 'bottom' && window.innerWidth < RAIL_MIN_VIEWPORT);
-          railPlacement.setAttribute('data-placement', mode === 'bottom' ? 'bottom' : 'right');
-          railPlacement.setAttribute('aria-label', viewerText(mode === 'bottom' ? 'viewer.rail.right' : 'viewer.rail.bottom'));
-          railPlacement.title = railPlacement.getAttribute('aria-label');
+          railPlacement.hidden = true;
+          railPlacement.setAttribute('data-placement', 'left');
         }
       }
       var outline = document.getElementById('node-outline');
       function hasCards() {
         return Boolean((cards && cards.children.length && !cards.hidden) || (outline && !outline.hidden));
       }
-      // Bottom notes and index are reading material below the fold: the first
-      // screen belongs to the interactive diagram and its controls.
+      function hasPanelContent() {
+        return Boolean(hasCards() || (focusPanel && !focusPanel.hidden));
+      }
+      // Nothing renders below the fold: notes, node details, and the index
+      // live inside the left sidebar, so the first screen belongs to the
+      // interactive diagram and its controls.
       function belowFold() {
-        return html.getAttribute('data-reader-rail') === 'bottom' ? outerHeight(railPanel) : 0;
+        return 0;
       }
       // A docked rail may run past a short diagram down to the viewport floor,
       // so the index uses that space instead of scrolling inside the diagram's
@@ -9535,8 +9566,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         var shellFloor = Math.min(MIN_READER_WIDTH, Math.max(0, window.innerWidth - chromeMetrics().bodyX));
         html.style.setProperty('--flowey-reader-width', Math.max(rounded, shellFloor) + 'px');
         if (rounded < shellFloor) {
-          // `rounded` already includes a docked rail and its gap; the SVG cap
-          // is only the diagram's share, not the space beside it.
+          // `rounded` already includes the docked left rail and its gap; the
+          // SVG cap is only the diagram's share, not the space beside it.
           var railShare = html.getAttribute('data-reader-rail') === 'true' ? RAIL_WIDTH + RAIL_GAP : 0;
           html.style.setProperty('--flowey-diagram-max-width', Math.max(1, rounded - railShare - chromeMetrics().diagramX) + 'px');
           html.setAttribute('data-reader-narrow', 'true');
@@ -9568,10 +9599,29 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           }
         });
       }
+      function railMode() {
+        if (!railEligible() || !hasPanelContent()) return false;
+        // Collapsed by default: only the reveal control is visible. An
+        // explicit open ('0') docks the sidebar on the left and reflows the
+        // canvas; it never overlays and never stacks below.
+        if (readPreference(RAIL_COLLAPSED_KEY) === '0') return 'true';
+        return 'collapsed';
+      }
       function measure() {
         frame = 0;
+        var mode = railMode();
         if (!eligible()) {
-          clear();
+          // Adaptive width is desktop-only, but the sidebar shell still
+          // applies on every viewport so cards never fall below the canvas.
+          html.style.removeProperty('--flowey-reader-width');
+          html.style.removeProperty('--flowey-diagram-max-width');
+          html.removeAttribute('data-reader-narrow');
+          html.removeAttribute('data-reader-layout');
+          html.removeAttribute('data-reader-overflow');
+          setRail(mode);
+          lastWidth = 0;
+          settledCap = 0;
+          if (mode === 'true') fitDockedRail();
           return null;
         }
         var chrome = chromeMetrics();
@@ -9595,32 +9645,19 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         }
         var primaryWidth = primaryReadingWidth();
         var railExtra = RAIL_WIDTH + RAIL_GAP;
-        var mode = null;
-        // Notes default below the diagram; the right rail is the reader's
-        // opt-in and needs a wide viewport.
-        if (hasCards() && (readPreference(RAIL_PLACEMENT_KEY) !== 'right' || window.innerWidth < RAIL_MIN_VIEWPORT)) {
-          mode = 'bottom';
-        } else if (hasCards()) {
-          var fitsReadable = readableMinimumWidth + railExtra <= maxWidth;
-          var comfortWidth = labelWidth(RAIL_COMFORT_PRIMARY_PX);
-          var comfortable = fitsReadable && (!comfortWidth || comfortWidth + chrome.diagramX + railExtra <= maxWidth);
-          var collapsedPreference = readPreference(RAIL_COLLAPSED_KEY);
-          if (collapsedPreference === '1' || (collapsedPreference !== '0' && !comfortable)) mode = 'collapsed';
-          else mode = fitsReadable ? 'true' : 'overlay';
-        }
-        // With notes below the fold, the first screen belongs to the whole
-        // diagram and its controls: it may shrink past the comfortable primary
-        // size down to the renderer's readable text floor, and zoom restores
-        // detail. Only a graph taller than that floor allows still scrolls.
-        if (mode === 'bottom') primaryWidth = 0;
+        // With the rail collapsed, the first screen belongs to the whole
+        // diagram and its controls: it may shrink past the comfortable
+        // primary size down to the renderer's readable text floor, and zoom
+        // restores detail. Only a docked rail enforces the comfort floor,
+        // since it consumes width beside the canvas.
+        if (mode !== 'true') primaryWidth = 0;
         if (primaryWidth > 0) minWidth = Math.max(minWidth, Math.min(maxWidth, primaryWidth + chrome.diagramX));
         var docked = mode === 'true';
         setRail(mode);
         chrome = chromeMetrics();
         if (docked) minWidth = Math.min(maxWidth, minWidth + railExtra);
-        var stackedBelow = mode === 'bottom' ? 0 : docked ? 0 : outerHeight(cards);
         var fixedHeight = chrome.bodyY + chrome.diagramY + SAFE_BOTTOM_GAP +
-          outerHeight(header) + stackedBelow;
+          outerHeight(header);
         var availableSvgHeight = Math.max(1, window.innerHeight - fixedHeight);
         var desiredWidth = availableSvgHeight * ratio + chrome.diagramX + (docked ? railExtra : 0);
         var width = Math.max(minWidth, Math.min(maxWidth, desiredWidth, settledCap || desiredWidth));
@@ -9643,6 +9680,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         return [
           lastWidth,
           html.getAttribute('data-reader-layout') || '',
+          html.getAttribute('data-reader-rail') || '',
           html.getAttribute('data-reader-overflow') || '',
           Math.ceil(document.documentElement.scrollWidth),
           Math.ceil(document.documentElement.scrollHeight),
@@ -9678,6 +9716,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       if (typeof MutationObserver === 'function') {
         var contentObserver = new MutationObserver(schedule);
         if (cards) contentObserver.observe(cards, { attributes: true, childList: true, subtree: true });
+        if (focusPanel) contentObserver.observe(focusPanel, { attributes: true, attributeFilter: ['hidden'] });
         contentObserver.observe(html, { attributes: true, attributeFilter: ['data-embed', 'data-present'] });
       }
       // Reader choices persist across artifacts; a resize-style remeasure
@@ -9691,20 +9730,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         chooseRail(RAIL_COLLAPSED_KEY, '1');
         if (railReveal) requestAnimationFrame(function () { try { railReveal.focus({ preventScroll: true }); } catch (_) {} });
       }
+      function openRail() {
+        chooseRail(RAIL_COLLAPSED_KEY, '0');
+      }
       if (railReveal) railReveal.addEventListener('click', function () { chooseRail(RAIL_COLLAPSED_KEY, '0'); });
       if (railCollapse) railCollapse.addEventListener('click', collapseRail);
-      if (railPlacement) railPlacement.addEventListener('click', function () {
-        var toBottom = html.getAttribute('data-reader-rail') !== 'bottom';
-        if (!toBottom) writePreference(RAIL_COLLAPSED_KEY, '0');
-        chooseRail(RAIL_PLACEMENT_KEY, toBottom ? 'bottom' : 'right');
-      });
-      document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape' && html.getAttribute('data-reader-rail') === 'overlay') collapseRail();
-      });
-      document.addEventListener('pointerdown', function (event) {
-        if (html.getAttribute('data-reader-rail') !== 'overlay' || !railPanel) return;
-        if (!railPanel.contains(event.target) && !(railReveal && railReveal.contains(event.target))) chooseRail(RAIL_COLLAPSED_KEY, '1');
-      });
       if (typeof ResizeObserver === 'function' && railPanel) new ResizeObserver(schedule).observe(railPanel);
       schedule();
 
@@ -9712,6 +9742,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         measure: measure,
         schedule: schedule,
         whenStable: whenStable,
+        openRail: openRail,
+        collapseRail: collapseRail,
         active: function () { return html.getAttribute('data-reader-layout') === 'adaptive'; },
         receipt: function () { return { ratio: ratio, width: lastWidth }; }
       };

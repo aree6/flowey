@@ -171,9 +171,11 @@ closed with `delivery/provenance-hardlink-unsupported` when it has another hard
 link, without scanning for or guessing the sibling name.
 
 If a currently verified owner fails after an older HTML exists, Flowey writes
-a new `status: "failed"` sidecar and leaves the journal until recovery is
-complete. An unreadable old HTML does not prevent that marker; its artifact hash
-and byte count may be absent. If the sidecar is locked or otherwise unwritable,
+a new `status: "failed"` sidecar without an artifact hash (bytes predate the
+run) and quarantine-removes the stale output HTML so no decoy remains; the
+pending journal of this attempt is retired on clean lock release. Commit,
+release, and recovery failures keep the old journal-preserving behavior, and
+an unreadable old HTML does not prevent the failure marker. If the sidecar is locked or otherwise unwritable,
 Flowey keeps the prior sidecar rather than deleting evidence, and the journal
 prevents checkers from trusting it. A rejected concurrent, stale, or invalid
 lock attempt does not write failed provenance. If ownership is lost, Flowey

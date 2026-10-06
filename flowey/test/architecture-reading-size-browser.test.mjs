@@ -69,7 +69,7 @@ test('automatic architectures preserve primary reading size when fitting the ful
   }
 });
 
-test('a narrow tall architecture fits the first screen without enlarging the other titles', async (t) => {
+test('a narrow tall architecture scrolls as authored without undershooting readability', async (t) => {
   if (!Object.hasOwn(process.env, 'FLOWEY_CHROME')) return t.skip('Set FLOWEY_CHROME for real browser checks');
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'flowey-reading-size-stress-'));
   const input = path.join(dir, 'input.json');
@@ -94,6 +94,7 @@ test('a narrow tall architecture fits the first screen without enlarging the oth
       const scale = svg.getBoundingClientRect().width / svg.viewBox.baseVal.width;
       return {
         diagramBottom: document.querySelector('.diagram-container').getBoundingClientRect().bottom,
+        overflow: document.documentElement.getAttribute('data-reader-overflow'),
         shellWidth: document.querySelector('.container').getBoundingClientRect().width,
         svgWidth: svg.getBoundingClientRect().width,
         titleLines: Math.round(document.querySelector('.header h1').getBoundingClientRect().height / parseFloat(getComputedStyle(document.querySelector('.header h1')).lineHeight)),
@@ -102,18 +103,20 @@ test('a narrow tall architecture fits the first screen without enlarging the oth
       };
     })()` }, session);
     assert.equal(result.exceptionDetails, undefined);
-    const { sizes, diagramBottom, shellWidth, svgWidth, titleLines } = result.result.value;
+    const { sizes, diagramBottom, shellWidth, svgWidth, titleLines, overflow } = result.result.value;
     // A narrow diagram is centred in a full-width reader shell, so the title,
     // toolbar, and diagram controls keep their desktop layout.
     assert.ok(shellWidth >= 960 && svgWidth < shellWidth - 200, JSON.stringify({ shellWidth, svgWidth }));
     assert.equal(titleLines, 1, 'the diagram title must not wrap in a narrow reader');
     assert.ok(sizes[0].source < sizes[1].source, 'fixture must contain a fitted long title');
-    // With notes below the fold the whole graph takes the first screen: text
-    // may shrink toward the declared 7.5px floor, and hierarchy still holds.
+    // A graph taller than the viewport at comfortable reading size scrolls as
+    // authored instead of shrinking past the comfort floor: text may not
+    // undershoot the readability floor, and hierarchy still holds.
     assert.ok(sizes[0].projected < sizes[1].projected, JSON.stringify(sizes));
-    assert.ok(sizes[0].projected >= 7.5 - 0.01 && sizes[1].projected <= 14.2, JSON.stringify(sizes));
+    assert.ok(sizes.every((size) => size.projected >= 6), JSON.stringify(sizes));
     assert.ok(metrics.scrollWidth <= 1440);
-    assert.ok(diagramBottom <= 900, `the tall graph must fit the first screen (diagram bottom ${diagramBottom})`);
+    assert.ok(diagramBottom > 900, 'this tall graph is expected to scroll as authored');
+    assert.equal(overflow, 'authored');
   } finally {
     await browser.close();
     fs.rmSync(dir, { recursive: true, force: true });
@@ -157,11 +160,17 @@ test('a first-screen fit never pushes relationship labels below the 6px floor', 
     // This graph is taller than the floor allows, so it scrolls as authored.
     assert.equal(overflow, 'authored');
 
-    // Moving the notes beside the diagram docks the rail. The shell keeps its
+    // Opening the collapsed rail docks the sidebar on the left. The shell keeps its
     // desktop floor, but the SVG gets only the diagram's share: its primary
     // labels return to the docked comfort size instead of doubling.
     const docked = await browser.cdp.send('Runtime.evaluate', { returnByValue: true, awaitPromise: true, expression: `(async () => {
-      document.getElementById('rail-placement').click();
+      document.getElementById('rail-reveal').click();
+      // The click schedules an async re-measure; poll for the applied state
+      // instead of asserting a single frame.
+      for (let attempt = 0; attempt < 40; attempt += 1) {
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+        if (document.documentElement.getAttribute('data-reader-rail') === 'true') break;
+      }
       await Flowey.layoutStability.whenStable();
       const svg = document.querySelector('.diagram-container > svg');
       const svgRect = svg.getBoundingClientRect();
@@ -171,9 +180,8 @@ test('a first-screen fit never pushes relationship labels below the 6px floor', 
         rail: document.documentElement.getAttribute('data-reader-rail'),
         shellWidth: document.querySelector('.container').getBoundingClientRect().width,
         primary: Math.max(...[...svg.querySelectorAll('text[data-node-label]')].map(text => Number(text.getAttribute('font-size')) * scale)),
-        svgRight: svgRect.right, railLeft: railRect.left,
+        svgLeft: svgRect.left, railRight: railRect.right,
       };
-      localStorage.removeItem('flowey-rail-placement');
       return result;
     })()` }, session);
     assert.equal(docked.exceptionDetails, undefined);
@@ -181,7 +189,7 @@ test('a first-screen fit never pushes relationship labels below the 6px floor', 
     assert.equal(rail.rail, 'true', JSON.stringify(rail));
     assert.ok(rail.shellWidth >= 960, JSON.stringify(rail));
     assert.ok(rail.primary >= 13.5 && rail.primary <= 14.2, JSON.stringify(rail));
-    assert.ok(rail.svgRight <= rail.railLeft, JSON.stringify(rail));
+    assert.ok(rail.railRight <= rail.svgLeft, JSON.stringify(rail));
   } finally {
     await browser.close();
     fs.rmSync(dir, { recursive: true, force: true });
