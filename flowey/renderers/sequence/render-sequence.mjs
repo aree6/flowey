@@ -24,7 +24,7 @@ const { diagram: sequence, template, outPath, sourceEvidence } = await loadDiagr
 const LEGEND_CATALOG = [
   { kind: 'emphasis', className: 'a-emphasis', marker: 'arrowhead-emphasis', strokeWidth: 1.8 },
   { kind: 'return', className: 'a-default', marker: 'arrowhead', dash: '3,5' },
-  { kind: 'decision', className: 'a-security', marker: 'arrowhead-security' },
+  { kind: 'alert', className: 'a-alert', marker: 'arrowhead-alert' },
   { kind: 'dashed', className: 'a-dashed', marker: 'arrowhead-dashed' },
   { kind: 'default', className: 'a-default', marker: 'arrowhead' },
 ].map((entry) => ({
@@ -434,7 +434,7 @@ function messageLabel(message, x1, x2) {
   const labelW = box?.width || Math.max(34, textUnits(message.label) * messageUnitWidth + 12);
   // A colored line gets a label in the same color, as in the legend swatches.
   // Gray lines (default and return) keep the readable muted text color.
-  const accent = ['emphasis', 'decision', 'dashed'].includes(message.variant) ? edgeLabelAccent(message.variant) : 't-muted';
+  const accent = ['emphasis', 'alert', 'dashed'].includes(message.variant) ? edgeLabelAccent(message.variant) : 't-muted';
   return `        <g data-detail="context">
           <rect x="${center - labelW / 2}" y="${y - 10}" width="${labelW}" height="${layout.labelH}" rx="3" class="c-mask"/>
           <text x="${center}" y="${y}" class="${accent}" font-size="${messageFontSize}" text-anchor="middle">${esc(message.label)}</text>

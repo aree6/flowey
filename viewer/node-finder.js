@@ -35,7 +35,7 @@
       function semanticType(node) {
         var authored = node.getAttribute('data-node-kind');
         if (authored) return authored;
-        var types = ['actor', 'action', 'document', 'milestone', 'decision', 'record', 'external'];
+        var types = ['actor', 'action', 'document', 'milestone', 'decision', 'record', 'place', 'outcome', 'group', 'external'];
         return types.find(function (type) { return node.querySelector('.c-' + type); }) || 'node';
       }
 

@@ -473,7 +473,7 @@ function renderFlowLabel(flow, index) {
 
 const LEGEND_CATALOG = [
   { kind: 'emphasis', className: 'a-emphasis', marker: 'arrowhead-emphasis', strokeWidth: 1.8, swatchWidth: 34, swatchGap: 9, interactive: false },
-  { kind: 'decision', className: 'a-security', marker: 'arrowhead-security', swatchWidth: 34, swatchGap: 9, interactive: false },
+  { kind: 'alert', className: 'a-alert', marker: 'arrowhead-alert', swatchWidth: 34, swatchGap: 9, interactive: false },
   { kind: 'dashed', className: 'a-dashed', marker: 'arrowhead-dashed', swatchWidth: 34, swatchGap: 9, interactive: false },
   { kind: 'document' },
   { kind: 'default', className: 'a-default', marker: 'arrowhead', swatchWidth: 34, swatchGap: 9, interactive: false },

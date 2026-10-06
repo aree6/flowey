@@ -10,7 +10,7 @@
       var count = document.getElementById('node-outline-count');
       var svg = document.querySelector('.diagram-container > svg');
       if (!panel || !list || !svg) return { count: 0 };
-      var TONES = ['actor', 'action', 'document', 'milestone', 'decision', 'record', 'external'];
+      var TONES = ['actor', 'action', 'document', 'milestone', 'decision', 'record', 'place', 'outcome', 'group', 'external'];
       var nodes = Array.from(svg.querySelectorAll('[data-node-id]')).filter(function (node) {
         return !node.closest('[data-legend-hit], .legend') && node.getAttribute('data-node-label');
       });

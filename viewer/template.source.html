@@ -299,8 +299,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <marker id="arrowhead-emphasis" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
             <polygon points="0 0, 10 3.5, 0 7" class="m-emphasis" />
           </marker>
-          <marker id="arrowhead-security" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-            <polygon points="0 0, 10 3.5, 0 7" class="m-security" />
+          <marker id="arrowhead-alert" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" class="m-alert" />
           </marker>
           <marker id="arrowhead-dashed" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
             <polygon points="0 0, 10 3.5, 0 7" class="m-dashed" />
@@ -337,53 +337,53 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <rect x="160" y="40" width="820" height="620" rx="12" class="c-region" stroke-width="1"/>
         <text x="172" y="58" class="t-milestone" font-size="10" font-weight="600">AWS Region: us-west-2</text>
 
-        <!-- AWS/Cloud Service -->
+        <!-- Milestone / place -->
         <rect x="200" y="280" width="110" height="50" rx="6" class="c-mask"/>
         <rect x="200" y="280" width="110" height="50" rx="6" class="c-milestone" stroke-width="1.5"/>
-        <text x="255" y="300" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">CloudFront</text>
-        <text x="255" y="316" class="t-muted" font-size="9" text-anchor="middle">CDN</text>
+        <text x="255" y="300" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Main Library</text>
+        <text x="255" y="316" class="t-muted" font-size="9" text-anchor="middle">City center</text>
 
-        <!-- Multi-line AWS Component (S3 Buckets example) -->
+        <!-- Multi-line place (campus buildings example) -->
         <rect x="200" y="380" width="110" height="100" rx="6" class="c-mask"/>
         <rect x="200" y="380" width="110" height="100" rx="6" class="c-milestone" stroke-width="1.5"/>
-        <text x="255" y="400" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">S3 Buckets</text>
-        <text x="255" y="420" class="t-muted" font-size="8" text-anchor="middle">&bull; bucket-one</text>
-        <text x="255" y="434" class="t-muted" font-size="8" text-anchor="middle">&bull; bucket-two</text>
-        <text x="255" y="448" class="t-muted" font-size="8" text-anchor="middle">&bull; bucket-three</text>
-        <text x="255" y="466" class="t-milestone" font-size="7" text-anchor="middle">OAI Protected</text>
+        <text x="255" y="400" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Campus</text>
+        <text x="255" y="420" class="t-muted" font-size="8" text-anchor="middle">&bull; north hall</text>
+        <text x="255" y="434" class="t-muted" font-size="8" text-anchor="middle">&bull; south hall</text>
+        <text x="255" y="448" class="t-muted" font-size="8" text-anchor="middle">&bull; library</text>
+        <text x="255" y="466" class="t-milestone" font-size="7" text-anchor="middle">Open 8am-10pm</text>
 
-        <!-- Security Group (dashed boundary). NOTE: extra vertical headroom
-             so the sg-name label has ~12px breathing room above the inner
+        <!-- Scope (dashed boundary). NOTE: extra vertical headroom
+             so the scope label has ~12px breathing room above the inner
              component. Pattern: boundary y = inner.y - 30, h = inner.h + 50. -->
-        <rect x="350" y="250" width="120" height="100" rx="8" class="c-decision-group" stroke-width="1"/>
-        <text x="358" y="268" class="t-decision" font-size="8">sg-name :port</text>
+        <rect x="350" y="250" width="120" height="100" rx="8" class="c-scope" stroke-width="1"/>
+        <text x="358" y="268" class="t-decision" font-size="8">scope name</text>
 
-        <!-- Component inside security group -->
+        <!-- Component inside scope -->
         <rect x="360" y="280" width="100" height="50" rx="6" class="c-mask"/>
         <rect x="360" y="280" width="100" height="50" rx="6" class="c-milestone" stroke-width="1.5"/>
-        <text x="410" y="300" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Load Balancer</text>
-        <text x="410" y="316" class="t-muted" font-size="9" text-anchor="middle">HTTPS :443</text>
+        <text x="410" y="300" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Check-in desk</text>
+        <text x="410" y="316" class="t-muted" font-size="9" text-anchor="middle">Level 2</text>
 
-        <!-- Backend Component -->
+        <!-- Action step -->
         <rect x="510" y="280" width="110" height="50" rx="6" class="c-mask"/>
         <rect x="510" y="280" width="110" height="50" rx="6" class="c-action" stroke-width="1.5"/>
-        <text x="565" y="300" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">API Server</text>
-        <text x="565" y="316" class="t-muted" font-size="9" text-anchor="middle">FastAPI :8000</text>
+        <text x="565" y="300" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Submit form</text>
+        <text x="565" y="316" class="t-muted" font-size="9" text-anchor="middle">Online or desk</text>
 
-        <!-- Database Component -->
+        <!-- Document -->
         <rect x="700" y="280" width="120" height="50" rx="6" class="c-mask"/>
         <rect x="700" y="280" width="120" height="50" rx="6" class="c-document" stroke-width="1.5"/>
-        <text x="760" y="300" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Database</text>
-        <text x="760" y="316" class="t-muted" font-size="9" text-anchor="middle">PostgreSQL</text>
+        <text x="760" y="300" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Application</text>
+        <text x="760" y="316" class="t-muted" font-size="9" text-anchor="middle">2 pages + ID</text>
 
-        <!-- Frontend Component -->
+        <!-- Actor -->
         <rect x="200" y="520" width="200" height="110" rx="8" class="c-mask"/>
         <rect x="200" y="520" width="200" height="110" rx="8" class="c-actor" stroke-width="1.5"/>
-        <text x="300" y="545" class="t-primary" font-size="12" font-weight="600" text-anchor="middle">Frontend</text>
-        <text x="300" y="565" class="t-muted" font-size="9" text-anchor="middle">React + TypeScript</text>
+        <text x="300" y="545" class="t-primary" font-size="12" font-weight="600" text-anchor="middle">Student</text>
+        <text x="300" y="565" class="t-muted" font-size="9" text-anchor="middle">Applies for leave</text>
         <text x="300" y="580" class="t-muted" font-size="9" text-anchor="middle">Additional detail</text>
         <text x="300" y="595" class="t-muted" font-size="9" text-anchor="middle">More info</text>
-        <text x="300" y="615" class="t-actor" font-size="8" text-anchor="middle">domain.example.com</text>
+        <text x="300" y="615" class="t-actor" font-size="8" text-anchor="middle">id.example.edu</text>
 
         <!-- =================================================================
              ARROW EXAMPLES (use .a-* classes and stroke-width on the line)
@@ -391,24 +391,24 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 
         <!-- Standard arrow with label -->
         <line x1="130" y1="305" x2="198" y2="305" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <text x="164" y="299" class="t-muted" font-size="9" text-anchor="middle">HTTPS</text>
+        <text x="164" y="299" class="t-muted" font-size="9" text-anchor="middle">sends</text>
 
         <!-- Simple arrow (no label) -->
         <line x1="310" y1="305" x2="358" y2="305" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
 
         <!-- Vertical arrow -->
         <line x1="255" y1="330" x2="255" y2="378" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <text x="270" y="358" class="t-muted" font-size="9">OAI</text>
+        <text x="270" y="358" class="t-muted" font-size="9">passes</text>
 
         <!-- Straight arrows between services -->
         <line x1="460" y1="305" x2="508" y2="305" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         <line x1="620" y1="305" x2="698" y2="305" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <text x="655" y="299" class="t-muted" font-size="9">TLS</text>
+        <text x="655" y="299" class="t-muted" font-size="9">signs off</text>
 
-        <!-- Curved dashed path for auth/security flow -->
+        <!-- Curved dashed path for approval/alert flow -->
         <path d="M 80 140 L 80 200 Q 80 220 100 220 L 200 220 Q 220 220 220 240 L 220 278"
-              class="a-security" stroke-width="1.5"/>
-        <text x="150" y="210" class="t-decision" font-size="8">JWT + PKCE</text>
+              class="a-alert" stroke-width="1.5"/>
+        <text x="150" y="210" class="t-decision" font-size="8">Review + approve</text>
 
         <!-- =================================================================
              LEGEND
@@ -416,24 +416,24 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <text x="720" y="70" class="t-primary" font-size="10" font-weight="600">Legend</text>
 
         <rect x="720" y="82" width="16" height="10" rx="2" class="c-actor" stroke-width="1"/>
-        <text x="742" y="90" class="t-muted" font-size="8">Frontend</text>
+        <text x="742" y="90" class="t-muted" font-size="8">Actor</text>
 
         <rect x="720" y="98" width="16" height="10" rx="2" class="c-action" stroke-width="1"/>
-        <text x="742" y="106" class="t-muted" font-size="8">Backend</text>
+        <text x="742" y="106" class="t-muted" font-size="8">Action</text>
 
         <rect x="720" y="114" width="16" height="10" rx="2" class="c-milestone" stroke-width="1"/>
-        <text x="742" y="122" class="t-muted" font-size="8">Cloud Service</text>
+        <text x="742" y="122" class="t-muted" font-size="8">Milestone</text>
 
         <rect x="720" y="130" width="16" height="10" rx="2" class="c-document" stroke-width="1"/>
-        <text x="742" y="138" class="t-muted" font-size="8">Database</text>
+        <text x="742" y="138" class="t-muted" font-size="8">Document</text>
 
         <rect x="720" y="146" width="16" height="10" rx="2" class="c-decision" stroke-width="1"/>
-        <text x="742" y="154" class="t-muted" font-size="8">Security</text>
+        <text x="742" y="154" class="t-muted" font-size="8">Decision</text>
 
-        <line x1="720" y1="168" x2="736" y2="168" class="a-security" stroke-width="1"/>
-        <text x="742" y="171" class="t-muted" font-size="8">Auth Flow</text>
+        <line x1="720" y1="168" x2="736" y2="168" class="a-alert" stroke-width="1"/>
+        <text x="742" y="171" class="t-muted" font-size="8">Alert flow</text>
 
-        <rect x="720" y="178" width="16" height="10" rx="2" class="c-decision-group" stroke-width="1"/>
+        <rect x="720" y="178" width="16" height="10" rx="2" class="c-scope" stroke-width="1"/>
         <text x="742" y="186" class="t-muted" font-size="8">Security Group</text>
       </svg>
       <!-- FLOWEY:SVG_SLOT_END -->

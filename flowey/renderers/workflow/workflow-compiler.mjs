@@ -820,6 +820,9 @@ function resolveWorkflowLegendFootprint(workflow, layout) {
     'record',
     'document',
     'milestone',
+    'place',
+    'outcome',
+    'group',
     'external',
   ].map((kind) => ({ kind, label: i18nText(workflow.meta.locale, `legend.workflow.${kind}`) }));
   const presentLegendKinds = new Set(asArray(workflow.nodes).map((node) => node.type));
@@ -4655,7 +4658,7 @@ function renderLane(lane, index) {
   const y = laneTop(lane.id);
   const height = laneHeight(index);
   const exception = lane.variant === 'exception'
-    ? `\n        <rect data-graph-role="structural-frame" data-composition-frame-kind="exception-lane" data-composition-frame-id="lane-${index}-exception" x="${layout.laneX + 6}" y="${y + 6}" width="${layout.laneW - 12}" height="${height - 12}" rx="8" class="c-decision-group" stroke-width="1"/>`
+    ? `\n        <rect data-graph-role="structural-frame" data-composition-frame-kind="exception-lane" data-composition-frame-id="lane-${index}-exception" x="${layout.laneX + 6}" y="${y + 6}" width="${layout.laneW - 12}" height="${height - 12}" rx="8" class="c-scope" stroke-width="1"/>`
     : '';
   const labelClass = lane.variant === 'exception' ? 't-decision' : 't-dim';
   const prefix = lane.variant === 'exception' ? 'EX' : String(index + 1).padStart(2, '0');
@@ -4679,7 +4682,7 @@ function renderGroup(group, index) {
     ? laneHeight(group.lane) - layout.laneTitleH
       - GROUP_FRAME_TOP_INSET - GROUP_FRAME_BOTTOM_INSET
     : layout.laneH - layout.laneTitleH - 16;
-  const cls = group.variant === 'decision' ? 'c-decision-group' : 'c-lane';
+  const cls = group.variant === 'alert' ? 'c-scope' : 'c-lane';
   const textClass = variantAccent(group.variant);
   const labelY = workflow.schema_version === 2 ? y + GROUP_LABEL_BASELINE_OFFSET : y + 14;
   return `        <rect data-graph-role="structural-frame" data-composition-frame-kind="group" data-composition-frame-id="group-${index}" x="${span.x}" y="${y}" width="${span.width}" height="${height}" rx="9" class="${cls}" stroke-width="1"/>

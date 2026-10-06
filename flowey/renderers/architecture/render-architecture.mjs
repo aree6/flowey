@@ -82,6 +82,9 @@ const LEGEND_CATALOG = [
   'milestone',
   'decision',
   'record',
+  'place',
+  'outcome',
+  'group',
   'external',
 ].map((kind) => ({ kind, label: i18nText(arch.meta.locale, `legend.architecture.${kind}`) }));
 

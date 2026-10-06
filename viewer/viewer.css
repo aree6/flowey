@@ -4556,7 +4556,7 @@ svg[data-preset="blueprint"][data-relationship-preview-active] [data-relationshi
 
 /* Optional trace animation, enabled only by meta.animation = "trace".
    The ordinary viewer performs one ambient pass and then restores the
-   authored solid/security/async line language. WebM samples the same
+   authored solid/alert/async line language. WebM samples the same
    authored geometry into an explicit canvas timeline. */
 html[data-ambient-motion="running"] svg[data-animation="trace"] [data-animate="edge"] {
   animation: flowey-edge-flow 2.4s linear 1;
