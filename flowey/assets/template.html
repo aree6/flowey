@@ -4273,14 +4273,14 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     svg[data-preset="blueprint"] [data-legend-hit],
     svg[data-preset="blueprint"] [data-legend-count-badge] rect { rx: 0; filter: none; }
     svg[data-legend-preview-active] [data-node-id],
-    svg[data-legend-preview-active] [data-edge-from] { filter: saturate(0) brightness(0.85); }
+    svg[data-legend-preview-active] [data-edge-from] { filter: saturate(0) brightness(0.7); }
     svg[data-legend-preview-active] [data-legend-preview-match] { opacity: 1; filter: none; }
     svg[data-legend-preview-active] [data-legend-preview-peer] { opacity: 0.62; }
     svg[data-legend-preview-active] [data-legend-preview-selected] {
       filter: drop-shadow(0 0 8px var(--document-stroke));
     }
     svg[data-lens-active] [data-node-id],
-    svg[data-lens-active] [data-edge-from] { filter: saturate(0) brightness(0.85); }
+    svg[data-lens-active] [data-edge-from] { filter: saturate(0) brightness(0.7); }
     svg[data-lens-active] [data-lens-match] { opacity: 1; filter: none; }
     svg[data-lens-active] [data-lens-peer] { opacity: 0.62; }
     svg[data-lens-active] [data-lens-selected] {
@@ -4339,14 +4339,14 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
        export still observe exactly one edge, then mirror reader emphasis from
        the paired foreground path in this presentation-only wrapper. */
     svg[data-legend-preview-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"],
-    svg[data-lens-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { filter: saturate(0) brightness(0.85); }
+    svg[data-lens-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { filter: saturate(0) brightness(0.7); }
     svg[data-legend-preview-active] [data-graph-role="automatic-crossover"]:has(> [data-legend-preview-match]) > [data-graph-role="automatic-crossover-underlay"],
     svg[data-lens-active] [data-graph-role="automatic-crossover"]:has(> [data-lens-match]) > [data-graph-role="automatic-crossover-underlay"] { opacity: 1; }
     svg[data-legend-preview-active] [data-graph-role="automatic-crossover"]:has(> [data-legend-preview-peer]) > [data-graph-role="automatic-crossover-underlay"],
     svg[data-lens-active] [data-graph-role="automatic-crossover"]:has(> [data-lens-peer]) > [data-graph-role="automatic-crossover-underlay"] { opacity: 0.62; }
     svg[data-focus-active] [data-node-id],
-    svg[data-focus-active] [data-edge-from] { filter: saturate(0) brightness(0.85); }
-    svg[data-focus-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { filter: saturate(0) brightness(0.85); }
+    svg[data-focus-active] [data-edge-from] { filter: saturate(0) brightness(0.7); }
+    svg[data-focus-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { filter: saturate(0) brightness(0.7); }
     svg[data-focus-active] [data-lifecycle-rail] { opacity: 0; }
     svg[data-focus-active] [data-focus-match] { opacity: 1; filter: none; }
     svg[data-focus-active] [data-graph-role="automatic-crossover"]:has(> [data-focus-match]) > [data-graph-role="automatic-crossover-underlay"] { opacity: 1; }
@@ -4359,8 +4359,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
        downstream walks outgoing edges. It never claims runtime causality and
        changes only viewer emphasis, not canonical geometry or export bytes. */
     svg[data-reach-active] [data-node-id],
-    svg[data-reach-active] [data-edge-from] { filter: saturate(0) brightness(0.85); }
-    svg[data-reach-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { filter: saturate(0) brightness(0.85); }
+    svg[data-reach-active] [data-edge-from] { filter: saturate(0) brightness(0.7); }
+    svg[data-reach-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { filter: saturate(0) brightness(0.7); }
     svg[data-reach-active] [data-reach-match] { opacity: 1; filter: none; }
     svg[data-reach-active] [data-graph-role="automatic-crossover"]:has(> [data-reach-match]) > [data-graph-role="automatic-crossover-underlay"] { opacity: 1; }
     svg[data-reach-active="upstream"] [data-reach-origin] {
@@ -4529,16 +4529,16 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     /* Intent Trace is a temporary, pre-click exploration layer. Related
        topology stays readable while a short viewer-only signal runs over
        cloned edge geometry; the authored edge remains untouched underneath. */
-    /* Keep the node's opaque backing mask intact while its visible ink dims.
-       Fading the whole group also fades that mask and briefly exposes arrows
-       routed underneath the node when the pointer leaves. */
-    svg[data-intent-trace-active] [data-node-id] { fill-opacity: 0.2; stroke-opacity: 0.2; }
+    /* Keep the node's opaque backing mask intact while unrelated ink goes
+       monochrome. A group-level filter desaturates without touching alpha, so
+       the mask still hides arrows routed underneath the node. */
+    svg[data-intent-trace-active] [data-node-id] { filter: saturate(0) brightness(0.7); }
     svg [data-node-id] > .c-mask { fill-opacity: 1; }
-    svg[data-intent-trace-active] [data-node-id][data-intent-trace-match] { fill-opacity: 1; stroke-opacity: 1; }
-    svg[data-intent-trace-active] [data-edge-from] { opacity: 0.2; }
-    svg[data-intent-trace-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { opacity: 0.2; }
+    svg[data-intent-trace-active] [data-node-id][data-intent-trace-match] { filter: none; }
+    svg[data-intent-trace-active] [data-edge-from] { filter: saturate(0) brightness(0.7); }
+    svg[data-intent-trace-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { filter: saturate(0) brightness(0.7); }
     svg[data-intent-trace-active] [data-lifecycle-rail] { opacity: 0; }
-    svg[data-intent-trace-active] [data-intent-trace-match] { opacity: 1; }
+    svg[data-intent-trace-active] [data-intent-trace-match] { opacity: 1; filter: none; }
     svg[data-intent-trace-active] [data-graph-role="automatic-crossover"]:has(> [data-intent-trace-match]) > [data-graph-role="automatic-crossover-underlay"] { opacity: 1; }
     svg[data-intent-trace-active] [data-intent-trace-selected] {
       filter: drop-shadow(0 0 10px var(--actor-stroke));
@@ -4601,8 +4601,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       filter: drop-shadow(0 0 10px var(--actor-stroke));
     }
     svg[data-route-active] [data-node-id],
-    svg[data-route-active] [data-edge-from] { filter: saturate(0) brightness(0.85); }
-    svg[data-route-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { filter: saturate(0) brightness(0.85); }
+    svg[data-route-active] [data-edge-from] { filter: saturate(0) brightness(0.7); }
+    svg[data-route-active] [data-graph-role="automatic-crossover"] > [data-graph-role="automatic-crossover-underlay"] { filter: saturate(0) brightness(0.7); }
     svg[data-route-active] [data-route-match] { opacity: 1; filter: none; }
     svg[data-route-active] [data-graph-role="automatic-crossover"]:has(> [data-route-match]) > [data-graph-role="automatic-crossover-underlay"] { opacity: 1; }
     svg[data-route-active] [data-route-start] {
