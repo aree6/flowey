@@ -33,13 +33,13 @@
     { "from": "request", "to": "admit", "label": "client request", "role": "main" },
     { "from": "admit", "to": "start", "label": "authorized session", "role": "main" },
     { "from": "start", "to": "turn", "label": "startTurn", "role": "main" },
-    { "from": "turn", "to": "tool", "label": "dispatch tool", "variant": "decision", "role": "main" },
+    { "from": "turn", "to": "tool", "label": "dispatch tool", "variant": "alert", "role": "main" },
     { "from": "tool", "to": "turn", "label": "tool result", "variant": "dashed", "role": "return" },
     { "from": "turn", "to": "commit", "label": "append event", "variant": "dashed", "role": "main" },
     { "from": "commit", "to": "project", "label": "projection", "variant": "dashed", "role": "main" },
     { "from": "start", "to": "graph", "label": "schedule graph", "variant": "emphasis", "role": "async" },
     { "from": "graph", "to": "turn", "label": "activation", "variant": "dashed", "role": "return" },
-    { "from": "turn", "to": "resume", "label": "crash / handoff", "variant": "decision", "role": "branch" },
+    { "from": "turn", "to": "resume", "label": "crash / handoff", "variant": "alert", "role": "branch" },
     { "from": "resume", "to": "commit", "label": "replay evidence", "variant": "dashed", "role": "return" }
   ]
 }

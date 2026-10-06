@@ -20,11 +20,11 @@
   ],
   "boundaries": [
     { "kind": "region", "label": "AWS Region: us-west-2", "wraps": ["cdn", "lb", "api", "cache", "db", "s3", "queue", "worker"] },
-    { "kind": "security-group", "label": "sg-api :443/:8000", "wraps": ["lb", "api"] }
+    { "kind": "scope", "label": "sg-api :443/:8000", "wraps": ["lb", "api"] }
   ],
   "connections": [
     { "from": "users", "to": "cdn", "label": "HTTPS", "variant": "emphasis" },
-    { "from": "auth", "to": "api", "label": "verify JWT", "variant": "decision", "fromSide": "right", "toSide": "left", "via": [[620, 142], [620, 330]] },
+    { "from": "auth", "to": "api", "label": "verify JWT", "variant": "alert", "fromSide": "right", "toSide": "left", "via": [[620, 142], [620, 330]] },
     { "from": "cdn", "to": "lb" },
     { "from": "cdn", "to": "s3", "label": "static", "variant": "dashed", "fromSide": "bottom", "toSide": "top", "labelDy": 58 },
     { "from": "lb", "to": "api" },

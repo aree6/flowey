@@ -26,11 +26,11 @@
     { "id": "expired", "type": "failure", "label": "Expired", "sublabel": "timeout", "lane": "terminal", "col": 1, "tag": "terminal" }
   ],
   "transitions": [
-    { "from": "executing", "to": "approval", "variant": "decision", "fromSide": "bottom", "toSide": "top", "route": "straight" },
+    { "from": "executing", "to": "approval", "variant": "alert", "fromSide": "bottom", "toSide": "top", "route": "straight" },
     { "from": "reviewing", "to": "blocked", "variant": "default", "route": "drop" },
-    { "from": "executing", "to": "failed", "variant": "decision", "fromSide": "left", "toSide": "top", "via": [[320, 157], [320, 342], [402, 342]] },
-    { "from": "blocked", "to": "expired", "variant": "decision", "fromSide": "bottom", "toSide": "top", "route": "straight" },
-    { "from": "approval", "to": "cancelled", "variant": "decision", "fromSide": "bottom", "toSide": "top", "via": [[320, 336], [320, 430], [402, 430]] }
+    { "from": "executing", "to": "failed", "variant": "alert", "fromSide": "left", "toSide": "top", "via": [[320, 157], [320, 342], [402, 342]] },
+    { "from": "blocked", "to": "expired", "variant": "alert", "fromSide": "bottom", "toSide": "top", "route": "straight" },
+    { "from": "approval", "to": "cancelled", "variant": "alert", "fromSide": "bottom", "toSide": "top", "via": [[320, 336], [320, 430], [402, 430]] }
   ],
   "cards": [
     {

@@ -46,7 +46,7 @@
     { "id": "planner-route", "from": "planner", "to": "router", "variant": "default" },
     { "id": "approval-check", "from": "router", "to": "approval", "label": "needs approval?", "variant": "alert" },
     { "id": "approved-tool", "from": "approval", "to": "tool", "variant": "emphasis" },
-    { "id": "approval-denied", "from": "approval", "to": "blocked", "label": "denied", "variant": "decision", "role": "error" },
+    { "id": "approval-denied", "from": "approval", "to": "blocked", "label": "denied", "variant": "alert", "role": "error" },
     { "id": "retry-request", "from": "blocked", "to": "retry", "variant": "dashed", "role": "branch" },
     { "id": "tool-external-call", "from": "tool", "to": "external", "variant": "default" },
     { "id": "external-reply", "from": "external", "to": "final", "variant": "emphasis", "role": "return", "fromSide": "right", "toSide": "right", "route": "outside-right", "width": 1.2 },

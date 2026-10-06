@@ -169,7 +169,7 @@
       "pad": 26
     },
     {
-      "kind": "security-group",
+      "kind": "scope",
       "label": "配置驱动的数据边界",
       "wraps": [
         "policy",

@@ -20,11 +20,11 @@
   ],
   "boundaries": [
     { "kind": "region", "label": "AWS Region: us-west-2", "wraps": ["cdn", "lb", "api", "cache", "db", "s3", "queue", "worker"] },
-    { "kind": "security-group", "label": "sg-api :443/:8000", "wraps": ["lb", "api"] }
+    { "kind": "scope", "label": "sg-api :443/:8000", "wraps": ["lb", "api"] }
   ],
   "connections": [
     { "id": "users-to-cdn", "from": "users", "to": "cdn", "label": "HTTPS", "variant": "emphasis" },
-    { "id": "jwt-verification", "from": "auth", "to": "api", "label": "verify JWT", "variant": "decision", "fromSide": "right", "toSide": "top", "via": [[620, 142], [620, 246], [735, 246]] },
+    { "id": "jwt-verification", "from": "auth", "to": "api", "label": "verify JWT", "variant": "alert", "fromSide": "right", "toSide": "top", "via": [[620, 142], [620, 246], [735, 246]] },
     { "id": "cdn-to-lb", "from": "cdn", "to": "lb" },
     { "id": "static-assets", "from": "cdn", "to": "s3", "label": "static", "variant": "dashed", "fromSide": "bottom", "toSide": "top", "labelDy": 58 },
     { "id": "lb-to-api", "from": "lb", "to": "api" },

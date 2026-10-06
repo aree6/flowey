@@ -32,7 +32,7 @@
     { "from": "building", "to": "verifying" },
     { "from": "verifying", "to": "ready" },
     { "from": "ready", "to": "live" },
-    { "from": "verifying", "to": "approval", "variant": "decision", "label": "needs sign-off" },
+    { "from": "verifying", "to": "approval", "variant": "alert", "label": "needs sign-off" },
     { "from": "approval", "to": "ready", "label": "approved" },
     { "from": "approval", "to": "cancelled", "variant": "alert" },
     { "from": "ready", "to": "rollback", "variant": "alert" },

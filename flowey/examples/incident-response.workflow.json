@@ -48,8 +48,8 @@
     { "from": "verify", "to": "close", "variant": "emphasis", "route": "drop", "fromSide": "bottom", "toSide": "top" },
     { "from": "triage", "to": "declare", "variant": "alert" },
     { "from": "declare", "to": "update", "variant": "dashed", "fromSide": "top", "toSide": "left", "via": [[430, 16], [20, 16], [20, 615]] },
-    { "from": "update", "to": "escalate", "variant": "decision", "route": "drop", "fromSide": "bottom", "toSide": "top" },
-    { "from": "verify", "to": "rollback", "variant": "decision", "role": "error", "route": "outside-right", "fromSide": "right", "toSide": "right" }
+    { "from": "update", "to": "escalate", "variant": "alert", "route": "drop", "fromSide": "bottom", "toSide": "top" },
+    { "from": "verify", "to": "rollback", "variant": "alert", "role": "error", "route": "outside-right", "fromSide": "right", "toSide": "right" }
   ],
   "cards": [
     { "dot": "rose", "title": "Ownership First", "items": ["A page is not an incident until someone owns command", "Severity and scope are explicit before mitigation spreads", "Escalation names the missing expertise"] },

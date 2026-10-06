@@ -133,7 +133,7 @@
       "pad": 32
     },
     {
-      "kind": "security-group",
+      "kind": "scope",
       "label": "Configured service boundaries",
       "wraps": [
         "auth",
@@ -169,7 +169,7 @@
       "from": "worker",
       "to": "auth",
       "label": "authorizeTenant",
-      "variant": "decision",
+      "variant": "alert",
       "fromSide": "top",
       "toSide": "bottom"
     },
@@ -178,7 +178,7 @@
       "from": "auth",
       "to": "worker",
       "label": "tenant token",
-      "variant": "decision",
+      "variant": "alert",
       "fromSide": "bottom",
       "toSide": "top"
     },

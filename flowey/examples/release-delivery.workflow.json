@@ -42,11 +42,11 @@
     { "from": "pull_request", "to": "build", "label": "merge", "variant": "emphasis", "route": "drop", "fromSide": "bottom", "toSide": "top" },
     { "from": "build", "to": "checks" },
     { "from": "checks", "to": "approval", "variant": "emphasis", "route": "drop", "fromSide": "bottom", "toSide": "top" },
-    { "from": "approval", "to": "deploy", "variant": "decision", "route": "drop", "fromSide": "bottom", "toSide": "top" },
+    { "from": "approval", "to": "deploy", "variant": "alert", "route": "drop", "fromSide": "bottom", "toSide": "top" },
     { "from": "deploy", "to": "verify_prod" },
     { "from": "verify_prod", "to": "announce", "label": "healthy", "variant": "emphasis", "route": "drop", "fromSide": "bottom", "toSide": "top" },
-    { "from": "checks", "to": "failed", "label": "red", "variant": "decision", "role": "error", "route": "drop", "fromSide": "bottom", "toSide": "top" },
-    { "from": "verify_prod", "to": "rollback", "variant": "decision", "role": "error", "route": "outside-right", "fromSide": "right", "toSide": "right" },
+    { "from": "checks", "to": "failed", "label": "red", "variant": "alert", "role": "error", "route": "drop", "fromSide": "bottom", "toSide": "top" },
+    { "from": "verify_prod", "to": "rollback", "variant": "alert", "role": "error", "route": "outside-right", "fromSide": "right", "toSide": "right" },
     { "from": "rollback", "to": "deploy", "label": "restore", "variant": "dashed", "role": "return", "route": "return-left", "fromSide": "left", "toSide": "left" }
   ],
   "cards": [

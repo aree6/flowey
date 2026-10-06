@@ -628,7 +628,7 @@
       ]
     },
     {
-      "kind": "security-group",
+      "kind": "scope",
       "label": "sg-api :443/:8000",
       "wraps": [
         "lb",
@@ -649,7 +649,7 @@
       "from": "auth",
       "to": "api",
       "label": "JWT検証",
-      "variant": "decision",
+      "variant": "alert",
       "fromSide": "right",
       "toSide": "top",
       "via": [
