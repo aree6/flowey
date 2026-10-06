@@ -901,6 +901,7 @@ function straightPathSegments(d) {
   while (i < tokens.length) {
     if (isCommand(tokens[i])) command = tokens[i++];
     if (!command) break;
+    const advanced = i;
     const absolute = command === command.toUpperCase();
     switch (command.toUpperCase()) {
       case 'M':
@@ -956,6 +957,10 @@ function straightPathSegments(d) {
       default:
         return [];
     }
+    // A truncated or corrupt token stream (e.g. a non-finite coordinate that
+    // the tokenizer dropped) must end analysis, never spin: without forward
+    // progress the same failing state would repeat forever.
+    if (i === advanced) break;
   }
   return segments.filter(({ start: a, end: b }) => isPoint(a) && isPoint(b));
 }
@@ -1166,6 +1171,7 @@ function pointsFromPath(d) {
   while (i < tokens.length) {
     if (isCommand(tokens[i])) command = tokens[i++];
     if (!command) break;
+    const advanced = i;
 
     const absolute = command === command.toUpperCase();
     switch (command.toUpperCase()) {
@@ -1232,6 +1238,9 @@ function pointsFromPath(d) {
       default:
         return [];
     }
+    // Same no-progress guard as straightPathSegments: a truncated token
+    // stream must end analysis, never spin.
+    if (i === advanced) break;
   }
 
   return points.filter(isPoint);

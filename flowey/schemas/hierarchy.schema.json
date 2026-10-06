@@ -1,13 +1,14 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://flowey.dev/schemas/architecture.schema.json",
-  "title": "Flowey Architecture Diagram",
+  "$id": "https://flowey.dev/schemas/hierarchy.schema.json",
+  "title": "Flowey hierarchy diagram",
+  "description": "Top-down parent/child tree: org charts, reporting lines, dotted-line relationships, advisory links. Geometry is fully derived; authors describe people (or units) and who reports to whom.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "diagram_type", "meta", "components"],
+  "required": ["schema_version", "diagram_type", "meta", "nodes"],
   "properties": {
     "schema_version": { "const": 1 },
-    "diagram_type": { "const": "architecture" },
+    "diagram_type": { "const": "hierarchy" },
     "meta": {
       "type": "object",
       "additionalProperties": false,
@@ -33,16 +34,20 @@
               "properties": {
                 "actor": { "$ref": "common.schema.json#/$defs/legendEntry" },
                 "action": { "$ref": "common.schema.json#/$defs/legendEntry" },
-                "document": { "$ref": "common.schema.json#/$defs/legendEntry" },
-                "milestone": { "$ref": "common.schema.json#/$defs/legendEntry" },
                 "decision": { "$ref": "common.schema.json#/$defs/legendEntry" },
+                "milestone": { "$ref": "common.schema.json#/$defs/legendEntry" },
+                "place": { "$ref": "common.schema.json#/$defs/legendEntry" },
+                "document": { "$ref": "common.schema.json#/$defs/legendEntry" },
                 "record": { "$ref": "common.schema.json#/$defs/legendEntry" },
+                "outcome": { "$ref": "common.schema.json#/$defs/legendEntry" },
+                "group": { "$ref": "common.schema.json#/$defs/legendEntry" },
                 "external": { "$ref": "common.schema.json#/$defs/legendEntry" }
               }
             }
           }
         },
         "viewBox": {
+          "description": "Optional minimum canvas. The tree is always laid out top-down from measured labels; an authored viewBox smaller than the computed tree fails validation instead of squeezing text.",
           "type": "array",
           "prefixItems": [
             { "type": "number", "minimum": 320 },
@@ -54,21 +59,7 @@
         }
       }
     },
-    "layout": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["mode"],
-      "properties": {
-        "mode": { "enum": ["grid"] },
-        "origin": { "$ref": "common.schema.json#/$defs/point" },
-        "cols": { "type": "integer", "minimum": 1, "maximum": 12 },
-        "gapX": { "type": "number", "minimum": 0 },
-        "gapY": { "type": "number", "minimum": 0 },
-        "cellW": { "type": "number", "minimum": 40 },
-        "cellH": { "type": "number", "minimum": 24 }
-      }
-    },
-    "components": {
+    "nodes": {
       "type": "array",
       "minItems": 1,
       "items": {
@@ -79,68 +70,32 @@
           "id": { "$ref": "common.schema.json#/$defs/id" },
           "type": { "$ref": "common.schema.json#/$defs/componentType" },
           "label": { "type": "string", "minLength": 1 },
-          "sublabel": { "type": "string" },
-          "tag": { "type": "string" },
+          "role": {
+            "description": "Job title or function shown under the name, e.g. Dean, Registrar, Class monitor.",
+            "type": "string",
+            "minLength": 1
+          },
+          "tag": { "type": "string", "minLength": 1 },
           "icon": { "$ref": "common.schema.json#/$defs/nodeIcon" },
           "brand": { "$ref": "common.schema.json#/$defs/brandMark" },
           "citations": { "$ref": "common.schema.json#/$defs/citations" },
-          "row": { "type": "integer", "minimum": 0 },
-          "col": { "type": "integer", "minimum": 0 },
-          "pos": { "$ref": "common.schema.json#/$defs/point" },
-          "size": {
-            "type": "array",
-            "prefixItems": [
-              { "type": "number", "exclusiveMinimum": 0 },
-              { "type": "number", "exclusiveMinimum": 0 }
-            ],
-            "items": false,
-            "minItems": 2,
-            "maxItems": 2
-          }
+          "width": { "type": "number", "minimum": 96 }
         }
       }
     },
-    "boundaries": {
+    "links": {
+      "description": "Parent/child reporting lines. Each non-root node has exactly one parent link; variant dashed draws a dotted-line (advisory) relationship.",
       "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["kind", "label", "wraps"],
-        "properties": {
-          "kind": { "enum": ["region", "scope"] },
-          "label": { "type": "string", "minLength": 1 },
-          "wraps": {
-            "type": "array",
-            "minItems": 1,
-            "items": { "$ref": "common.schema.json#/$defs/id" }
-          },
-          "pad": { "type": "number", "minimum": 0 }
-        }
-      }
-    },
-    "connections": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": ["from", "to"],
+        "required": ["parent", "child"],
         "properties": {
           "id": { "$ref": "common.schema.json#/$defs/id" },
-          "from": { "$ref": "common.schema.json#/$defs/id" },
-          "to": { "$ref": "common.schema.json#/$defs/id" },
-          "label": { "type": "string" },
+          "parent": { "$ref": "common.schema.json#/$defs/id" },
+          "child": { "$ref": "common.schema.json#/$defs/id" },
+          "label": { "type": "string", "minLength": 1 },
           "variant": { "$ref": "common.schema.json#/$defs/variant" },
-          "fromSide": { "$ref": "common.schema.json#/$defs/side" },
-          "toSide": { "$ref": "common.schema.json#/$defs/side" },
-          "route": { "enum": ["auto", "straight", "orthogonal-h", "orthogonal-v"] },
-          "via": {
-            "type": "array",
-            "items": { "$ref": "common.schema.json#/$defs/point" }
-          },
-          "labelAt": { "$ref": "common.schema.json#/$defs/point" },
-          "labelDx": { "type": "number" },
-          "labelDy": { "type": "number" },
-          "labelSegment": { "type": "integer", "minimum": 0 },
           "width": { "$ref": "common.schema.json#/$defs/relationshipWidth" }
         }
       }

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/tt-a1i/flowey/schemas/dataflow.schema.json",
+  "$id": "https://flowey.dev/schemas/dataflow.schema.json",
   "title": "Flowey Data Flow Diagram",
   "type": "object",
   "additionalProperties": false,

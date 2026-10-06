@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/tt-a1i/flowey/schemas/sequence.schema.json",
+  "$id": "https://flowey.dev/schemas/sequence.schema.json",
   "title": "Flowey Sequence Diagram",
   "type": "object",
   "additionalProperties": false,

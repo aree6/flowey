@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "diagram_type": "hierarchy",
+  "meta": {
+    "title": "Faculty of Computing",
+    "subtitle": "Who reports to whom, plus advisory lines",
+    "quality_profile": "showcase",
+    "output": "hierarchy-org-chart.html"
+  },
+  "nodes": [
+    {
+      "id": "dean",
+      "type": "actor",
+      "label": "Prof. A. Rahman",
+      "role": "Dean",
+      "tag": "appointed 2024",
+      "citations": [
+        { "label": "Faculty handbook", "detail": "section 1, leadership", "ref": "https://example.edu/handbook.pdf" }
+      ]
+    },
+    {
+      "id": "deputy_academic",
+      "type": "actor",
+      "label": "Dr. S. Lim",
+      "role": "Deputy Dean (Academic)"
+    },
+    {
+      "id": "deputy_research",
+      "type": "actor",
+      "label": "Dr. M. Ong",
+      "role": "Deputy Dean (Research)"
+    },
+    {
+      "id": "registrar",
+      "type": "actor",
+      "label": "N. Ahmad",
+      "role": "Registrar"
+    },
+    {
+      "id": "cs_head",
+      "type": "actor",
+      "label": "Dr. K. Tan",
+      "role": "Head, Computer Science"
+    },
+    {
+      "id": "se_head",
+      "type": "actor",
+      "label": "Dr. J. Wu",
+      "role": "Head, Software Engineering"
+    },
+    {
+      "id": "ai_lab",
+      "type": "group",
+      "label": "AI Lab",
+      "role": "7 researchers",
+      "tag": "vacant lead"
+    },
+    {
+      "id": "industry_panel",
+      "type": "external",
+      "label": "Industry panel",
+      "role": "advisory only"
+    }
+  ],
+  "links": [
+    { "id": "l_academic", "parent": "dean", "child": "deputy_academic", "label": "reports to" },
+    { "id": "l_research", "parent": "dean", "child": "deputy_research", "label": "reports to" },
+    { "id": "l_registrar", "parent": "dean", "child": "registrar", "label": "reports to" },
+    { "id": "l_cs", "parent": "deputy_academic", "child": "cs_head", "label": "reports to" },
+    { "id": "l_se", "parent": "deputy_academic", "child": "se_head", "label": "reports to" },
+    { "id": "l_lab", "parent": "deputy_research", "child": "ai_lab", "label": "supervises" },
+    { "id": "l_panel", "parent": "dean", "child": "industry_panel", "label": "dotted line", "variant": "dashed" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Reading this chart",
+      "items": [
+        "Solid lines are direct reporting lines",
+        "The dashed line to the industry panel is advisory only",
+        "Roles are job titles; tags flag fixed-term or vacant posts"
+      ]
+    }
+  ]
+}

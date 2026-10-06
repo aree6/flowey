@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/tt-a1i/flowey/schemas/workflow.schema.json",
+  "$id": "https://flowey.dev/schemas/workflow.schema.json",
   "title": "Flowey Workflow Diagram",
   "type": "object",
   "additionalProperties": false,
