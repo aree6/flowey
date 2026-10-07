@@ -39,7 +39,7 @@ test('ordinary handoff uses one deterministic finalizer without image capability
   assert.match(skill, /passing receipt completes the automated gates; follow any visual review recommendation/i);
   assert.match(skill, /flowey\.mjs finalize <type> <candidate\.json> <output\.html> --quality showcase --json/);
   assert.match(skill, /When the user supplies a frozen candidate[\s\S]*?run `finalize` first as one CLI invocation/);
-  assert.match(skill, /Once the complete first candidate is written, run `finalize` directly\. Its first gate is showcase validation/);
+  assert.match(skill, /Once the complete first candidate is written, run `finalize` directly \(once per page when step 3 planned several\)\. Its first gate is showcase validation/);
   assert.doesNotMatch(skill, /node bin\/flowey\.mjs deliver <type> <candidate\.json> <output\.html>/);
 
   assert.match(finalizeSection, /`browser-check --require-provenance`/);
