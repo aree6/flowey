@@ -3,6 +3,21 @@
        trace yields to the strongest semantic owner; Still also parks bounded
        viewer signals without discarding their static meaning.
        ============================================================ */
+    // Chrome does not scale stylesheet stroke-dasharray by pathLength, so
+    // fractional overlay dashes render sub-pixel and the traveling pulse
+    // stays invisible. Measure the real length and store user-unit dashes
+    // plus a per-element travel distance as CSS vars instead. Stylesheet
+    // still/reduced-motion overrides keep winning because they beat the
+    // var-based base rule on specificity. Returns false when the length is
+    // unreadable so callers keep the pathLength fallback.
+    Flowey.flowDashFor = function (clone, shape, dash, gap) {
+      var length = 0;
+      try { length = shape.getTotalLength() || 0; } catch (_) { length = 0; }
+      if (!(length > 0)) return false;
+      clone.style.setProperty('--flow-dash', length * dash + ' ' + length * gap);
+      clone.style.setProperty('--flowlen', length + 'px');
+      return true;
+    };
     Flowey.motionGovernor = (function () {
       var STORAGE_KEY = 'flowey-motion';
       var html = document.documentElement;

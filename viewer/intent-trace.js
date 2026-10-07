@@ -84,6 +84,7 @@
         clone.setAttribute('class', 'intent-trace-flow');
         clone.setAttribute('data-direction', direction);
         clone.setAttribute('pathLength', '1');
+        if (typeof Flowey !== 'undefined' && Flowey.flowDashFor) Flowey.flowDashFor(clone, shape, 0.12, 0.13);
         return clone;
       }
       function show(id, options) {

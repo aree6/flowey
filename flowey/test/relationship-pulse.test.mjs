@@ -61,7 +61,7 @@ test('pulse clones only the previewed authored geometry and keeps source-to-targ
   assert.match(html, /motion\.setAttribute\('path', pathData\)/);
   assert.match(html, /motion\.setAttribute\('rotate', 'auto'\)/);
   assert.match(html, /svg\.insertBefore\(overlay, firstNode\)/);
-  assert.match(html, /stroke-dashoffset: -1/);
+  assert.match(html, /stroke-dashoffset: calc\(var\(--flowlen/);
 });
 
 test('semantic token classification is evidence-based and fail-closed', () => {

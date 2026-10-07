@@ -69,7 +69,7 @@ test('Intent Trace keeps incoming and outgoing motion on authored source-to-targ
     );
     assert.match(incomingRule, /animation-direction\s*:\s*normal/, mode);
     assert.match(html, /function traceGeometry\(shape, direction\)[\s\S]+shape\.cloneNode\(false\)/, mode);
-    assert.match(html, /@keyframes flowey-intent-trace-flow[\s\S]+stroke-dashoffset: -1/, mode);
+    assert.match(html, /@keyframes flowey-intent-trace-flow[\s\S]+stroke-dashoffset: calc\(var\(--flowlen/, mode);
   }
 });
 
