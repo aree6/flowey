@@ -72,7 +72,8 @@
   "diagram_type": "architecture",
   "meta": {
     "output": "shop-backend.html",
-    "title": "API Service (detail)"
+    "title": "API Service (detail)",
+    "animation": "trace"
   },
   "schema_version": 1
 }

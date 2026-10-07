@@ -120,7 +120,8 @@
   "diagram_type": "architecture",
   "meta": {
     "output": "shop-overview.html",
-    "title": "Shop Platform (overview)"
+    "title": "Shop Platform (overview)",
+    "animation": "trace"
   },
   "schema_version": 1
 }

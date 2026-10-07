@@ -76,7 +76,8 @@
   "diagram_type": "architecture",
   "meta": {
     "output": "shop-frontend.html",
-    "title": "Storefront (detail)"
+    "title": "Storefront (detail)",
+    "animation": "trace"
   },
   "schema_version": 1
 }
