@@ -3,6 +3,25 @@
        trace yields to the strongest semantic owner; Still also parks bounded
        viewer signals without discarding their static meaning.
        ============================================================ */
+    // Overlay dashes are declared as path fractions in CSS (0.1 of the
+    // path), but Chrome scales stylesheet dasharrays by pathLength over
+    // true length, so a pathLength of 1 shrinks every dash to sub-pixel
+    // and only a pale glow ghost shows (white on white). Clones therefore
+    // carry no pathLength at all; measure the real length and store
+    // user-unit dashes plus a per-element travel distance as CSS vars
+    // instead. The CSS keeps the stock fractions as fallbacks, so the
+    // declared animation is unchanged; only the painted size becomes what
+    // the spec intends. Stylesheet still/reduced-motion overrides keep
+    // winning because they beat the var-based base rule on specificity.
+    // Returns false when the length is unreadable.
+    Flowey.flowDashFor = function (clone, shape, dash, gap) {
+      var length = 0;
+      try { length = shape.getTotalLength() || 0; } catch (_) { length = 0; }
+      if (!(length > 0)) return false;
+      clone.style.setProperty('--flow-dash', length * dash + ' ' + length * gap);
+      clone.style.setProperty('--flowlen', length + 'px');
+      return true;
+    };
     Flowey.motionGovernor = (function () {
       var STORAGE_KEY = 'flowey-motion';
       var html = document.documentElement;

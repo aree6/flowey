@@ -250,8 +250,8 @@ test('Intent Trace preserves input handoffs, transient geometry and cleanup', {
       const overlay=svg.querySelector('[data-intent-trace-overlay]'),shapes=[...overlay.querySelectorAll('.intent-trace-flow')];
       const data={directions:shapes.map(n=>n.getAttribute('data-direction')),status:document.getElementById('intent-trace-status').textContent,
         transform:overlay.firstElementChild.getAttribute('transform'),d:shapes[0].getAttribute('d'),points:shapes[3].getAttribute('points'),
-        stripped:!overlay.querySelector('[id],[style],[marker-end],[data-edge-from]'),pathLength:shapes.every(n=>n.getAttribute('pathLength')==='1'),
-        original:svg.querySelector('#original-path').outerHTML===original,beforeEdges:overlay.nextElementSibling.hasAttribute('data-edge-from')};
+        stripped:![...overlay.querySelectorAll('[id],[marker-end],[data-edge-from]')].length&&![...overlay.querySelectorAll('[style]')].some(el=>{for(let i=0;i<el.style.length;i++){if(!el.style[i].startsWith('--'))return true;}return false;}),pathLength:shapes.every(n=>!n.hasAttribute('pathLength')),
+        original:svg.querySelector('#original-path').outerHTML===original,beforeEdges:overlay.nextElementSibling.hasAttribute('data-node-id')};
       Flowey.intentTrace.show('solo',{announce:true});data.solo={active:Flowey.intentTrace.active(),overlays:svg.querySelectorAll('[data-intent-trace-overlay]').length,status:document.getElementById('intent-trace-status').textContent};
       return data;
     })()`);

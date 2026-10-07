@@ -4270,7 +4270,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       fill: none;
       stroke-width: 3.05;
       stroke-linecap: round;
-      stroke-dasharray: 0.075 0.925;
+      stroke-dasharray: var(--flow-dash, 0.075 0.925);
       stroke-dashoffset: 0;
       vector-effect: non-scaling-stroke;
       opacity: 0.9;
@@ -4440,7 +4440,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       stroke: var(--arrow-emphasis);
       stroke-width: 3.35;
       stroke-linecap: round;
-      stroke-dasharray: 0.085 0.915;
+      stroke-dasharray: var(--flow-dash, 0.085 0.915);
       stroke-dashoffset: 0;
       vector-effect: non-scaling-stroke;
       opacity: 0;
@@ -4530,7 +4530,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       /* Four dots per path (period 0.25 divides the -1 offset cycle, so the
          loop stays seamless): travel reads continuously on every edge instead
          of one faint dot that vanishes on short or zoomed routes. */
-      stroke-dasharray: 0.1 0.9;
+      stroke-dasharray: var(--flow-dash, 0.1 0.9);
       stroke-dashoffset: 0;
       vector-effect: non-scaling-stroke;
       opacity: 1;
@@ -4616,7 +4616,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       stroke: var(--action-stroke);
       stroke-width: 3.25;
       stroke-linecap: round;
-      stroke-dasharray: 0.085 0.915;
+      stroke-dasharray: var(--flow-dash, 0.085 0.915);
       stroke-dashoffset: 0;
       vector-effect: non-scaling-stroke;
       opacity: 0.96;
@@ -4629,7 +4629,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       stroke: var(--action-stroke);
       stroke-width: 3.5;
       stroke-linecap: round;
-      stroke-dasharray: 0.1 0.9;
+      stroke-dasharray: var(--flow-dash, 0.1 0.9);
       stroke-dashoffset: 0;
       vector-effect: non-scaling-stroke;
       opacity: 0;
@@ -4790,27 +4790,27 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     @keyframes flowey-intent-trace-flow {
       0% { opacity: 0.28; stroke-dashoffset: 0; }
       12%, 78% { opacity: 0.94; }
-      100% { opacity: 0; stroke-dashoffset: -1; }
+      100% { opacity: 0; stroke-dashoffset: calc(var(--flowlen, 1px) * -1); }
     }
     @keyframes flowey-route-probe-flow {
       0% { stroke-dashoffset: 0; opacity: 0.96; }
-      78% { stroke-dashoffset: -1; opacity: 0.96; }
+      78% { stroke-dashoffset: calc(var(--flowlen, 1px) * -1); opacity: 0.96; }
       100% { stroke-dasharray: none; stroke-dashoffset: 0; opacity: 0.58; }
     }
     @keyframes flowey-route-journey-flow {
       0% { opacity: 0.16; stroke-dashoffset: 0; }
       14%, 76% { opacity: 1; }
-      100% { opacity: 0; stroke-dashoffset: -1; }
+      100% { opacity: 0; stroke-dashoffset: calc(var(--flowlen, 1px) * -1); }
     }
     @keyframes flowey-semantic-lens-flow {
       0% { opacity: 0.2; stroke-dashoffset: 0; }
       12%, 78% { opacity: 0.9; }
-      100% { opacity: 0; stroke-dashoffset: -1; }
+      100% { opacity: 0; stroke-dashoffset: calc(var(--flowlen, 1px) * -1); }
     }
     @keyframes flowey-relationship-pulse {
       0% { opacity: 0.18; stroke-dashoffset: 0; }
       10%, 76% { opacity: 0.98; }
-      100% { opacity: 0; stroke-dashoffset: -1; }
+      100% { opacity: 0; stroke-dashoffset: calc(var(--flowlen, 1px) * -1); }
     }
     @keyframes flowey-relationship-token-life {
       0%, 7% { opacity: 0; }
@@ -7126,6 +7126,25 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
        trace yields to the strongest semantic owner; Still also parks bounded
        viewer signals without discarding their static meaning.
        ============================================================ */
+    // Overlay dashes are declared as path fractions in CSS (0.1 of the
+    // path), but Chrome scales stylesheet dasharrays by pathLength over
+    // true length, so a pathLength of 1 shrinks every dash to sub-pixel
+    // and only a pale glow ghost shows (white on white). Clones therefore
+    // carry no pathLength at all; measure the real length and store
+    // user-unit dashes plus a per-element travel distance as CSS vars
+    // instead. The CSS keeps the stock fractions as fallbacks, so the
+    // declared animation is unchanged; only the painted size becomes what
+    // the spec intends. Stylesheet still/reduced-motion overrides keep
+    // winning because they beat the var-based base rule on specificity.
+    // Returns false when the length is unreadable.
+    Flowey.flowDashFor = function (clone, shape, dash, gap) {
+      var length = 0;
+      try { length = shape.getTotalLength() || 0; } catch (_) { length = 0; }
+      if (!(length > 0)) return false;
+      clone.style.setProperty('--flow-dash', length * dash + ' ' + length * gap);
+      clone.style.setProperty('--flowlen', length + 'px');
+      return true;
+    };
     Flowey.motionGovernor = (function () {
       var STORAGE_KEY = 'flowey-motion';
       var html = document.documentElement;
@@ -7997,7 +8016,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         clone.removeAttribute('data-focus-match');
         clone.removeAttribute('data-relationship-preview');
         clone.setAttribute('class', 'relationship-flow-pulse');
-        clone.setAttribute('pathLength', '1');
+        if (typeof Flowey !== 'undefined' && Flowey.flowDashFor) Flowey.flowDashFor(clone, shape, 0.085, 0.165);
         return clone;
       }
       function relationshipTokenKind(edge) {
@@ -9178,7 +9197,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         clone.removeAttribute('data-intent-trace-selected');
         clone.setAttribute('class', 'intent-trace-flow');
         clone.setAttribute('data-direction', direction);
-        clone.setAttribute('pathLength', '1');
+        if (typeof Flowey !== 'undefined' && Flowey.flowDashFor) Flowey.flowDashFor(clone, shape, 0.1, 0.9);
         return clone;
       }
       function show(id, options) {
@@ -9233,10 +9252,12 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           if (nodeId === id) node.setAttribute('data-intent-trace-selected', '');
         });
         if (overlay.childNodes.length) {
-          var firstEdge = edgeList[0];
+          // Above the edges but below the nodes: the traveling dot paints
+          // in its true direction color instead of hiding under the edge
+          // line (which reads as a white ghost on light canvases). This
+          // matches the lens, probe, and relationship overlays.
           var firstNode = svg.querySelector('[data-node-id]');
-          if (firstEdge && firstEdge.parentNode) firstEdge.parentNode.insertBefore(overlay, firstEdge);
-          else if (firstNode) svg.insertBefore(overlay, firstNode);
+          if (firstNode) svg.insertBefore(overlay, firstNode);
           else svg.appendChild(overlay);
         }
         activeId = id;
@@ -12194,7 +12215,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         clone.removeAttribute('data-route-match');
         clone.removeAttribute('data-route-step');
         clone.setAttribute('class', 'route-probe-flow');
-        clone.setAttribute('pathLength', '1');
+        if (typeof Flowey !== 'undefined' && Flowey.flowDashFor) Flowey.flowDashFor(clone, shape, 0.085, 0.165);
         clone.style.setProperty('--route-step', String(step));
         return clone;
       }
@@ -12296,7 +12317,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         clone.removeAttribute('data-route-journey-state');
         clone.removeAttribute('data-route-journey-current');
         clone.setAttribute('class', 'route-journey-flow');
-        clone.setAttribute('pathLength', '1');
+        if (typeof Flowey !== 'undefined' && Flowey.flowDashFor) Flowey.flowDashFor(clone, shape, 0.1, 0.15);
         return clone;
       }
       function renderJourneyPulse(edge) {
@@ -13126,7 +13147,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         clone.removeAttribute('data-lens-match');
         clone.setAttribute('class', 'semantic-lens-flow');
         clone.setAttribute('data-direction', direction);
-        clone.setAttribute('pathLength', '1');
+        if (typeof Flowey !== 'undefined' && Flowey.flowDashFor) Flowey.flowDashFor(clone, shape, 0.075, 0.175);
         clone.style.setProperty('--lens-flow-delay', (step * 0.08).toFixed(2) + 's');
         return clone;
       }

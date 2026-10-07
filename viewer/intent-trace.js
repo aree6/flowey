@@ -85,7 +85,7 @@
         clone.removeAttribute('data-intent-trace-selected');
         clone.setAttribute('class', 'intent-trace-flow');
         clone.setAttribute('data-direction', direction);
-        clone.setAttribute('pathLength', '1');
+        if (typeof Flowey !== 'undefined' && Flowey.flowDashFor) Flowey.flowDashFor(clone, shape, 0.1, 0.9);
         return clone;
       }
       function show(id, options) {
@@ -140,10 +140,12 @@
           if (nodeId === id) node.setAttribute('data-intent-trace-selected', '');
         });
         if (overlay.childNodes.length) {
-          var firstEdge = edgeList[0];
+          // Above the edges but below the nodes: the traveling dot paints
+          // in its true direction color instead of hiding under the edge
+          // line (which reads as a white ghost on light canvases). This
+          // matches the lens, probe, and relationship overlays.
           var firstNode = svg.querySelector('[data-node-id]');
-          if (firstEdge && firstEdge.parentNode) firstEdge.parentNode.insertBefore(overlay, firstEdge);
-          else if (firstNode) svg.insertBefore(overlay, firstNode);
+          if (firstNode) svg.insertBefore(overlay, firstNode);
           else svg.appendChild(overlay);
         }
         activeId = id;
