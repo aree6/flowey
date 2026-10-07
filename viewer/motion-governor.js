@@ -45,6 +45,7 @@
         if (!capable) return false;
         ambientStarted = true;
         ambientPending.clear();
+        if (ambientFallback) { window.clearTimeout(ambientFallback); ambientFallback = 0; }
         detachAmbientBoundary();
         html.setAttribute('data-ambient-motion', 'settled');
         html.setAttribute('data-ambient-settle-reason', reason || 'complete');
@@ -55,6 +56,7 @@
         ambientPending.delete(event.target);
         if (!ambientPending.size) settleAmbient('complete');
       }
+      var ambientFallback = 0;
       function startAmbient() {
         if (ambientStarted || !capable) return false;
         ambientStarted = true;
@@ -62,6 +64,14 @@
         if (!ambientPending.size) return settleAmbient('empty');
         svg.addEventListener('animationend', onAmbientBoundary, true);
         svg.addEventListener('animationcancel', onAmbientBoundary, true);
+        // Infinite ambient loops never fire animationend, so a wall-clock
+        // fallback settles the bookkeeping (visuals keep running under the
+        // settled gate). The cap sits past the longest single-pass ambient
+        // budget (12 steps x 160ms + 3.6s node pulse) with headroom.
+        if (ambientFallback) window.clearTimeout(ambientFallback);
+        ambientFallback = window.setTimeout(function () {
+          if (ambientPending.size) settleAmbient('timeout');
+        }, 8000);
         html.setAttribute('data-ambient-motion', 'running');
         html.removeAttribute('data-ambient-settle-reason');
         return true;
