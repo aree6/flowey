@@ -32,7 +32,7 @@ test('wide desktop diagrams use one height-budgeted reader shell instead of brea
   assert.doesNotMatch(template, /@media \(min-width: 1920px\)[\s\S]{0,180}\.container/);
   assert.match(reader, /var WIDE_RATIO = 1\.55/);
   assert.match(reader, /var MAX_READER_WIDTH = 1920/);
-  assert.match(reader, /var availableSvgHeight = Math\.max\(1, window\.innerHeight - fixedHeight\)/);
+  assert.match(reader, /var availableSvgHeight = Math\.max\(1, Math\.floor\(window\.innerHeight \* 0\.95\) - fixedHeight\)/);
   assert.match(reader, /var desiredWidth = availableSvgHeight \* ratio \+ chrome\.diagramX/);
   assert.match(reader, /html\.style\.setProperty\('--flowey-reader-width', Math\.max\(rounded, shellFloor\) \+ 'px'\)/);
   assert.match(reader, /html\.style\.setProperty\('--flowey-diagram-max-width'/);

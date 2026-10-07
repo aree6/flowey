@@ -34,6 +34,7 @@ const testFiles = [
   'crossover-state-browser.test.mjs',
   'export-browser.test.mjs',
   'viewer-identifiers-browser.test.mjs',
+  'drilldown-links-browser.test.mjs',
 ];
 
 const chrome = findChrome();
