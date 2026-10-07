@@ -941,7 +941,7 @@ test('semantic sigils cover every component and lifecycle kind without literal c
     assert.match(sigil, new RegExp(`data-semantic-sigil="${kind}"`), kind);
     assert.match(sigil, /aria-hidden="true"/, kind);
     assert.match(sigil, /class="semantic-sigil s-[a-z]+"/, kind);
-    assert.match(sigil, /transform="translate\(12 18\) scale\(0\.6875\)"/, kind);
+    assert.match(sigil, /transform="translate\(12 18\) scale\(1\.375\)"/, kind);
     assert.doesNotMatch(sigil, /#[0-9a-f]{3,8}|rgba?\(/i, kind);
   }
 });
@@ -1268,7 +1268,7 @@ test('applyTemplate requires the new evidence slot only when evidence is present
   assert.throws(() => applyTemplate(legacyTemplate, {
     title: 'Evidence', subtitle: '', svg: '<svg/>', cards: '',
     sourceEvidence: { verified: true },
-  }), /repository evidence requires placeholder/);
+  }), /citations require placeholder/);
 });
 
 test('route rhythm floors pass exact-minimum measurements and agree with budget metrics', () => {

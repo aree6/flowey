@@ -97,7 +97,7 @@ const SIGIL_SHAPE = {
 // accessible name, layout box, or interaction state of its own.
 // Shared with label clearance so the reserved rail matches the actual icon.
 export const SEMANTIC_SIGIL_INSET = 6;
-export const SEMANTIC_SIGIL_SIZE = 11;
+export const SEMANTIC_SIGIL_SIZE = 22;
 export const SEMANTIC_SIGIL_FOOTPRINT = SEMANTIC_SIGIL_INSET + SEMANTIC_SIGIL_SIZE;
 // The viewer installs a runtime "sources" beacon on the node's top-right
 // rail, just left of the brand mark. Layout must reserve the same footprint
