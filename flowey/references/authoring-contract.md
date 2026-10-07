@@ -359,7 +359,9 @@ Use only when no renderer can run. Start from `assets/template.html`, keep seman
 For domain-specific diagrams, set an optional `icon` on architecture components,
 workflow/dataflow nodes, sequence participants, or lifecycle states. Choose
 `calendar`, `clock`, `person`, `briefcase`, `flag`, or `moon` for everyday concepts;
-the complete catalog (including existing technical and lifecycle symbols) is
+for anything else, search the 50 vendored Phosphor glyphs with
+`node bin/flowey.mjs icons <words>` and set `icon` to the returned name
+(e.g. `"icon": "database"`). The full accepted set is
 `common.schema.json#/$defs/nodeIcon`. Use `icon: "none"` to hide the corner symbol.
 Omitting `icon` keeps the type-based default. These inline SVG symbols are
 renderer-owned and export with the diagram; URLs and raw SVG are not accepted.
