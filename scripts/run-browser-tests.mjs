@@ -35,6 +35,7 @@ const testFiles = [
   'export-browser.test.mjs',
   'viewer-identifiers-browser.test.mjs',
   'drilldown-links-browser.test.mjs',
+  'sigil-label-clearance-browser.test.mjs',
 ];
 
 const chrome = findChrome();

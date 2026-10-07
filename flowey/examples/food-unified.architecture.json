@@ -1,0 +1,216 @@
+{
+  "boundaries": [],
+  "cards": [
+    {
+      "dot": "emerald",
+      "items": [
+        "Everything on one page: the full order and dispatch system. Click Order Service, Customer App, or Payments for the order detail; click Dispatch Service or Rider App for the dispatch detail"
+      ],
+      "title": "Unified view"
+    }
+  ],
+  "components": [
+    {
+      "icon": "device-mobile",
+      "id": "customer-app",
+      "label": "Customer App",
+      "pos": [
+        40,
+        80
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sublabel": "Mobile + web",
+      "type": "actor"
+    },
+    {
+      "icon": "package",
+      "id": "order-service",
+      "label": "Order Service",
+      "pos": [
+        250,
+        80
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sublabel": "Order API",
+      "type": "action"
+    },
+    {
+      "icon": "storefront",
+      "id": "restaurant-partner",
+      "label": "Restaurant Partner",
+      "pos": [
+        460,
+        80
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sublabel": "Prepares food",
+      "type": "external"
+    },
+    {
+      "icon": "bank",
+      "id": "payments",
+      "label": "Payments",
+      "pos": [
+        670,
+        80
+      ],
+      "size": [
+        160,
+        60
+      ],
+      "sublabel": "External",
+      "type": "external"
+    },
+    {
+      "icon": "database",
+      "id": "orders-db",
+      "label": "Orders DB",
+      "pos": [
+        880,
+        80
+      ],
+      "size": [
+        160,
+        60
+      ],
+      "sublabel": "Orders + state",
+      "type": "document"
+    },
+    {
+      "icon": "network",
+      "id": "dispatch-service",
+      "label": "Dispatch Service",
+      "pos": [
+        250,
+        260
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sublabel": "Assigns riders",
+      "type": "action"
+    },
+    {
+      "icon": "device-mobile",
+      "id": "rider-app",
+      "label": "Rider App",
+      "pos": [
+        460,
+        260
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sublabel": "Mobile app",
+      "type": "actor"
+    },
+    {
+      "icon": "map-pin",
+      "id": "rider-locations",
+      "label": "Rider Locations",
+      "pos": [
+        670,
+        260
+      ],
+      "size": [
+        160,
+        60
+      ],
+      "sublabel": "Live positions",
+      "type": "place"
+    },
+    {
+      "icon": "truck",
+      "id": "rider-fleet",
+      "label": "Rider Fleet",
+      "pos": [
+        880,
+        260
+      ],
+      "size": [
+        160,
+        60
+      ],
+      "sublabel": "Delivery fleet",
+      "type": "actor"
+    }
+  ],
+  "connections": [
+    {
+      "from": "customer-app",
+      "id": "u1",
+      "label": "order",
+      "to": "order-service"
+    },
+    {
+      "from": "order-service",
+      "id": "u2",
+      "label": "forward",
+      "to": "restaurant-partner"
+    },
+    {
+      "from": "order-service",
+      "id": "u3",
+      "label": "charge",
+      "to": "payments"
+    },
+    {
+      "from": "order-service",
+      "fromSide": "bottom",
+      "id": "u4",
+      "label": "writes",
+      "to": "orders-db",
+      "toSide": "left"
+    },
+    {
+      "from": "restaurant-partner",
+      "fromSide": "bottom",
+      "id": "u5",
+      "label": "ready",
+      "to": "dispatch-service",
+      "toSide": "top"
+    },
+    {
+      "from": "dispatch-service",
+      "id": "u6",
+      "label": "offer",
+      "to": "rider-app"
+    },
+    {
+      "from": "dispatch-service",
+      "id": "u7",
+      "label": "track",
+      "to": "rider-locations"
+    },
+    {
+      "from": "rider-app",
+      "id": "u8",
+      "label": "pings",
+      "to": "rider-locations"
+    },
+    {
+      "from": "dispatch-service",
+      "id": "u9",
+      "label": "assign",
+      "to": "rider-fleet"
+    }
+  ],
+  "diagram_type": "architecture",
+  "meta": {
+    "output": "food-unified.html",
+    "quality_profile": "showcase",
+    "title": "Food Delivery Platform (unified)"
+  },
+  "schema_version": 1
+}

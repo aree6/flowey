@@ -5066,7 +5066,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <title>Auth Provider · OAuth 2.0 · Architecture component · JWT + PKCE</title>
           <rect x="40" y="110" width="120" height="64" rx="6" class="c-mask"/>
           <rect x="40" y="110" width="120" height="64" rx="6" class="c-decision" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="decision" class="semantic-sigil s-decision" transform="translate(46 116) scale(1.375)">
+          <g aria-hidden="true" data-semantic-sigil="decision" class="semantic-sigil s-decision" transform="translate(46 111) scale(0.8125)">
             <path d="M8 2.2 13.8 8 8 13.8 2.2 8Z"/><circle cx="8" cy="8" r="1.1" class="sigil-fill"/>
           </g>
           <text data-node-label="" data-detail-anchor="" x="100" y="140" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Auth Provider</text>
@@ -5081,7 +5081,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <g aria-hidden="true" data-semantic-sigil="milestone" class="semantic-sigil s-milestone" transform="translate(256 306) scale(1.375)">
             <path d="M8 2.2l1.7 3.5 3.8.5-2.7 2.7.6 3.8L8 10.9l-3.4 1.8.6-3.8-2.7-2.7 3.8-.5Z"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="315" y="328" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">CloudFront</text>
+          <text data-node-label="" data-detail-anchor="" x="324.5" y="328" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">CloudFront</text>
         <text data-detail="context" x="315" y="344" class="t-muted" font-size="9" text-anchor="middle">CDN</text>
         </g>
 
@@ -5089,7 +5089,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <title>Load Balancer · HTTPS :443 · AWS Region: us-west-2 › sg-api :443/:8000</title>
           <rect x="460" y="300" width="130" height="60" rx="6" class="c-mask"/>
           <rect x="460" y="300" width="130" height="60" rx="6" class="c-milestone" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="milestone" class="semantic-sigil s-milestone" transform="translate(466 306) scale(1.375)">
+          <g aria-hidden="true" data-semantic-sigil="milestone" class="semantic-sigil s-milestone" transform="translate(466 301) scale(0.6875)">
             <path d="M8 2.2l1.7 3.5 3.8.5-2.7 2.7.6 3.8L8 10.9l-3.4 1.8.6-3.8-2.7-2.7 3.8-.5Z"/>
           </g>
           <text data-node-label="" data-detail-anchor="" x="525" y="328" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Load Balancer</text>
@@ -5103,7 +5103,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <g aria-hidden="true" data-semantic-sigil="action" class="semantic-sigil s-action" transform="translate(676 306) scale(1.375)">
             <path d="M3 3.5 7 8l-4 4.5M8 3.5 12 8l-4 4.5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="735" y="328" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">API Server</text>
+          <text data-node-label="" data-detail-anchor="" x="744.5" y="328" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">API Server</text>
         <text data-detail="context" x="735" y="344" class="t-muted" font-size="9" text-anchor="middle">FastAPI :8000</text>
         </g>
 
@@ -5125,7 +5125,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <g aria-hidden="true" data-semantic-sigil="document" class="semantic-sigil s-document" transform="translate(886 306) scale(1.375)">
             <path d="M4 1.8h5.5L12.5 5v9.2H4Z"/><path d="M9.5 1.8V5H12.5M6 8h4M6 10.2h4"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="945" y="328" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">PostgreSQL</text>
+          <text data-node-label="" data-detail-anchor="" x="954.5" y="328" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">PostgreSQL</text>
         <text data-detail="context" x="945" y="344" class="t-muted" font-size="9" text-anchor="middle">primary :5432</text>
         </g>
 
@@ -9599,6 +9599,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       function clear() {
         html.style.removeProperty('--flowey-reader-width');
         html.style.removeProperty('--flowey-diagram-max-width');
+        if (diagram) diagram.style.removeProperty('min-height');
         html.removeAttribute('data-reader-narrow');
         html.removeAttribute('data-reader-layout');
         html.removeAttribute('data-reader-overflow');
@@ -9739,6 +9740,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           // applies on every viewport so cards never fall below the canvas.
           html.style.removeProperty('--flowey-reader-width');
           html.style.removeProperty('--flowey-diagram-max-width');
+          if (diagram) diagram.style.removeProperty('min-height');
           html.removeAttribute('data-reader-narrow');
           html.removeAttribute('data-reader-layout');
           html.removeAttribute('data-reader-overflow');
@@ -9796,6 +9798,12 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         var desiredWidth = availableSvgHeight * ratio + chrome.diagramX + (docked ? railExtra : 0);
         var width = Math.max(minWidth, Math.min(maxWidth, desiredWidth, settledCap || desiredWidth));
         applyWidth(width, minWidth);
+        // Fill the viewport vertically: the dotted canvas takes the available
+        // height so no dead page shows below a short diagram. Capped at the
+        // viewport, so the page still never scrolls.
+        var containerTop = diagram.getBoundingClientRect().top;
+        var fillHeight = Math.max(0, window.innerHeight - containerTop - SAFE_BOTTOM_GAP);
+        diagram.style.minHeight = Math.ceil(fillHeight) + 'px';
         settleOverflow(minWidth);
         return {
           ratio: ratio,

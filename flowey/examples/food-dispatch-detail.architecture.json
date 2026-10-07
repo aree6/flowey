@@ -1,0 +1,111 @@
+{
+  "boundaries": [],
+  "cards": [
+    {
+      "dot": "emerald",
+      "items": [
+        "Dispatch detail: how delivery jobs are assigned and tracked. Click any node to return to the overview."
+      ],
+      "title": "Detail"
+    }
+  ],
+  "components": [
+    {
+      "icon": "package",
+      "id": "order-service",
+      "label": "Order Service",
+      "pos": [
+        40,
+        80
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "sublabel": "Sends jobs",
+      "type": "action"
+    },
+    {
+      "icon": "network",
+      "id": "dispatch-service",
+      "label": "Dispatch Service",
+      "pos": [
+        270,
+        80
+      ],
+      "size": [
+        170,
+        64
+      ],
+      "sublabel": "Assigns riders",
+      "type": "action"
+    },
+    {
+      "icon": "device-mobile",
+      "id": "rider-app",
+      "label": "Rider App",
+      "pos": [
+        520,
+        80
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "sublabel": "Mobile app",
+      "type": "actor"
+    },
+    {
+      "icon": "map-pin",
+      "id": "rider-locations",
+      "label": "Rider Locations",
+      "pos": [
+        270,
+        250
+      ],
+      "size": [
+        170,
+        60
+      ],
+      "sublabel": "Live positions",
+      "type": "place"
+    }
+  ],
+  "connections": [
+    {
+      "from": "order-service",
+      "id": "e1",
+      "label": "jobs",
+      "to": "dispatch-service"
+    },
+    {
+      "from": "dispatch-service",
+      "id": "e2",
+      "label": "assign",
+      "to": "rider-app"
+    },
+    {
+      "from": "dispatch-service",
+      "fromSide": "bottom",
+      "id": "e3",
+      "label": "track",
+      "to": "rider-locations",
+      "toSide": "top"
+    },
+    {
+      "from": "rider-app",
+      "fromSide": "bottom",
+      "id": "e4",
+      "label": "updates",
+      "to": "rider-locations",
+      "toSide": "right"
+    }
+  ],
+  "diagram_type": "architecture",
+  "meta": {
+    "output": "food-dispatch-detail.html",
+    "quality_profile": "showcase",
+    "title": "Rider Dispatch (detail)"
+  },
+  "schema_version": 1
+}

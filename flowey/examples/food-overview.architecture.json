@@ -1,0 +1,162 @@
+{
+  "boundaries": [],
+  "cards": [
+    {
+      "dot": "cyan",
+      "items": [
+        "Click Customer App, Restaurant Partner, Order Service, or Payments for the order-flow detail; click Dispatch Service or Rider Fleet for the dispatch detail; click Full System Map for everything on one page"
+      ],
+      "title": "How to present"
+    }
+  ],
+  "components": [
+    {
+      "icon": "device-mobile",
+      "id": "customer-app",
+      "label": "Customer App",
+      "pos": [
+        40,
+        80
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sublabel": "Mobile + web",
+      "type": "actor"
+    },
+    {
+      "icon": "package",
+      "id": "order-service",
+      "label": "Order Service",
+      "pos": [
+        280,
+        80
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sublabel": "Order API",
+      "type": "action"
+    },
+    {
+      "icon": "storefront",
+      "id": "restaurant-partner",
+      "label": "Restaurant Partner",
+      "pos": [
+        520,
+        80
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sublabel": "Prepares food",
+      "type": "external"
+    },
+    {
+      "icon": "network",
+      "id": "dispatch-service",
+      "label": "Dispatch Service",
+      "pos": [
+        760,
+        80
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sublabel": "Assigns riders",
+      "type": "action"
+    },
+    {
+      "icon": "bank",
+      "id": "payments",
+      "label": "Payments",
+      "pos": [
+        280,
+        250
+      ],
+      "size": [
+        160,
+        60
+      ],
+      "sublabel": "External",
+      "type": "external"
+    },
+    {
+      "icon": "map-pin",
+      "id": "full-map",
+      "label": "Full System Map",
+      "pos": [
+        520,
+        250
+      ],
+      "size": [
+        160,
+        60
+      ],
+      "sublabel": "Unified view",
+      "type": "outcome"
+    },
+    {
+      "icon": "truck",
+      "id": "rider-fleet",
+      "label": "Rider Fleet",
+      "pos": [
+        760,
+        250
+      ],
+      "size": [
+        160,
+        60
+      ],
+      "sublabel": "Delivery fleet",
+      "type": "actor"
+    }
+  ],
+  "connections": [
+    {
+      "from": "customer-app",
+      "id": "c1",
+      "label": "order",
+      "to": "order-service"
+    },
+    {
+      "from": "order-service",
+      "id": "c2",
+      "label": "forward",
+      "to": "restaurant-partner"
+    },
+    {
+      "from": "restaurant-partner",
+      "id": "c3",
+      "label": "ready",
+      "to": "dispatch-service"
+    },
+    {
+      "from": "order-service",
+      "fromSide": "bottom",
+      "id": "c4",
+      "label": "charge",
+      "to": "payments",
+      "toSide": "top"
+    },
+    {
+      "from": "dispatch-service",
+      "fromSide": "bottom",
+      "id": "c5",
+      "label": "assign",
+      "to": "rider-fleet",
+      "toSide": "top"
+    }
+  ],
+  "diagram_type": "architecture",
+  "meta": {
+    "output": "food-overview.html",
+    "quality_profile": "showcase",
+    "title": "Food Delivery Platform (overview)"
+  },
+  "schema_version": 1
+}

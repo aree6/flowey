@@ -5050,10 +5050,10 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <title>Revise and resubmit · fix flagged items · Student</title>
           <rect x="283" y="94" width="160" height="52" rx="6" class="c-mask"/>
           <rect x="283" y="94" width="160" height="52" rx="6" class="c-action" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="action" class="semantic-sigil s-action" transform="translate(289 100) scale(1.375)">
+          <g aria-hidden="true" data-semantic-sigil="action" class="semantic-sigil s-action" transform="translate(289 95) scale(0.25)">
             <path d="M3 3.5 7 8l-4 4.5M8 3.5 12 8l-4 4.5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="375.7" y="115" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Revise and resubmit</text>
+          <text data-node-label="" data-detail-anchor="" x="363" y="115" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Revise and resubmit</text>
           <text data-detail="context" x="363" y="132" class="t-muted" font-size="8" text-anchor="middle">fix flagged items</text>
         </g>
 
@@ -5061,10 +5061,10 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <title>Supervisor review · approve or return · Supervisor</title>
           <rect x="168" y="220" width="150" height="52" rx="6" class="c-mask"/>
           <rect x="168" y="220" width="150" height="52" rx="6" class="c-decision" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="decision" class="semantic-sigil s-decision" transform="translate(174 226) scale(1.375)">
+          <g aria-hidden="true" data-semantic-sigil="decision" class="semantic-sigil s-decision" transform="translate(174 221) scale(0.25)">
             <path d="M8 2.2 13.8 8 8 13.8 2.2 8Z"/><circle cx="8" cy="8" r="1.1" class="sigil-fill"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="254.1" y="241" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Supervisor review</text>
+          <text data-node-label="" data-detail-anchor="" x="243" y="241" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Supervisor review</text>
           <text data-detail="context" x="243" y="258" class="t-muted" font-size="8" text-anchor="middle">approve or return</text>
         </g>
 
@@ -5075,7 +5075,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <g aria-hidden="true" data-semantic-sigil="decision" class="semantic-sigil s-decision" transform="translate(419 344) scale(1.375)">
             <path d="M8 2.2 13.8 8 8 13.8 2.2 8Z"/><circle cx="8" cy="8" r="1.1" class="sigil-fill"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="485.9" y="359" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Dean sign-off</text>
+          <text data-node-label="" data-detail-anchor="" x="498.6" y="359" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Dean sign-off</text>
           <text data-detail="context" x="483" y="376" class="t-muted" font-size="8" text-anchor="middle">final approval</text>
         <text data-detail="fine" x="483" y="394" class="t-decision" font-size="7" text-anchor="middle">3 working days</text>
         </g>
@@ -5088,7 +5088,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             <circle cx="8" cy="8" r="5.3"/>
             <path d="m5.2 8 1.8 1.8 3.8-4"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="659.8" y="367" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Rejected</text>
+          <text data-node-label="" data-detail-anchor="" x="666.9" y="367" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Rejected</text>
           <text data-detail="context" x="659.8" y="384" class="t-muted" font-size="8" text-anchor="middle">with written reason</text>
         </g>
 
@@ -5099,7 +5099,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <g aria-hidden="true" data-semantic-sigil="flag" class="semantic-sigil s-outcome" transform="translate(733.8 352) scale(1.375)">
             <path d="M3 14V2h10l-2 3 2 3H3"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="804" y="367" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Leave recorded</text>
+          <text data-node-label="" data-detail-anchor="" x="817.0999999999999" y="367" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Leave recorded</text>
           <text data-detail="context" x="802.8" y="384" class="t-muted" font-size="8" text-anchor="middle">registrar notified</text>
         </g>
 
@@ -9498,6 +9498,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       function clear() {
         html.style.removeProperty('--flowey-reader-width');
         html.style.removeProperty('--flowey-diagram-max-width');
+        if (diagram) diagram.style.removeProperty('min-height');
         html.removeAttribute('data-reader-narrow');
         html.removeAttribute('data-reader-layout');
         html.removeAttribute('data-reader-overflow');
@@ -9638,6 +9639,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           // applies on every viewport so cards never fall below the canvas.
           html.style.removeProperty('--flowey-reader-width');
           html.style.removeProperty('--flowey-diagram-max-width');
+          if (diagram) diagram.style.removeProperty('min-height');
           html.removeAttribute('data-reader-narrow');
           html.removeAttribute('data-reader-layout');
           html.removeAttribute('data-reader-overflow');
@@ -9695,6 +9697,12 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         var desiredWidth = availableSvgHeight * ratio + chrome.diagramX + (docked ? railExtra : 0);
         var width = Math.max(minWidth, Math.min(maxWidth, desiredWidth, settledCap || desiredWidth));
         applyWidth(width, minWidth);
+        // Fill the viewport vertically: the dotted canvas takes the available
+        // height so no dead page shows below a short diagram. Capped at the
+        // viewport, so the page still never scrolls.
+        var containerTop = diagram.getBoundingClientRect().top;
+        var fillHeight = Math.max(0, window.innerHeight - containerTop - SAFE_BOTTOM_GAP);
+        diagram.style.minHeight = Math.ceil(fillHeight) + 'px';
         settleOverflow(minWidth);
         return {
           ratio: ratio,

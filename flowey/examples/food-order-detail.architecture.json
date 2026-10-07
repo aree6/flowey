@@ -1,0 +1,126 @@
+{
+  "boundaries": [],
+  "cards": [
+    {
+      "dot": "emerald",
+      "items": [
+        "Order flow detail: how a customer order is placed, charged, cooked, and recorded. Click any node to return to the overview."
+      ],
+      "title": "Detail"
+    }
+  ],
+  "components": [
+    {
+      "icon": "device-mobile",
+      "id": "customer-app",
+      "label": "Customer App",
+      "pos": [
+        40,
+        80
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "sublabel": "Mobile + web",
+      "type": "actor"
+    },
+    {
+      "icon": "package",
+      "id": "order-service",
+      "label": "Order Service",
+      "pos": [
+        270,
+        80
+      ],
+      "size": [
+        170,
+        64
+      ],
+      "sublabel": "Orchestrates",
+      "type": "action"
+    },
+    {
+      "icon": "storefront",
+      "id": "restaurant-partner",
+      "label": "Restaurant Partner",
+      "pos": [
+        520,
+        80
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "sublabel": "Prepares food",
+      "type": "external"
+    },
+    {
+      "icon": "bank",
+      "id": "payments",
+      "label": "Payments",
+      "pos": [
+        185,
+        250
+      ],
+      "size": [
+        140,
+        60
+      ],
+      "sublabel": "External",
+      "type": "external"
+    },
+    {
+      "icon": "database",
+      "id": "orders-db",
+      "label": "Orders DB",
+      "pos": [
+        375,
+        250
+      ],
+      "size": [
+        140,
+        60
+      ],
+      "sublabel": "Orders + state",
+      "type": "document"
+    }
+  ],
+  "connections": [
+    {
+      "from": "customer-app",
+      "id": "d1",
+      "label": "order",
+      "to": "order-service"
+    },
+    {
+      "from": "order-service",
+      "id": "d2",
+      "label": "forward",
+      "to": "restaurant-partner"
+    },
+    {
+      "from": "order-service",
+      "fromSide": "bottom",
+      "id": "d3",
+      "label": "charge",
+      "to": "payments",
+      "toSide": "top"
+    },
+    {
+      "from": "order-service",
+      "fromSide": "bottom",
+      "id": "d4",
+      "label": "writes",
+      "to": "orders-db",
+      "toSide": "top"
+    }
+  ],
+  "diagram_type": "architecture",
+  "meta": {
+    "output": "food-order-detail.html",
+    "quality_profile": "showcase",
+    "title": "Order Flow (detail)"
+  },
+  "schema_version": 1
+}

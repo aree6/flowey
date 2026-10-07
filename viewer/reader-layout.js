@@ -145,6 +145,7 @@
       function clear() {
         html.style.removeProperty('--flowey-reader-width');
         html.style.removeProperty('--flowey-diagram-max-width');
+        if (diagram) diagram.style.removeProperty('min-height');
         html.removeAttribute('data-reader-narrow');
         html.removeAttribute('data-reader-layout');
         html.removeAttribute('data-reader-overflow');
@@ -285,6 +286,7 @@
           // applies on every viewport so cards never fall below the canvas.
           html.style.removeProperty('--flowey-reader-width');
           html.style.removeProperty('--flowey-diagram-max-width');
+          if (diagram) diagram.style.removeProperty('min-height');
           html.removeAttribute('data-reader-narrow');
           html.removeAttribute('data-reader-layout');
           html.removeAttribute('data-reader-overflow');
@@ -342,6 +344,12 @@
         var desiredWidth = availableSvgHeight * ratio + chrome.diagramX + (docked ? railExtra : 0);
         var width = Math.max(minWidth, Math.min(maxWidth, desiredWidth, settledCap || desiredWidth));
         applyWidth(width, minWidth);
+        // Fill the viewport vertically: the dotted canvas takes the available
+        // height so no dead page shows below a short diagram. Capped at the
+        // viewport, so the page still never scrolls.
+        var containerTop = diagram.getBoundingClientRect().top;
+        var fillHeight = Math.max(0, window.innerHeight - containerTop - SAFE_BOTTOM_GAP);
+        diagram.style.minHeight = Math.ceil(fillHeight) + 'px';
         settleOverflow(minWidth);
         return {
           ratio: ratio,

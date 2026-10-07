@@ -54,15 +54,22 @@ export function availableNodeTextWidth(width) {
 export function nodeLabelLayout({ width, height, rows, side = 'left', brand = false, source = false, step = '' }) {
   const result = { x: width / 2, ys: rows.map(row => row.y), sigilY: SEMANTIC_SIGIL_INSET, sigilSize: SEMANTIC_SIGIL_SIZE };
   const labelWidth = minimumNodeTextWidth(rows[0].text, rows[0].font);
+  // Structural overlap invariant: fit/shift decisions use a conservative
+  // width (wide glyphs and bearings overshoot the 0.6 estimator), so label
+  // text can never be placed under the corner stamp in any renderer. Labels
+  // that only fit the estimator fall through to the below-rail rows instead.
+  const fitWidth = labelWidth * 1.12 + 3;
   const stepEnd = step ? (side === 'left' ? 23 : 10) + minimumNodeTextWidth(step, 8) + 3 : 0;
-  const left = Math.max(side === 'left' ? SEMANTIC_SIGIL_FOOTPRINT + 2 : 4, stepEnd);
-  const right = width - (brand ? 26 : side === 'right' ? SEMANTIC_SIGIL_FOOTPRINT + 2 : 4)
+  // The icon reserve keeps shifted labels clear of the corner stamp with room
+  // for glyph bearings, which run wider than the width estimator assumes.
+  const left = Math.max(side === 'left' ? SEMANTIC_SIGIL_FOOTPRINT + 8 : 4, stepEnd);
+  const right = width - (brand ? 26 : side === 'right' ? SEMANTIC_SIGIL_FOOTPRINT + 8 : 4)
     - (source ? SOURCE_BADGE_FOOTPRINT : 0);
-  if (result.x - labelWidth / 2 >= left && result.x + labelWidth / 2 <= right) return result;
-  if (labelWidth <= right - left) {
+  if (result.x - fitWidth / 2 >= left && result.x + fitWidth / 2 <= right) return result;
+  if (fitWidth <= right - left) {
     // Round away from the icon, retaining the node centre whenever possible.
-    result.x = Math.min(Math.floor((right - labelWidth / 2) * 10) / 10,
-      Math.max(result.x, Math.ceil((left + labelWidth / 2) * 10) / 10));
+    result.x = Math.min(Math.floor((right - fitWidth / 2) * 10) / 10,
+      Math.max(result.x, Math.ceil((left + fitWidth / 2) * 10) / 10));
     return result;
   }
   // Keep the existing font sizes and put the text below the decoration rail.
