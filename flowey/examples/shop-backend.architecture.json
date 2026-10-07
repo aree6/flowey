@@ -22,7 +22,8 @@
         60
       ],
       "sublabel": "REST routes",
-      "type": "action"
+      "type": "action",
+      "icon": "network"
     },
     {
       "id": "orders",
@@ -36,7 +37,8 @@
         60
       ],
       "sublabel": "Create + pay",
-      "type": "action"
+      "type": "action",
+      "icon": "package"
     },
     {
       "id": "stock",
@@ -50,7 +52,8 @@
         60
       ],
       "sublabel": "Reserve items",
-      "type": "record"
+      "type": "record",
+      "icon": "hard-drives"
     }
   ],
   "connections": [

@@ -22,7 +22,8 @@
         60
       ],
       "sublabel": "Catalog, cart",
-      "type": "actor"
+      "type": "actor",
+      "icon": "browser"
     },
     {
       "id": "checkout",
@@ -36,7 +37,8 @@
         60
       ],
       "sublabel": "Form + pay button",
-      "type": "action"
+      "type": "action",
+      "icon": "shopping-cart"
     },
     {
       "id": "cdn",
@@ -50,7 +52,8 @@
         60
       ],
       "sublabel": "Images",
-      "type": "milestone"
+      "type": "milestone",
+      "icon": "cloud"
     }
   ],
   "connections": [

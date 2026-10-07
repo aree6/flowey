@@ -22,7 +22,8 @@
         60
       ],
       "sublabel": "Browser",
-      "type": "external"
+      "type": "external",
+      "icon": "device-mobile"
     },
     {
       "id": "storefront",
@@ -36,7 +37,8 @@
         64
       ],
       "sublabel": "Web UI",
-      "type": "actor"
+      "type": "actor",
+      "icon": "storefront"
     },
     {
       "id": "api",
@@ -50,7 +52,8 @@
         64
       ],
       "sublabel": ":8000",
-      "type": "action"
+      "type": "action",
+      "icon": "terminal"
     },
     {
       "id": "db",
@@ -64,7 +67,8 @@
         64
       ],
       "sublabel": "Orders + stock",
-      "type": "document"
+      "type": "document",
+      "icon": "database"
     },
     {
       "id": "pay",
@@ -78,7 +82,8 @@
         60
       ],
       "sublabel": "External",
-      "type": "external"
+      "type": "external",
+      "icon": "bank"
     }
   ],
   "connections": [
