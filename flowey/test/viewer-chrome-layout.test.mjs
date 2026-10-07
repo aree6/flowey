@@ -34,6 +34,23 @@ function render(mode, example) {
   return output;
 }
 
+// Pins the dock onto the stage bottom to force a genuine nav/stage
+// collision. Reserve assertions need a real overlap: post-fill geometry
+// leaves natural fixtures clear, so tests that verify collision handling
+// force one explicitly instead of relying on incidental overlap.
+const FORCE_NAV_COLLISION = `(function () {
+  var container = document.querySelector('.diagram-container');
+  var svg = document.querySelector('.diagram-container > svg');
+  var nav = document.querySelector('.diagram-nav');
+  var stage = svg.getBoundingClientRect();
+  var box = container.getBoundingClientRect();
+  nav.style.right = 'auto';
+  nav.style.left = '8px';
+  nav.style.bottom = Math.max(0, box.bottom - stage.bottom + 30) + 'px';
+  nav.style.width = '240px';
+  window.dispatchEvent(new Event('resize'));
+})()`;
+
 function renderWithoutLegend() {
   const source = JSON.parse(fs.readFileSync(
     path.join(skillRoot, 'examples', CASES.architecture),
@@ -315,6 +332,20 @@ test('an artifact with no Legend still receives the desktop stage rail', {
   const browser = new ChromeVisualBrowser(chromePath);
   try {
     const sessionId = await load(browser, renderWithoutLegend());
+    // Force the dock onto the stage bottom: legend absence must not disable
+    // the rail when a genuine collision exists.
+    await evaluate(browser, sessionId, `(function () {
+      var container = document.querySelector('.diagram-container');
+      var svg = document.querySelector('.diagram-container > svg');
+      var nav = document.querySelector('.diagram-nav');
+      var stage = svg.getBoundingClientRect();
+      var box = container.getBoundingClientRect();
+      nav.style.right = 'auto';
+      nav.style.left = '8px';
+      nav.style.bottom = Math.max(0, box.bottom - stage.bottom + 4) + 'px';
+      window.dispatchEvent(new Event('resize'));
+    })()`);
+    await waitForLayout(browser, sessionId);
     const receipt = await finalGeometry(browser, sessionId);
 
     assert.equal(receipt.hasLegend, false, JSON.stringify(receipt));
@@ -461,6 +492,8 @@ test('manual zoom and pan reschedules Legend and Dock collision measurement', {
   const browser = new ChromeVisualBrowser(chromePath);
   try {
     const sessionId = await load(browser, render('architecture', CASES.architecture));
+    await evaluate(browser, sessionId, FORCE_NAV_COLLISION);
+    await waitForLayout(browser, sessionId);
     await evaluate(browser, sessionId, `(function () {
       var container = document.querySelector('.diagram-container');
       var zoomIn = document.querySelector('[data-view="in"]');
@@ -632,7 +665,10 @@ test('Reset followed immediately by zoom and pan retains a collision-free deskto
   const browser = new ChromeVisualBrowser(chromePath);
   try {
     const sessionId = await load(browser, render('architecture', CASES.architecture));
+    await evaluate(browser, sessionId, FORCE_NAV_COLLISION);
+    await waitForLayout(browser, sessionId);
     const baseline = await finalGeometry(browser, sessionId);
+    assert.ok(baseline.reserve > 0, JSON.stringify({ baseline }));
     await evaluate(browser, sessionId, `(function () {
       var container = document.querySelector('.diagram-container');
       document.querySelector('[data-view="reset"]').click();
@@ -860,6 +896,7 @@ test('mobile, embed, and print keep zero reserve while hidden Legends retain the
       document.querySelector('[data-legend]').hidden = true;
       window.dispatchEvent(new Event('resize'));
     })()`);
+    await evaluate(browser, sessionId, FORCE_NAV_COLLISION);
     await waitForLayout(browser, sessionId);
     receipt = await finalGeometry(browser, sessionId);
     assert.ok(receipt.reserve > 0, `hidden: ${JSON.stringify(receipt)}`);
@@ -1034,6 +1071,8 @@ test('Chrome Layout preserves scheduling, mode restoration and Reader handoffs',
     await t.test('pending Reader probes coalesce and retain the rail when the camera changes', async () => {
       for (const reject of [false, true]) {
         await load(browser, file);
+        await run(FORCE_NAV_COLLISION);
+        await waitForLayout(browser, session);
         const initial = await state(`probe-initial-${reject}`);
         assert.ok(initial.reserve > 0);
         const pending = await run(`(() => {
@@ -1113,6 +1152,8 @@ test('theme switches repaint the page and diagram without dropping the desktop r
   const browser = new ChromeVisualBrowser(chromePath);
   try {
     const session = await load(browser, file, { query: '?theme=dark' });
+    await evaluate(browser, session, FORCE_NAV_COLLISION);
+    await waitForLayout(browser, session);
     for (const theme of ['light', 'dark']) {
       const result = await evaluate(browser, session, `(async function () {
         var root = document.documentElement;

@@ -537,7 +537,6 @@
         clone.removeAttribute('data-relationship-preview');
         clone.setAttribute('class', 'relationship-flow-pulse');
         clone.setAttribute('pathLength', '1');
-        if (typeof Flowey !== 'undefined' && Flowey.flowDashFor) Flowey.flowDashFor(clone, shape, 0.085, 0.165);
         return clone;
       }
       function relationshipTokenKind(edge) {

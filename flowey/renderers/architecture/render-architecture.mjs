@@ -598,7 +598,8 @@ function validateArchitecture() {
         code: 'layout/boundary-membership', severity: 'error', message,
         subject: { diagramType: 'architecture', collection: 'components', id: component.id },
         evidence: {
-          boundary: { kind: boundary.kind, label: boundary.label, wraps: asArray(boundary.wraps) },
+          boundary: { kind: boundary.kind, label: boundary.label, wraps: asArray(boundary.wraps),
+            frame: { x: Math.round(boundary.x), y: Math.round(boundary.y), width: Math.round(boundary.width), height: Math.round(boundary.height) } },
           component: { x: component.x, y: component.y, width: component.width, height: component.height },
         },
         supportedFixes: [

@@ -14,6 +14,7 @@
       var settleFrame = 0;
       var reserve = 0;
       var railLatched = false;
+      var smallGapStreak = 0;
       var probingBaseline = false;
       var probePromise = null;
       var baselineIntersectionArea = 0;
@@ -94,11 +95,7 @@
       }
       function writeReserve(next, options) {
         options = options || {};
-        // Cap the reserve at one toolbar height plus the safe gap: beyond
-        // that the stage-gap feedback cannot converge (padding growth moves
-        // both the nav and the measured gap), so an unbounded reserve only
-        // inflates the page. Genuine legend/nav collisions resolve far below.
-        next = Math.min(72, Math.max(0, Math.ceil(next)));
+        next = Math.max(0, Math.ceil(next));
         if (Math.abs(next - reserve) < 1) return false;
         reserve = next;
         if (reserve) {
@@ -126,6 +123,7 @@
       function clear(options) {
         options = options || {};
         railLatched = false;
+        smallGapStreak = 0;
         if (options.preserveBaseline !== true) {
           baselineIntersectionArea = 0;
           baselineStageGap = null;
@@ -218,9 +216,18 @@
         if (!railLatched && reserve === 0) {
           baselineIntersectionArea = actualIntersectionArea;
           baselineStageGap = stageGap;
-          if (stageGap < SAFE_GAP) {
+          // Latch only on a repeated small gap: a single transient pass
+          // (load settling, rail toggles, width steps) must not freeze a
+          // rail the converged layout never needs. The follow-up measure
+          // is bounded (one extra frame); latching stops further polling.
+          if (stageGap < SAFE_GAP) smallGapStreak += 1;
+          else smallGapStreak = 0;
+          if (stageGap < SAFE_GAP && smallGapStreak >= 2) {
             railLatched = true;
+            smallGapStreak = 0;
             if (writeReserve(Math.max(0, SAFE_GAP - stageGap))) return null;
+          } else if (stageGap < SAFE_GAP) {
+            schedule();
           }
         } else if (railLatched && reserve > 0 && stageGap < SAFE_GAP) {
           /* Keep the decision latched while Adaptive Reader incorporates the
@@ -260,6 +267,7 @@
         probeFallbackReserve = restorableReserve || reserve;
         probingBaseline = true;
         railLatched = false;
+        smallGapStreak = 0;
         baselineIntersectionArea = 0;
         baselineStageGap = null;
         restorableReserve = 0;

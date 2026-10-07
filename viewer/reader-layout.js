@@ -22,6 +22,11 @@
       // layout cycle re-learns convergence from scratch.
       var settlePrevOverflow = null;
       var WIDE_RATIO = 1.55;
+      // Never reflow the whole canvas to chase a residual scroll smaller
+      // than this: below it the page scrolls as authored and readability is
+      // preserved. Only a material overflow (a genuinely taller-than-viewport
+      // diagram) is worth shrinking for.
+      var SHRINK_OVERFLOW_MIN_PX = 96;
       var MIN_DESKTOP_WIDTH = 1024;
       var MIN_READER_WIDTH = 960;
       var MAX_READER_WIDTH = 1920;
@@ -251,15 +256,21 @@
             document.documentElement.scrollHeight,
             document.body.scrollHeight
           ) - window.innerHeight - belowFold();
-          // Shrink while any overflow persists: the canvas must fit the
-          // viewport instead of scrolling. Two guards keep the loop honest:
-          // persistence (a single-frame transient never ratchets) and
-          // improvement (a shrink that does not reduce the overflow holds
-          // instead of grinding to the floor).
+          // A shrink step that does not reduce the overflow is chasing fixed
+          // chrome or non-responsive content: hold the width instead of
+          // ratcheting down to the floor. Tracked across frames so genuine
+          // slow convergence still proceeds while a plateau stops it.
+          // Separately, never reflow the whole canvas to chase a residual
+          // scroll smaller than SHRINK_OVERFLOW_MIN_PX: below that the page
+          // scrolls as authored and readability is preserved. Only a
+          // material overflow (a genuinely taller-than-viewport diagram)
+          // is worth shrinking for. The overflow must also persist across
+          // two consecutive passes so single-frame transients (fonts,
+          // theme toggles) never ratchet the width down.
           var improving = settlePrevOverflow === null || overflow < settlePrevOverflow - 1;
-          var persistent = settlePrevOverflow !== null && settlePrevOverflow > 1;
+          var persistent = settlePrevOverflow !== null && settlePrevOverflow > SHRINK_OVERFLOW_MIN_PX;
           settlePrevOverflow = overflow;
-          if (overflow > 1 && persistent && lastWidth > Math.ceil(minWidth) && improving) {
+          if (overflow > SHRINK_OVERFLOW_MIN_PX && persistent && lastWidth > Math.ceil(minWidth) && improving) {
             applyWidth(Math.max(minWidth, lastWidth - overflow * ratio - 4), minWidth);
             settledCap = lastWidth;
             html.setAttribute('data-reader-overflow', 'reduced');
@@ -328,11 +339,6 @@
         // Only a docked rail (which consumes width beside the canvas)
         // enforces the comfort floor.
         if (mode !== 'true') primaryWidth = 0;
-        // Fit beats comfort: the floor is text readability, not the comfort
-        // size, so tall or wide diagrams shrink to the viewport instead of
-        // scrolling. Only a docked rail (which consumes width beside the
-        // canvas) enforces the comfort floor.
-        if (mode !== 'true') primaryWidth = 0;
         if (primaryWidth > 0) minWidth = Math.max(minWidth, Math.min(maxWidth, primaryWidth + chrome.diagramX));
         var docked = mode === 'true';
         setRail(mode);
@@ -343,6 +349,7 @@
         var availableSvgHeight = Math.max(1, Math.floor(window.innerHeight * 0.95) - fixedHeight);
         var desiredWidth = availableSvgHeight * ratio + chrome.diagramX + (docked ? railExtra : 0);
         var width = Math.max(minWidth, Math.min(maxWidth, desiredWidth, settledCap || desiredWidth));
+        try { window.__wlog.push({ w: Math.round(width), min: Math.round(minWidth), max: Math.round(maxWidth), des: Math.round(desiredWidth), cap: settledCap, availH: Math.round(availableSvgHeight), fixH: Math.round(fixedHeight) }); } catch (_) {}
         applyWidth(width, minWidth);
         // Fill the viewport vertically: the dotted canvas takes the available
         // height so no dead page shows below a short diagram. Capped at the
@@ -350,6 +357,17 @@
         var containerTop = diagram.getBoundingClientRect().top;
         var fillHeight = Math.max(0, window.innerHeight - containerTop - SAFE_BOTTOM_GAP);
         diagram.style.minHeight = Math.ceil(fillHeight) + 'px';
+        // Trim sub-viewport overshoot from below-fold margins (e.g. the cards
+        // slot's top margin leaks even when cards live in the rail), so the
+        // page never scrolls. Bounded: genuinely taller content is left as
+        // authored instead of grinding the canvas down.
+        var fillExcess = Math.max(
+          document.documentElement.scrollHeight,
+          document.body.scrollHeight
+        ) - window.innerHeight;
+        if (fillExcess > 0 && fillExcess <= 64) {
+          diagram.style.minHeight = Math.max(0, Math.ceil(fillHeight - fillExcess)) + 'px';
+        }
         settleOverflow(minWidth);
         return {
           ratio: ratio,

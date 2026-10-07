@@ -142,7 +142,7 @@ test('all five renderers add one geometry-neutral semantic sigil per primary nod
     assert.equal(sigils(staticSvg).length, expected, mode);
     assert.deepEqual(sigils(traceSvg), sigils(staticSvg), `${mode} trace must not change sigil geometry`);
     assert.match(staticHtml, /svg \.semantic-sigil \{/i, mode);
-    assert.match(staticHtml, /svg \.s-database\s+\{ color: var\(--document-stroke\); \}/, mode);
+    assert.match(staticHtml, /svg \.s-document\s+\{ color: var\(--document-stroke\); \}/, mode);
   }
 });
 

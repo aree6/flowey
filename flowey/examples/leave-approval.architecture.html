@@ -761,8 +761,10 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       overflow: hidden;
       position: relative;
       min-width: 0;
-      /* Glide with the sidebar instead of being overlapped by it. */
-      transition: margin 0.24s ease, padding 0.24s ease;
+      /* The sidebar docks beside the canvas (never overlapping it) with an
+         instant reflow: margin/padding transitions feed lagged geometry into
+         the rail/reader measurement loops, overshooting reserves and flapping
+         hover under a stationary cursor. */
     }
 
     html[data-preset="signal-flow"] .diagram-container {
@@ -4268,7 +4270,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       fill: none;
       stroke-width: 3.05;
       stroke-linecap: round;
-      stroke-dasharray: var(--flow-dash, 0.075 0.925);
+      stroke-dasharray: 8 17;
       stroke-dashoffset: 0;
       vector-effect: non-scaling-stroke;
       opacity: 0.9;
@@ -4438,7 +4440,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       stroke: var(--arrow-emphasis);
       stroke-width: 3.35;
       stroke-linecap: round;
-      stroke-dasharray: var(--flow-dash, 0.085 0.915);
+      stroke-dasharray: 8 17;
       stroke-dashoffset: 0;
       vector-effect: non-scaling-stroke;
       opacity: 0;
@@ -4528,7 +4530,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       /* Four dots per path (period 0.25 divides the -1 offset cycle, so the
          loop stays seamless): travel reads continuously on every edge instead
          of one faint dot that vanishes on short or zoomed routes. */
-      stroke-dasharray: var(--flow-dash, 0.1 0.9);
+      stroke-dasharray: 9 16;
       stroke-dashoffset: 0;
       vector-effect: non-scaling-stroke;
       opacity: 1;
@@ -4614,7 +4616,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       stroke: var(--action-stroke);
       stroke-width: 3.25;
       stroke-linecap: round;
-      stroke-dasharray: var(--flow-dash, 0.085 0.915);
+      stroke-dasharray: 8 17;
       stroke-dashoffset: 0;
       vector-effect: non-scaling-stroke;
       opacity: 0.96;
@@ -4627,7 +4629,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       stroke: var(--action-stroke);
       stroke-width: 3.5;
       stroke-linecap: round;
-      stroke-dasharray: var(--flow-dash, 0.1 0.9);
+      stroke-dasharray: 9 16;
       stroke-dashoffset: 0;
       vector-effect: non-scaling-stroke;
       opacity: 0;
@@ -4788,27 +4790,27 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     @keyframes flowey-intent-trace-flow {
       0% { opacity: 0.28; stroke-dashoffset: 0; }
       12%, 78% { opacity: 0.94; }
-      100% { opacity: 0; stroke-dashoffset: calc(var(--flowlen, 1px) * -1); }
+      100% { opacity: 0; stroke-dashoffset: -25; }
     }
     @keyframes flowey-route-probe-flow {
       0% { stroke-dashoffset: 0; opacity: 0.96; }
-      78% { stroke-dashoffset: calc(var(--flowlen, 1px) * -1); opacity: 0.96; }
+      78% { stroke-dashoffset: -25; opacity: 0.96; }
       100% { stroke-dasharray: none; stroke-dashoffset: 0; opacity: 0.58; }
     }
     @keyframes flowey-route-journey-flow {
       0% { opacity: 0.16; stroke-dashoffset: 0; }
       14%, 76% { opacity: 1; }
-      100% { opacity: 0; stroke-dashoffset: calc(var(--flowlen, 1px) * -1); }
+      100% { opacity: 0; stroke-dashoffset: -25; }
     }
     @keyframes flowey-semantic-lens-flow {
       0% { opacity: 0.2; stroke-dashoffset: 0; }
       12%, 78% { opacity: 0.9; }
-      100% { opacity: 0; stroke-dashoffset: calc(var(--flowlen, 1px) * -1); }
+      100% { opacity: 0; stroke-dashoffset: -25; }
     }
     @keyframes flowey-relationship-pulse {
       0% { opacity: 0.18; stroke-dashoffset: 0; }
       10%, 76% { opacity: 0.98; }
-      100% { opacity: 0; stroke-dashoffset: calc(var(--flowlen, 1px) * -1); }
+      100% { opacity: 0; stroke-dashoffset: -25; }
     }
     @keyframes flowey-relationship-token-life {
       0%, 7% { opacity: 0; }
@@ -7124,21 +7126,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
        trace yields to the strongest semantic owner; Still also parks bounded
        viewer signals without discarding their static meaning.
        ============================================================ */
-    // Chrome does not scale stylesheet stroke-dasharray by pathLength, so
-    // fractional overlay dashes render sub-pixel and the traveling pulse
-    // stays invisible. Measure the real length and store user-unit dashes
-    // plus a per-element travel distance as CSS vars instead. Stylesheet
-    // still/reduced-motion overrides keep winning because they beat the
-    // var-based base rule on specificity. Returns false when the length is
-    // unreadable so callers keep the pathLength fallback.
-    Flowey.flowDashFor = function (clone, shape, dash, gap) {
-      var length = 0;
-      try { length = shape.getTotalLength() || 0; } catch (_) { length = 0; }
-      if (!(length > 0)) return false;
-      clone.style.setProperty('--flow-dash', length * dash + ' ' + length * gap);
-      clone.style.setProperty('--flowlen', length + 'px');
-      return true;
-    };
     Flowey.motionGovernor = (function () {
       var STORAGE_KEY = 'flowey-motion';
       var html = document.documentElement;
@@ -8011,7 +7998,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         clone.removeAttribute('data-relationship-preview');
         clone.setAttribute('class', 'relationship-flow-pulse');
         clone.setAttribute('pathLength', '1');
-        if (typeof Flowey !== 'undefined' && Flowey.flowDashFor) Flowey.flowDashFor(clone, shape, 0.085, 0.165);
         return clone;
       }
       function relationshipTokenKind(edge) {
@@ -9116,6 +9102,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       var svg = container.querySelector(':scope > svg');
       var status = document.getElementById('intent-trace-status');
       var namespace = 'http://www.w3.org/2000/svg';
+      try { window.__traceLog = []; } catch (_) {}
       var activeId = null;
       var hoveredNode = null;
       var focusedNode = null;
@@ -9157,6 +9144,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       }
       function clear(options) {
         options = options || {};
+        try { window.__traceLog.push('clear:' + (options.announce === false ? 'silent' : 'announce') + ' active=' + activeId); } catch (_) {}
         if (enterTimer) window.clearTimeout(enterTimer);
         enterTimer = null;
         activeId = null;
@@ -9191,7 +9179,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         clone.setAttribute('class', 'intent-trace-flow');
         clone.setAttribute('data-direction', direction);
         clone.setAttribute('pathLength', '1');
-        if (typeof Flowey !== 'undefined' && Flowey.flowDashFor) Flowey.flowDashFor(clone, shape, 0.1, 0.9);
         return clone;
       }
       function show(id, options) {
@@ -9267,6 +9254,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         return true;
       }
       function schedule(node) {
+        try { window.__traceLog.push('schedule:' + (node && node.getAttribute('data-node-id'))); } catch (_) {}
         if (enterTimer) window.clearTimeout(enterTimer);
         enterTimer = window.setTimeout(function () {
           enterTimer = null;
@@ -9393,6 +9381,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       // layout cycle re-learns convergence from scratch.
       var settlePrevOverflow = null;
       var WIDE_RATIO = 1.55;
+      // Never reflow the whole canvas to chase a residual scroll smaller
+      // than this: below it the page scrolls as authored and readability is
+      // preserved. Only a material overflow (a genuinely taller-than-viewport
+      // diagram) is worth shrinking for.
+      var SHRINK_OVERFLOW_MIN_PX = 96;
       var MIN_DESKTOP_WIDTH = 1024;
       var MIN_READER_WIDTH = 960;
       var MAX_READER_WIDTH = 1920;
@@ -9622,15 +9615,21 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             document.documentElement.scrollHeight,
             document.body.scrollHeight
           ) - window.innerHeight - belowFold();
-          // Shrink while any overflow persists: the canvas must fit the
-          // viewport instead of scrolling. Two guards keep the loop honest:
-          // persistence (a single-frame transient never ratchets) and
-          // improvement (a shrink that does not reduce the overflow holds
-          // instead of grinding to the floor).
+          // A shrink step that does not reduce the overflow is chasing fixed
+          // chrome or non-responsive content: hold the width instead of
+          // ratcheting down to the floor. Tracked across frames so genuine
+          // slow convergence still proceeds while a plateau stops it.
+          // Separately, never reflow the whole canvas to chase a residual
+          // scroll smaller than SHRINK_OVERFLOW_MIN_PX: below that the page
+          // scrolls as authored and readability is preserved. Only a
+          // material overflow (a genuinely taller-than-viewport diagram)
+          // is worth shrinking for. The overflow must also persist across
+          // two consecutive passes so single-frame transients (fonts,
+          // theme toggles) never ratchet the width down.
           var improving = settlePrevOverflow === null || overflow < settlePrevOverflow - 1;
-          var persistent = settlePrevOverflow !== null && settlePrevOverflow > 1;
+          var persistent = settlePrevOverflow !== null && settlePrevOverflow > SHRINK_OVERFLOW_MIN_PX;
           settlePrevOverflow = overflow;
-          if (overflow > 1 && persistent && lastWidth > Math.ceil(minWidth) && improving) {
+          if (overflow > SHRINK_OVERFLOW_MIN_PX && persistent && lastWidth > Math.ceil(minWidth) && improving) {
             applyWidth(Math.max(minWidth, lastWidth - overflow * ratio - 4), minWidth);
             settledCap = lastWidth;
             html.setAttribute('data-reader-overflow', 'reduced');
@@ -9699,11 +9698,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         // Only a docked rail (which consumes width beside the canvas)
         // enforces the comfort floor.
         if (mode !== 'true') primaryWidth = 0;
-        // Fit beats comfort: the floor is text readability, not the comfort
-        // size, so tall or wide diagrams shrink to the viewport instead of
-        // scrolling. Only a docked rail (which consumes width beside the
-        // canvas) enforces the comfort floor.
-        if (mode !== 'true') primaryWidth = 0;
         if (primaryWidth > 0) minWidth = Math.max(minWidth, Math.min(maxWidth, primaryWidth + chrome.diagramX));
         var docked = mode === 'true';
         setRail(mode);
@@ -9714,6 +9708,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         var availableSvgHeight = Math.max(1, Math.floor(window.innerHeight * 0.95) - fixedHeight);
         var desiredWidth = availableSvgHeight * ratio + chrome.diagramX + (docked ? railExtra : 0);
         var width = Math.max(minWidth, Math.min(maxWidth, desiredWidth, settledCap || desiredWidth));
+        try { window.__wlog.push({ w: Math.round(width), min: Math.round(minWidth), max: Math.round(maxWidth), des: Math.round(desiredWidth), cap: settledCap, availH: Math.round(availableSvgHeight), fixH: Math.round(fixedHeight) }); } catch (_) {}
         applyWidth(width, minWidth);
         // Fill the viewport vertically: the dotted canvas takes the available
         // height so no dead page shows below a short diagram. Capped at the
@@ -9721,6 +9716,17 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         var containerTop = diagram.getBoundingClientRect().top;
         var fillHeight = Math.max(0, window.innerHeight - containerTop - SAFE_BOTTOM_GAP);
         diagram.style.minHeight = Math.ceil(fillHeight) + 'px';
+        // Trim sub-viewport overshoot from below-fold margins (e.g. the cards
+        // slot's top margin leaks even when cards live in the rail), so the
+        // page never scrolls. Bounded: genuinely taller content is left as
+        // authored instead of grinding the canvas down.
+        var fillExcess = Math.max(
+          document.documentElement.scrollHeight,
+          document.body.scrollHeight
+        ) - window.innerHeight;
+        if (fillExcess > 0 && fillExcess <= 64) {
+          diagram.style.minHeight = Math.max(0, Math.ceil(fillHeight - fillExcess)) + 'px';
+        }
         settleOverflow(minWidth);
         return {
           ratio: ratio,
@@ -9826,6 +9832,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       var settleFrame = 0;
       var reserve = 0;
       var railLatched = false;
+      var smallGapStreak = 0;
       var probingBaseline = false;
       var probePromise = null;
       var baselineIntersectionArea = 0;
@@ -9906,11 +9913,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       }
       function writeReserve(next, options) {
         options = options || {};
-        // Cap the reserve at one toolbar height plus the safe gap: beyond
-        // that the stage-gap feedback cannot converge (padding growth moves
-        // both the nav and the measured gap), so an unbounded reserve only
-        // inflates the page. Genuine legend/nav collisions resolve far below.
-        next = Math.min(72, Math.max(0, Math.ceil(next)));
+        next = Math.max(0, Math.ceil(next));
         if (Math.abs(next - reserve) < 1) return false;
         reserve = next;
         if (reserve) {
@@ -9938,6 +9941,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       function clear(options) {
         options = options || {};
         railLatched = false;
+        smallGapStreak = 0;
         if (options.preserveBaseline !== true) {
           baselineIntersectionArea = 0;
           baselineStageGap = null;
@@ -10030,9 +10034,18 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         if (!railLatched && reserve === 0) {
           baselineIntersectionArea = actualIntersectionArea;
           baselineStageGap = stageGap;
-          if (stageGap < SAFE_GAP) {
+          // Latch only on a repeated small gap: a single transient pass
+          // (load settling, rail toggles, width steps) must not freeze a
+          // rail the converged layout never needs. The follow-up measure
+          // is bounded (one extra frame); latching stops further polling.
+          if (stageGap < SAFE_GAP) smallGapStreak += 1;
+          else smallGapStreak = 0;
+          if (stageGap < SAFE_GAP && smallGapStreak >= 2) {
             railLatched = true;
+            smallGapStreak = 0;
             if (writeReserve(Math.max(0, SAFE_GAP - stageGap))) return null;
+          } else if (stageGap < SAFE_GAP) {
+            schedule();
           }
         } else if (railLatched && reserve > 0 && stageGap < SAFE_GAP) {
           /* Keep the decision latched while Adaptive Reader incorporates the
@@ -10072,6 +10085,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         probeFallbackReserve = restorableReserve || reserve;
         probingBaseline = true;
         railLatched = false;
+        smallGapStreak = 0;
         baselineIntersectionArea = 0;
         baselineStageGap = null;
         restorableReserve = 0;
@@ -12181,7 +12195,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         clone.removeAttribute('data-route-step');
         clone.setAttribute('class', 'route-probe-flow');
         clone.setAttribute('pathLength', '1');
-        if (typeof Flowey !== 'undefined' && Flowey.flowDashFor) Flowey.flowDashFor(clone, shape, 0.085, 0.165);
         clone.style.setProperty('--route-step', String(step));
         return clone;
       }
@@ -12284,7 +12297,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         clone.removeAttribute('data-route-journey-current');
         clone.setAttribute('class', 'route-journey-flow');
         clone.setAttribute('pathLength', '1');
-        if (typeof Flowey !== 'undefined' && Flowey.flowDashFor) Flowey.flowDashFor(clone, shape, 0.1, 0.15);
         return clone;
       }
       function renderJourneyPulse(edge) {
@@ -13115,7 +13127,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         clone.setAttribute('class', 'semantic-lens-flow');
         clone.setAttribute('data-direction', direction);
         clone.setAttribute('pathLength', '1');
-        if (typeof Flowey !== 'undefined' && Flowey.flowDashFor) Flowey.flowDashFor(clone, shape, 0.075, 0.175);
         clone.style.setProperty('--lens-flow-delay', (step * 0.08).toFixed(2) + 's');
         return clone;
       }

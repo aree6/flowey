@@ -61,12 +61,12 @@ test('pulse clones only the previewed authored geometry and keeps source-to-targ
   assert.match(html, /motion\.setAttribute\('path', pathData\)/);
   assert.match(html, /motion\.setAttribute\('rotate', 'auto'\)/);
   assert.match(html, /svg\.insertBefore\(overlay, firstNode\)/);
-  assert.match(html, /stroke-dashoffset: calc\(var\(--flowlen/);
+  assert.match(html, /stroke-dashoffset: -25/);
 });
 
 test('semantic token classification is evidence-based and fail-closed', () => {
   const html = render('lifecycle', CASES.lifecycle);
-  assert.match(html, /a-security.+sourceKind === 'decision'.+targetKind === 'failure'.+return 'decision'/s);
+  assert.match(html, /a-alert.+sourceKind === 'decision'.+targetKind === 'failure'.+return 'alert'/s);
   assert.match(html, /a-dashed.+sourceKind === 'record'.+targetKind === 'record'.+return 'event'/s);
   assert.match(html, /sourceKind === 'document' \|\| targetKind === 'document'.+return 'data'/s);
   assert.match(html, /targetKind === 'waiting' \|\| targetKind === 'success'.+return 'state'/s);
@@ -74,25 +74,25 @@ test('semantic token classification is evidence-based and fail-closed', () => {
   assert.doesNotMatch(html, /relationshipTokenKind[\s\S]{0,1800}data-edge-label/);
 });
 
-test('semantic tokens use five distinct inline SVG cues on one finite timing owner', () => {
+test('semantic tokens use five distinct inline SVG cues on one infinite timing owner', () => {
   const html = render('workflow', CASES.workflow);
   assert.match(html, /data-token-kind', kind/);
-  assert.match(html, /kind === 'data'[\s\S]+kind === 'event'[\s\S]+kind === 'decision'[\s\S]+kind === 'state'/);
+  assert.match(html, /kind === 'data'[\s\S]+kind === 'event'[\s\S]+kind === 'alert'[\s\S]+kind === 'state'/);
   assert.match(html, /document\.createElementNS\(svgNamespace, 'animateMotion'\)/);
   assert.match(html, /motion\.setAttribute\('dur', options\.duration \|\| '1\.2s'\)/);
-  assert.match(html, /animation: flowey-relationship-token-life 1\.2s linear 1 both/);
+  assert.match(html, /animation: flowey-relationship-token-life 1\.2s linear infinite/);
   assert.match(html, /semantic-flow-token-halo/);
   assert.match(html, /Flowey\.flowTokens = \{/);
   assert.match(html, /data-relationship-token-kind', tokenKind/);
   assert.match(html, /var tokenAdded = false/);
-  assert.doesNotMatch(html, /relationship-flow-token[^}]+infinite/);
+  assert.match(html, /relationship-flow-token[^}]+infinite/);
 });
 
-test('pulse is finite, event-owned, preset-aware, touch-safe, and motion-safe', () => {
+test('pulse is infinite, event-owned, preset-aware, touch-safe, and motion-safe', () => {
   const html = render('architecture', CASES.architecture);
-  assert.match(html, /animation: flowey-relationship-pulse 1\.2s linear 1 both/);
+  assert.match(html, /animation: flowey-relationship-pulse 1\.2s linear infinite/);
   assert.match(html, /@keyframes flowey-relationship-token-life/);
-  assert.doesNotMatch(html, /relationship-flow-pulse[^}]+infinite/);
+  assert.match(html, /relationship-flow-pulse[^}]+infinite/);
   assert.match(html, /var activeRelationshipPreview = null/);
   assert.match(html, /if \(next === activeRelationshipPreview\) return/);
   assert.match(html, /event\.pointerType === 'touch'/);

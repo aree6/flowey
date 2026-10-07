@@ -9,6 +9,7 @@
       var svg = container.querySelector(':scope > svg');
       var status = document.getElementById('intent-trace-status');
       var namespace = 'http://www.w3.org/2000/svg';
+      try { window.__traceLog = []; } catch (_) {}
       var activeId = null;
       var hoveredNode = null;
       var focusedNode = null;
@@ -50,6 +51,7 @@
       }
       function clear(options) {
         options = options || {};
+        try { window.__traceLog.push('clear:' + (options.announce === false ? 'silent' : 'announce') + ' active=' + activeId); } catch (_) {}
         if (enterTimer) window.clearTimeout(enterTimer);
         enterTimer = null;
         activeId = null;
@@ -84,7 +86,6 @@
         clone.setAttribute('class', 'intent-trace-flow');
         clone.setAttribute('data-direction', direction);
         clone.setAttribute('pathLength', '1');
-        if (typeof Flowey !== 'undefined' && Flowey.flowDashFor) Flowey.flowDashFor(clone, shape, 0.1, 0.9);
         return clone;
       }
       function show(id, options) {
@@ -160,6 +161,7 @@
         return true;
       }
       function schedule(node) {
+        try { window.__traceLog.push('schedule:' + (node && node.getAttribute('data-node-id'))); } catch (_) {}
         if (enterTimer) window.clearTimeout(enterTimer);
         enterTimer = window.setTimeout(function () {
           enterTimer = null;

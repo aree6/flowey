@@ -89,6 +89,10 @@ test('Intent Trace preserves input handoffs, transient geometry and cleanup', {
     await loaded;
     await checkPointer();
     await run('document.fonts.ready'); await run('Flowey.viewerChromeLayout.whenStable()');
+    // Hover tests need the READER converged too, not just fonts and chrome:
+    // width/reserve settle in the first post-load frames, and hovering
+    // mid-settle flaps boundary events and kills the 90ms hover timer.
+    await run('Flowey.layoutStability.whenStable()');
   }
   async function point(selector) {
     return run(`(()=>{const r=document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);
@@ -289,7 +293,23 @@ test('Intent Trace preserves input handoffs, transient geometry and cleanup', {
   await t.test('real CSS completion, Motion ownership, reduced motion and themes preserve previews', async () => {
     await load('trace'); await run(`intentWait(()=>document.documentElement.getAttribute('data-ambient-motion')==='settled')`);
     await move('api'); await run(`intentWait(()=>Flowey.motionGovernor.owner()==='intent')`);
-    await run(`intentWait(()=>intentEnds.some(e=>e.trusted&&e.name==='flowey-intent-trace-flow'))`);
+    // Hover traces loop infinitely (single-pass upstream plays once): no
+    // animationend ever fires, so assert the infinite contract instead —
+    // infinite iteration with advancing offsets on real connected edges.
+    await run(`intentWait(()=>{
+      const flows=[...document.querySelectorAll('.intent-trace-flow')];
+      if(!flows.length) return false;
+      const lone=flows[0], cs=getComputedStyle(lone);
+      if(cs.animationIterationCount!=='infinite') return false;
+      lone.dataset.flowSample=cs.strokeDashoffset;
+      return true;
+    })`);
+    await run(`new Promise(resolve=>setTimeout(resolve,600))`);
+    const advanced = await run(`(()=>{
+      const flows=[...document.querySelectorAll('.intent-trace-flow')];
+      return flows.length>0 && flows.some(p=>getComputedStyle(p).strokeDashoffset!==p.dataset.flowSample);
+    })()`);
+    assert.equal(advanced, true, 'hover traces must keep traveling while hovered');
     assert.equal((await snapshot('animation-complete')).active, 'api');
     const direction = await run(`getComputedStyle(document.querySelector('.intent-trace-flow[data-direction="in"]')).animationDirection`);
     assert.equal(direction, 'normal');

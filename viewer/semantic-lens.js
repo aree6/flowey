@@ -253,7 +253,6 @@
         clone.setAttribute('class', 'semantic-lens-flow');
         clone.setAttribute('data-direction', direction);
         clone.setAttribute('pathLength', '1');
-        if (typeof Flowey !== 'undefined' && Flowey.flowDashFor) Flowey.flowDashFor(clone, shape, 0.075, 0.175);
         clone.style.setProperty('--lens-flow-delay', (step * 0.08).toFixed(2) + 's');
         return clone;
       }

@@ -592,8 +592,10 @@ html[data-preset="editorial"] .header-row::after {
   overflow: hidden;
   position: relative;
   min-width: 0;
-  /* Glide with the sidebar instead of being overlapped by it. */
-  transition: margin 0.24s ease, padding 0.24s ease;
+  /* The sidebar docks beside the canvas (never overlapping it) with an
+     instant reflow: margin/padding transitions feed lagged geometry into
+     the rail/reader measurement loops, overshooting reserves and flapping
+     hover under a stationary cursor. */
 }
 
 html[data-preset="signal-flow"] .diagram-container {
@@ -4099,7 +4101,7 @@ svg[data-lens-active] [data-lens-selected] {
   fill: none;
   stroke-width: 3.05;
   stroke-linecap: round;
-  stroke-dasharray: var(--flow-dash, 0.075 0.925);
+  stroke-dasharray: 8 17;
   stroke-dashoffset: 0;
   vector-effect: non-scaling-stroke;
   opacity: 0.9;
@@ -4269,7 +4271,7 @@ svg[data-relationship-preview-active] [data-relationship-preview-target] {
   stroke: var(--arrow-emphasis);
   stroke-width: 3.35;
   stroke-linecap: round;
-  stroke-dasharray: var(--flow-dash, 0.085 0.915);
+  stroke-dasharray: 8 17;
   stroke-dashoffset: 0;
   vector-effect: non-scaling-stroke;
   opacity: 0;
@@ -4359,7 +4361,7 @@ svg[data-intent-trace-active] [data-intent-trace-selected] {
   /* Four dots per path (period 0.25 divides the -1 offset cycle, so the
      loop stays seamless): travel reads continuously on every edge instead
      of one faint dot that vanishes on short or zoomed routes. */
-  stroke-dasharray: var(--flow-dash, 0.1 0.9);
+  stroke-dasharray: 9 16;
   stroke-dashoffset: 0;
   vector-effect: non-scaling-stroke;
   opacity: 1;
@@ -4445,7 +4447,7 @@ svg[data-route-journey] [data-edge-from][data-route-journey-current] {
   stroke: var(--action-stroke);
   stroke-width: 3.25;
   stroke-linecap: round;
-  stroke-dasharray: var(--flow-dash, 0.085 0.915);
+  stroke-dasharray: 8 17;
   stroke-dashoffset: 0;
   vector-effect: non-scaling-stroke;
   opacity: 0.96;
@@ -4458,7 +4460,7 @@ svg[data-route-journey] [data-edge-from][data-route-journey-current] {
   stroke: var(--action-stroke);
   stroke-width: 3.5;
   stroke-linecap: round;
-  stroke-dasharray: var(--flow-dash, 0.1 0.9);
+  stroke-dasharray: 9 16;
   stroke-dashoffset: 0;
   vector-effect: non-scaling-stroke;
   opacity: 0;
@@ -4619,27 +4621,27 @@ html[data-share-playback="true"] svg[data-animation="trace"] [data-graph-role="a
 @keyframes flowey-intent-trace-flow {
   0% { opacity: 0.28; stroke-dashoffset: 0; }
   12%, 78% { opacity: 0.94; }
-  100% { opacity: 0; stroke-dashoffset: calc(var(--flowlen, 1px) * -1); }
+  100% { opacity: 0; stroke-dashoffset: -25; }
 }
 @keyframes flowey-route-probe-flow {
   0% { stroke-dashoffset: 0; opacity: 0.96; }
-  78% { stroke-dashoffset: calc(var(--flowlen, 1px) * -1); opacity: 0.96; }
+  78% { stroke-dashoffset: -25; opacity: 0.96; }
   100% { stroke-dasharray: none; stroke-dashoffset: 0; opacity: 0.58; }
 }
 @keyframes flowey-route-journey-flow {
   0% { opacity: 0.16; stroke-dashoffset: 0; }
   14%, 76% { opacity: 1; }
-  100% { opacity: 0; stroke-dashoffset: calc(var(--flowlen, 1px) * -1); }
+  100% { opacity: 0; stroke-dashoffset: -25; }
 }
 @keyframes flowey-semantic-lens-flow {
   0% { opacity: 0.2; stroke-dashoffset: 0; }
   12%, 78% { opacity: 0.9; }
-  100% { opacity: 0; stroke-dashoffset: calc(var(--flowlen, 1px) * -1); }
+  100% { opacity: 0; stroke-dashoffset: -25; }
 }
 @keyframes flowey-relationship-pulse {
   0% { opacity: 0.18; stroke-dashoffset: 0; }
   10%, 76% { opacity: 0.98; }
-  100% { opacity: 0; stroke-dashoffset: calc(var(--flowlen, 1px) * -1); }
+  100% { opacity: 0; stroke-dashoffset: -25; }
 }
 @keyframes flowey-relationship-token-life {
   0%, 7% { opacity: 0; }

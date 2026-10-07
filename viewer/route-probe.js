@@ -353,7 +353,6 @@
         clone.removeAttribute('data-route-step');
         clone.setAttribute('class', 'route-probe-flow');
         clone.setAttribute('pathLength', '1');
-        if (typeof Flowey !== 'undefined' && Flowey.flowDashFor) Flowey.flowDashFor(clone, shape, 0.085, 0.165);
         clone.style.setProperty('--route-step', String(step));
         return clone;
       }
@@ -456,7 +455,6 @@
         clone.removeAttribute('data-route-journey-current');
         clone.setAttribute('class', 'route-journey-flow');
         clone.setAttribute('pathLength', '1');
-        if (typeof Flowey !== 'undefined' && Flowey.flowDashFor) Flowey.flowDashFor(clone, shape, 0.1, 0.15);
         return clone;
       }
       function renderJourneyPulse(edge) {
