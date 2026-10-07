@@ -4531,12 +4531,12 @@ svg[data-preset="blueprint"][data-relationship-preview-active] [data-relationshi
    The ordinary viewer performs one ambient pass and then restores the
    authored solid/alert/async line language. WebM samples the same
    authored geometry into an explicit canvas timeline. */
-html[data-ambient-motion] svg[data-animation="trace"] [data-animate="edge"] {
-  animation: flowey-edge-flow 2.4s linear infinite;
+html[data-ambient-motion="running"] svg[data-animation="trace"] [data-animate="edge"] {
+  animation: flowey-edge-flow 2.4s linear 1;
   animation-delay: calc(var(--step, 0) * 160ms);
 }
-html[data-ambient-motion] svg[data-animation="trace"] [data-graph-role="automatic-crossover"]:has(> [data-animate="edge"]) > [data-graph-role="automatic-crossover-underlay"] {
-  animation: flowey-edge-flow 2.4s linear infinite;
+html[data-ambient-motion="running"] svg[data-animation="trace"] [data-graph-role="automatic-crossover"]:has(> [data-animate="edge"]) > [data-graph-role="automatic-crossover-underlay"] {
+  animation: flowey-edge-flow 2.4s linear 1;
   animation-delay: calc(var(--step, 0) * 160ms);
 }
 html[data-ambient-motion="running"] svg[data-animation="trace"] [data-animate="node"] {

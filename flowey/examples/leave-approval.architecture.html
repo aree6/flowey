@@ -4700,12 +4700,12 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
        The ordinary viewer performs one ambient pass and then restores the
        authored solid/alert/async line language. WebM samples the same
        authored geometry into an explicit canvas timeline. */
-    html[data-ambient-motion] svg[data-animation="trace"] [data-animate="edge"] {
-      animation: flowey-edge-flow 2.4s linear infinite;
+    html[data-ambient-motion="running"] svg[data-animation="trace"] [data-animate="edge"] {
+      animation: flowey-edge-flow 2.4s linear 1;
       animation-delay: calc(var(--step, 0) * 160ms);
     }
-    html[data-ambient-motion] svg[data-animation="trace"] [data-graph-role="automatic-crossover"]:has(> [data-animate="edge"]) > [data-graph-role="automatic-crossover-underlay"] {
-      animation: flowey-edge-flow 2.4s linear infinite;
+    html[data-ambient-motion="running"] svg[data-animation="trace"] [data-graph-role="automatic-crossover"]:has(> [data-animate="edge"]) > [data-graph-role="automatic-crossover-underlay"] {
+      animation: flowey-edge-flow 2.4s linear 1;
       animation-delay: calc(var(--step, 0) * 160ms);
     }
     html[data-ambient-motion="running"] svg[data-animation="trace"] [data-animate="node"] {
@@ -7166,7 +7166,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         if (!capable) return false;
         ambientStarted = true;
         ambientPending.clear();
-        if (ambientFallback) { window.clearTimeout(ambientFallback); ambientFallback = 0; }
         detachAmbientBoundary();
         html.setAttribute('data-ambient-motion', 'settled');
         html.setAttribute('data-ambient-settle-reason', reason || 'complete');
@@ -7177,7 +7176,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         ambientPending.delete(event.target);
         if (!ambientPending.size) settleAmbient('complete');
       }
-      var ambientFallback = 0;
       function startAmbient() {
         if (ambientStarted || !capable) return false;
         ambientStarted = true;
@@ -7185,14 +7183,6 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         if (!ambientPending.size) return settleAmbient('empty');
         svg.addEventListener('animationend', onAmbientBoundary, true);
         svg.addEventListener('animationcancel', onAmbientBoundary, true);
-        // Infinite ambient loops never fire animationend, so a wall-clock
-        // fallback settles the bookkeeping (visuals keep running under the
-        // settled gate). The cap sits past the longest single-pass ambient
-        // budget (12 steps x 160ms + 3.6s node pulse) with headroom.
-        if (ambientFallback) window.clearTimeout(ambientFallback);
-        ambientFallback = window.setTimeout(function () {
-          if (ambientPending.size) settleAmbient('timeout');
-        }, 8000);
         html.setAttribute('data-ambient-motion', 'running');
         html.removeAttribute('data-ambient-settle-reason');
         return true;
