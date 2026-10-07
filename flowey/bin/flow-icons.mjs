@@ -25,12 +25,21 @@ export function searchIcons(query) {
   const words = String(query || '').toLocaleLowerCase('en-US').split(/[\s_-]+/).filter(Boolean);
   const names = Object.keys(glyphs).sort();
   if (!words.length) return names.map((name) => ({ name, ...glyphs[name] }));
+  // Rank by how many query words hit the glyph name or tags: a multi-word
+  // query narrows to the best matches instead of returning nothing when one
+  // word misses. Words under 3 characters only count on an exact token hit
+  // (so "db" still finds the database tag but "xyz" noise matches nothing).
   return names
-    .filter((name) => {
-      const hay = `${name} ${(glyphs[name].tags || []).join(' ')}`.toLocaleLowerCase('en-US');
-      return words.every((word) => hay.includes(word));
+    .map((name) => {
+      const tags = glyphs[name].tags || [];
+      const hay = `${name} ${tags.join(' ')}`.toLocaleLowerCase('en-US');
+      const tokens = new Set(hay.split(/[\s_-]+/));
+      const score = words.filter((word) => (word.length >= 3 ? hay.includes(word) : tokens.has(word))).length;
+      return { name, ...glyphs[name], score };
     })
-    .map((name) => ({ name, ...glyphs[name] }));
+    .filter((match) => match.score > 0)
+    .sort((a, b) => b.score - a.score || (a.name < b.name ? -1 : 1))
+    .map(({ score, ...match }) => match);
 }
 
 export function emitIcon(name) {

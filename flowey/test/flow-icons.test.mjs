@@ -15,8 +15,12 @@ test('flow-icons searches vendored glyphs by name and tag', () => {
   assert.ok(byName.some((m) => m.name === 'database'));
   const byTag = searchIcons('fee');
   assert.ok(byTag.some((m) => m.name === 'bank'));
+  // Multi-word queries rank best-first instead of returning nothing.
   const multi = searchIcons('pay fee');
-  assert.deepEqual(multi.map((m) => m.name), ['bank']);
+  assert.equal(multi[0].name, 'bank');
+  const broad = searchIcons('customer mobile payment restaurant rider map');
+  assert.ok(broad.length > 0);
+  assert.ok(broad.some((m) => m.name === 'device-mobile'));
   assert.deepEqual(searchIcons('no-such-glyph-xyz').length, 0);
   // Empty query lists the whole vendored set, sorted.
   const all = searchIcons('');

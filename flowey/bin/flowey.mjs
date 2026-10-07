@@ -6288,7 +6288,7 @@ async function commandIcons(args) {
       schemaVersion: 1, ok: true, command: 'icons',
       query, count: matches.length,
       matches: matches.map((m) => ({ icon: m.name, tone: m.tone, tags: m.tags })),
-      usage: 'Set node "icon" to the chosen name, e.g. {"id": "db", "type": "document", "icon": "database"}.',
+      usage: 'Set node "icon" to the match "icon" value, e.g. {"id": "db", "type": "document", "icon": "database"}. Results rank best-first when several words match.',
     }, null, 2));
     return;
   }

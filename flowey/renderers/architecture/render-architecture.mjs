@@ -571,6 +571,43 @@ function validateArchitecture() {
       }
     }
   }
+  // A non-member drawn fully inside a boundary frame reads as a member even
+  // though wraps says otherwise: flag it so geometry and membership agree.
+  // Members of a boundary nested inside the frame are exempt (frame nesting
+  // is already checked for membership agreement above).
+  for (const boundary of boundaries) {
+    const exempt = new Set(asArray(boundary.wraps));
+    for (const other of boundaries) {
+      if (other === boundary) continue;
+      if (rectContains(boundary, other)) {
+        for (const id of asArray(other.wraps)) exempt.add(id);
+      }
+    }
+    // Inset the frame so components merely touching its edge are not flagged.
+    const inner = {
+      x: boundary.x + 4, y: boundary.y + 4,
+      width: boundary.width - 8, height: boundary.height - 8,
+    };
+    if (inner.width <= 0 || inner.height <= 0) continue;
+    for (const component of components.values()) {
+      if (exempt.has(component.id)) continue;
+      if (!rectContains(inner, component)) continue;
+      const message = `Component "${component.id}" sits inside boundary "${boundary.label}" but is not in its wraps — move the component outside the frame or add it to wraps so geometry and membership agree.`;
+      problems.push(message);
+      diagnostics.push({
+        code: 'layout/boundary-membership', severity: 'error', message,
+        subject: { diagramType: 'architecture', collection: 'components', id: component.id },
+        evidence: {
+          boundary: { kind: boundary.kind, label: boundary.label, wraps: asArray(boundary.wraps) },
+          component: { x: component.x, y: component.y, width: component.width, height: component.height },
+        },
+        supportedFixes: [
+          `move component "${component.id}" outside the "${boundary.label}" frame`,
+          `add "${component.id}" to the wraps of boundary "${boundary.label}"`,
+        ],
+      });
+    }
+  }
   for (const b of boundaries) {
     if (b.x < 0 || b.y < 0 || b.x + b.width > viewBox[0] || b.y + b.height > viewBox[1]) {
       const overflow = {
