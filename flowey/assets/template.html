@@ -4270,7 +4270,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       fill: none;
       stroke-width: 3.05;
       stroke-linecap: round;
-      stroke-dasharray: 8 17;
+      stroke-dasharray: 0.075 0.925;
       stroke-dashoffset: 0;
       vector-effect: non-scaling-stroke;
       opacity: 0.9;
@@ -4440,7 +4440,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       stroke: var(--arrow-emphasis);
       stroke-width: 3.35;
       stroke-linecap: round;
-      stroke-dasharray: 8 17;
+      stroke-dasharray: 0.085 0.915;
       stroke-dashoffset: 0;
       vector-effect: non-scaling-stroke;
       opacity: 0;
@@ -4530,7 +4530,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       /* Four dots per path (period 0.25 divides the -1 offset cycle, so the
          loop stays seamless): travel reads continuously on every edge instead
          of one faint dot that vanishes on short or zoomed routes. */
-      stroke-dasharray: 9 16;
+      stroke-dasharray: 0.1 0.9;
       stroke-dashoffset: 0;
       vector-effect: non-scaling-stroke;
       opacity: 1;
@@ -4616,7 +4616,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       stroke: var(--action-stroke);
       stroke-width: 3.25;
       stroke-linecap: round;
-      stroke-dasharray: 8 17;
+      stroke-dasharray: 0.085 0.915;
       stroke-dashoffset: 0;
       vector-effect: non-scaling-stroke;
       opacity: 0.96;
@@ -4629,7 +4629,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       stroke: var(--action-stroke);
       stroke-width: 3.5;
       stroke-linecap: round;
-      stroke-dasharray: 9 16;
+      stroke-dasharray: 0.1 0.9;
       stroke-dashoffset: 0;
       vector-effect: non-scaling-stroke;
       opacity: 0;
@@ -4790,27 +4790,27 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     @keyframes flowey-intent-trace-flow {
       0% { opacity: 0.28; stroke-dashoffset: 0; }
       12%, 78% { opacity: 0.94; }
-      100% { opacity: 0; stroke-dashoffset: -25; }
+      100% { opacity: 0; stroke-dashoffset: -1; }
     }
     @keyframes flowey-route-probe-flow {
       0% { stroke-dashoffset: 0; opacity: 0.96; }
-      78% { stroke-dashoffset: -25; opacity: 0.96; }
+      78% { stroke-dashoffset: -1; opacity: 0.96; }
       100% { stroke-dasharray: none; stroke-dashoffset: 0; opacity: 0.58; }
     }
     @keyframes flowey-route-journey-flow {
       0% { opacity: 0.16; stroke-dashoffset: 0; }
       14%, 76% { opacity: 1; }
-      100% { opacity: 0; stroke-dashoffset: -25; }
+      100% { opacity: 0; stroke-dashoffset: -1; }
     }
     @keyframes flowey-semantic-lens-flow {
       0% { opacity: 0.2; stroke-dashoffset: 0; }
       12%, 78% { opacity: 0.9; }
-      100% { opacity: 0; stroke-dashoffset: -25; }
+      100% { opacity: 0; stroke-dashoffset: -1; }
     }
     @keyframes flowey-relationship-pulse {
       0% { opacity: 0.18; stroke-dashoffset: 0; }
       10%, 76% { opacity: 0.98; }
-      100% { opacity: 0; stroke-dashoffset: -25; }
+      100% { opacity: 0; stroke-dashoffset: -1; }
     }
     @keyframes flowey-relationship-token-life {
       0%, 7% { opacity: 0; }
