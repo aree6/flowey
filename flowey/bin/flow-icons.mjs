@@ -42,8 +42,48 @@ export function searchIcons(query) {
     .map(({ score, ...match }) => match);
 }
 
-export function emitIcon(name) {
+// Closest catalog names to a no-match query, for "did you mean" hints.
+// Substring affinity plus single-typo tolerance only: looser fuzzy guesses
+// mislead more than they help.
+function typoDistance(a, b) {
+  if (a[0] !== b[0] || Math.abs(a.length - b.length) > 1) return Infinity;
+  let edits = 0;
+  let i = 0;
+  let j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { i += 1; j += 1; continue; }
+    edits += 1;
+    if (edits > 1) return Infinity;
+    if (a.length > b.length) i += 1;
+    else if (b.length > a.length) j += 1;
+    else { i += 1; j += 1; }
+  }
+  return edits + (a.length - i) + (b.length - j);
+}
+
+export function suggestIcons(query, limit = 3) {
   const glyphs = readCatalog();
+  const words = String(query || '').toLocaleLowerCase('en-US').split(/[\s_-]+/).filter(Boolean);
+  if (!words.length) return [];
+  const names = Object.keys(glyphs).sort();
+  const scored = names.map((name) => {
+    const tags = glyphs[name].tags || [];
+    const tokens = `${name} ${tags.join(' ')}`.toLocaleLowerCase('en-US').split(/[\s_-]+/);
+    let best = Infinity;
+    for (const word of words) {
+      if (word.length < 4) continue;
+      for (const token of tokens) {
+        if (token.length >= 4 && (token.includes(word) || word.includes(token))) { best = 0; break; }
+        if (word.length >= 5 && token.length >= 5 && typoDistance(word, token) <= 1) best = Math.min(best, 1);
+      }
+      if (best === 0) break;
+    }
+    return { name, best };
+  });
+  return scored.filter((s) => s.best <= 1).sort((a, b) => a.best - b.best).slice(0, limit).map((s) => s.name);
+}
+
+export function emitIcon(name) {  const glyphs = readCatalog();
   if (!glyphs[name]) {
     const error = new Error(`Unknown icon ${JSON.stringify(name)}. Run "flowey icons <words>" to search.`);
     error.code = 'icons/unknown-icon';

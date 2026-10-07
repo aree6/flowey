@@ -6223,6 +6223,10 @@ function writeStageOutput(outputPath, html) {
 }
 
 async function commandMotion(args) {
+  if (args.includes('--help') || args.includes('-h')) {
+    console.log('Usage: flowey motion <input.html> [output.html] [--json]\n\nLoops hover-trace animations for presentations. Deterministic post-delivery stage: refuses to double-wrap; report its output SHA separately since the delivery receipt covers the pre-stage bytes. Re-running deliver/finalize wipes it.');
+    return;
+  }
   const json = args.includes('--json');
   const positional = args.filter((arg) => !arg.startsWith('--'));
   const unknown = args.find((arg) => arg.startsWith('--') && arg !== '--json');
@@ -6252,6 +6256,10 @@ async function commandMotion(args) {
 }
 
 async function commandIcons(args) {
+  if (args.includes('--help') || args.includes('-h')) {
+    console.log('Usage: flowey icons <words> [--emit] [--limit <n>] [--json]\n\nSearches the 50 vendored Phosphor glyphs (MIT, offline, icons/). Query one concrete noun at a time ("database", not "customer mobile payment"); results rank best-first. Set node "icon" to the match "icon" value. --emit prints the corner-stamp markup.');
+    return;
+  }
   const json = args.includes('--json');
   const emit = args.includes('--emit');
   let limit = 12;
@@ -6271,10 +6279,10 @@ async function commandIcons(args) {
     }
   }
   const query = rest.join(' ').trim();
-  const { searchIcons, emitIcon } = await import('./flow-icons.mjs');
+  const { searchIcons, emitIcon, suggestIcons } = await import('./flow-icons.mjs');
   if (emit) {
     const matches = searchIcons(query).slice(0, limit);
-    if (!matches.length) fail(`No vendored icon matched "${query}". Try fewer words.`);
+    if (!matches.length) fail(`No vendored icon matched "${query}". Query one concrete noun at a time; run "flowey icons" with no query to list all 50.`);
     if (json) {
       console.log(JSON.stringify({ schemaVersion: 1, ok: true, command: 'icons', query, matches }, null, 2));
       return;
@@ -6288,18 +6296,26 @@ async function commandIcons(args) {
       schemaVersion: 1, ok: true, command: 'icons',
       query, count: matches.length,
       matches: matches.map((m) => ({ icon: m.name, tone: m.tone, tags: m.tags })),
-      usage: 'Set node "icon" to the match "icon" value, e.g. {"id": "db", "type": "document", "icon": "database"}. Results rank best-first when several words match.',
+      suggestions: matches.length ? undefined : suggestIcons(query),
+      usage: 'Set node "icon" to the match "icon" value, e.g. {"id": "db", "type": "document", "icon": "database"}. Results rank best-first when several words match; query one concrete noun at a time.',
     }, null, 2));
     return;
   }
   if (!matches.length) {
-    console.log(query ? `No vendored icon matched "${query}". Try fewer words.` : 'Vendored icons (50 Phosphor glyphs, MIT):');
+    const suggestions = suggestIcons(query);
+    console.log(query
+      ? `No vendored icon matched "${query}".${suggestions.length ? ` Did you mean: ${suggestions.join(', ')}?` : ''} Query one concrete noun at a time (truck, bank, clinic, database); run "flowey icons" with no query to list all 50.`
+      : 'Vendored icons (50 Phosphor glyphs, MIT):');
     return;
   }
   for (const match of matches) console.log(`${match.name} — ${(match.tags || []).join(', ')}`);
 }
 
 async function commandLinks(args) {
+  if (args.includes('--help') || args.includes('-h')) {
+    console.log('Usage: flowey links <input.html> [output.html] --map <links.json> [--json]\n\nWires node clicks (and Enter/Space) to open the mapped targets in a new tab. The map is { "<node-id>": "<url-or-relative-path>" }; every id must exist as id="node-<id>" in the artifact. Deterministic post-delivery stage: refuses to double-wrap, rejects unknown ids; report its output SHA separately since the delivery receipt covers the pre-stage bytes. Verify wired pages by opening them and clicking through (see the drill-down rule in SKILL.md).');
+    return;
+  }
   const json = args.includes('--json');
   let mapPath;
   const positional = [];

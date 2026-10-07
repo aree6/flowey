@@ -6,7 +6,7 @@ import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
-import { emitIcon, searchIcons } from '../bin/flow-icons.mjs';
+import { emitIcon, searchIcons, suggestIcons } from '../bin/flow-icons.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -32,6 +32,15 @@ test('flow-icons catalog matches vendored files one-to-one', () => {
   const catalog = JSON.parse(fs.readFileSync(path.join(root, 'icons/catalog.json'), 'utf8'));
   const files = fs.readdirSync(path.join(root, 'icons/phosphor')).filter((f) => f.endsWith('.svg'));
   assert.deepEqual(files.map((f) => f.replace(/\.svg$/, '')).sort(), Object.keys(catalog.glyphs).sort());
+});
+
+test('flow-icons suggest offers substring affinity and single-typo help, never noise', () => {
+  assert.ok(suggestIcons('delivery').includes('package') || suggestIcons('delivery').includes('truck'));
+  assert.deepEqual(suggestIcons('paymnt').slice(0, 1), ['bank']);
+  assert.deepEqual(suggestIcons('rider'), []);
+  assert.deepEqual(suggestIcons('courier'), []);
+  assert.deepEqual(suggestIcons('no-such-glyph-xyz'), []);
+  assert.deepEqual(suggestIcons(''), []);
 });
 
 test('flow-icons emit returns inert scaled stamp markup', () => {
