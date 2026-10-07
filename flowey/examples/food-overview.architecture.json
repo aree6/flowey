@@ -156,7 +156,8 @@
   "meta": {
     "output": "food-overview.html",
     "quality_profile": "showcase",
-    "title": "Food Delivery Platform (overview)"
+    "title": "Food Delivery Platform (overview)",
+    "animation": "trace"
   },
   "schema_version": 1
 }

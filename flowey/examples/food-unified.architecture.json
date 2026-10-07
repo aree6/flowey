@@ -210,7 +210,8 @@
   "meta": {
     "output": "food-unified.html",
     "quality_profile": "showcase",
-    "title": "Food Delivery Platform (unified)"
+    "title": "Food Delivery Platform (unified)",
+    "animation": "trace"
   },
   "schema_version": 1
 }

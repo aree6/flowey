@@ -36,3 +36,7 @@ canonical shape is four pages (see `examples/food-*.architecture.json` and
 - Every node sets an `icon` from `flowey icons <single-word>` (never guessed).
 - Keep the overview to one row of subsystems plus one row of shared
   dependencies; detail pages stay under 6 nodes each.
+- Decks set `meta.animation: "trace"` so edges play the ambient pulse and
+  hover/focus traces travel every connected edge infinitely. For presenting,
+  apply `flowey motion` after `links` so hover traces loop at presentation
+  pacing instead of playing once.

@@ -105,7 +105,8 @@
   "meta": {
     "output": "food-dispatch-detail.html",
     "quality_profile": "showcase",
-    "title": "Rider Dispatch (detail)"
+    "title": "Rider Dispatch (detail)",
+    "animation": "trace"
   },
   "schema_version": 1
 }

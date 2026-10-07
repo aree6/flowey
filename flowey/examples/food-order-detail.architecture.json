@@ -120,7 +120,8 @@
   "meta": {
     "output": "food-order-detail.html",
     "quality_profile": "showcase",
-    "title": "Order Flow (detail)"
+    "title": "Order Flow (detail)",
+    "animation": "trace"
   },
   "schema_version": 1
 }
