@@ -127,9 +127,12 @@
         // enlarging every other node to compensate.
         return labelWidth(declaredPrimaryText);
       }
+      // Embed and print stay rail-free (proof grids stay calm; print is
+      // static). Present keeps the rail: slide iframes (`?present=1`) show
+      // the collapsed "Notes & index" reveal control, and an explicit open
+      // docks the sidebar beside the canvas exactly like the reader.
       function viewerModesBlocked() {
         return html.getAttribute('data-embed') === 'true' ||
-          html.getAttribute('data-present') === 'true' ||
           (window.matchMedia && window.matchMedia('print').matches);
       }
       // Sidebar availability never depends on viewport width or diagram ratio:

@@ -6224,7 +6224,7 @@ function writeStageOutput(outputPath, html) {
 
 async function commandMotion(args) {
   if (args.includes('--help') || args.includes('-h')) {
-    console.log('Usage: flowey motion <input.html> [output.html] [--json]\n\nLoops hover-trace animations for presentations. Deterministic post-delivery stage: refuses to double-wrap; report its output SHA separately since the delivery receipt covers the pre-stage bytes. Re-running deliver/finalize wipes it.');
+    console.log('Usage: flowey motion <input.html> [output.html] [--json]\n\nLoops hover-trace and ambient edge-flow animations for presentations, and fits `?present=1` for slide iframes (viewer header hidden, Notes & index rail kept). Deterministic post-delivery stage: refuses to double-wrap; report its output SHA separately since the delivery receipt covers the pre-stage bytes. Re-running deliver/finalize wipes it.');
     return;
   }
   const json = args.includes('--json');

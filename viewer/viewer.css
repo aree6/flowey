@@ -444,6 +444,22 @@ html[data-present="true"]:not([data-embed="true"]) #btn-present {
   color: var(--actor-stroke);
 }
 
+/* Present + docked rail: the "Notes & index" sidebar docks on the left and
+   the canvas reflows beside it, exactly like the reader. These selectors
+   outrank the present column layout above (extra attribute) so an explicit
+   open reflows instead of stacking. The rail defaults to collapsed. */
+html[data-present="true"]:not([data-embed="true"])[data-reader-rail="true"] .container {
+  display: grid;
+  grid-template-columns: var(--flowey-rail-width) minmax(0, 1fr);
+  grid-auto-flow: row dense;
+  column-gap: var(--flowey-rail-gap);
+  align-items: start;
+  height: calc(100dvh - 2rem);
+}
+html[data-present="true"]:not([data-embed="true"])[data-reader-rail="true"] .container > .header { grid-column: 1 / -1; grid-row: 1; }
+html[data-present="true"]:not([data-embed="true"])[data-reader-rail="true"] .container > .diagram-container { grid-column: 2; grid-row: 2; min-width: 0; }
+html[data-present="true"]:not([data-embed="true"])[data-reader-rail="true"] .cards { display: flex; }
+
 /* The reader owns only the outer scale. Wide diagrams and measured tall workflows keep one authored
    SVG/viewBox while the runtime chooses a desktop width from the actual
    vertical budget. This avoids device-specific files and breakpoint

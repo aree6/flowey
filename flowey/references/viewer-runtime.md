@@ -16,7 +16,9 @@ Read this only when the user asks for a reader-facing capability. Ordinary gener
 
 ## Motion and presentation
 
-`meta.animation: "trace"` enables a finite reader-controlled Live/Still trace. Static is the default. Still, reduced motion, page hiding, print, and canonical export preserve complete static meaning. Presentation Stage changes viewer chrome and framing, never authored geometry. This is not a mobile product feature; narrow layouts get containment only.
+`meta.animation: "trace"` enables a finite reader-controlled Live/Still trace. Static is the default. Still, reduced motion, page hiding, print, and canonical export preserve complete static meaning. Presentation Stage changes viewer chrome and framing, never authored geometry. The reader sidebar ("Notes & index") is available in presentation mode: collapsed by default, docks on explicit open. This is not a mobile product feature; narrow layouts get containment only.
+
+For presenting, the post-delivery `motion` stage (`node bin/flowey.mjs motion <output.html>`) loops hover-trace overlays and the ambient edge flow, and fits `?present=1` artifacts for slide iframes. Embed the result as `<iframe src="<artifact>.html?present=1&theme=light">`: embed mode (`?embed=1`) stays static by design and must not be used for animated slides.
 
 ## Canonical exports
 
