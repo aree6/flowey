@@ -366,6 +366,26 @@ for anything else, search the 50 vendored Phosphor glyphs with
 Omitting `icon` keeps the type-based default. These inline SVG symbols are
 renderer-owned and export with the diagram; URLs and raw SVG are not accepted.
 
+## Product marks
+
+`icon` is subject-neutral, so it is the wrong channel for a named product. When
+a node names a real tool, datastore, runtime, or vendor, set `brand` to the
+mark's built-in id instead: `node bin/flowey.mjs brands <name, alias, or domain>`
+returns the id and its category. The built-in catalogue is generated from Simple
+Icons (CC0 collection) plus the official OpenAI mark, so `postgresql`,
+`model-context-protocol` (alias `mcp`), `docker`, `kubernetes`, `react`,
+`node-js`, `bun`, `express`, `jira`, `openai`, and `anthropic` all resolve
+offline with no capture step.
+
+Decide deliberately rather than letting a default stand in for a lookup: a
+database node naming PostgreSQL gets `brand: "postgresql"`, an MCP endpoint or
+server gets `brand: "model-context-protocol"`, a Bun service gets
+`brand: "bun"`. Reach for `icon` only when the node describes a role rather than
+a product, such as an API, a queue, or a person. A node may carry both, but a
+named product takes `brand` alone. `brand` never replaces `type`, `label`, or
+relationships, and an unknown site still goes through
+`flowey brands capture <url>` rather than a guessed mark.
+
 Icon selection changes only the corner symbol. The node's type still determines
 color and semantic grouping; brand marks remain independent. For a holiday
 workflow, pair `type: "action", icon: "calendar"` with

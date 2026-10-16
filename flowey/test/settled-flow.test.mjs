@@ -32,24 +32,31 @@ function render(mode, example) {
   return fs.readFileSync(output, 'utf8');
 }
 
-test('all five renderers inherit one finite running-to-settled ambient contract', () => {
+test('all five renderers inherit one continuous running ambient contract', () => {
   for (const [mode, example] of Object.entries(CASES)) {
     const html = render(mode, example);
     assert.match(html, /data-ambient-motion/, mode);
     assert.match(html, /function startAmbient\(\)/, mode);
     assert.match(html, /function settleAmbient\(reason\)/, mode);
-    assert.match(html, /animation: flowey-edge-flow [^;]+ 1;/, mode);
+    // The edge flow is a continuous dash cycle, never a finite pass that
+    // settles on its own: a reader must not watch the lines die seconds in.
+    assert.match(html, /animation: flowey-edge-flow [^;]+ infinite/, mode);
+    assert.doesNotMatch(html, /animation: flowey-edge-flow [^;]+ 1;/, mode);
+    // Exactly one dash period of `10 8` is 18 units, so 18 -> 0 wraps with no
+    // visible jump. A longer travel would stutter at the seam.
+    assert.match(html, /@keyframes flowey-edge-flow \{\s*from \{ stroke-dasharray: 10 8; stroke-dashoffset: 18;/, mode);
+    assert.match(html, /to \{ stroke-dasharray: 10 8; stroke-dashoffset: 0;/, mode);
+    // Node pulses keep their one-shot authoring.
     assert.match(html, /animation: flowey-node-pulse [^;]+ 1;/, mode);
-    assert.doesNotMatch(html, /animation: flowey-edge-flow [^;]+ infinite/, mode);
     assert.doesNotMatch(html, /animation: flowey-node-pulse [^;]+ infinite/, mode);
   }
 });
 
-test('settled flow restores authored security and async dash semantics', () => {
-  assert.match(template, /\.a-security\s*\{[^}]*stroke-dasharray:\s*5,5/);
+test('settled flow restores authored alert and async dash semantics', () => {
+  assert.match(template, /\.a-alert\s*\{[^}]*stroke-dasharray:\s*5,5/);
   assert.match(template, /\.a-dashed\s*\{[^}]*stroke-dasharray:\s*4,4/);
   assert.match(template, /@keyframes flowey-edge-flow\s*\{[\s\S]*?stroke-dasharray:\s*10 8/);
-  assert.match(template, /100%\s*\{\s*stroke-dashoffset:\s*0;\s*opacity:\s*1;\s*\}/);
+  assert.match(template, /to\s*\{\s*stroke-dasharray:\s*10 8;\s*stroke-dashoffset:\s*0;\s*opacity:\s*1;\s*\}/);
   const runningRule = template.match(/html\[data-ambient-motion="running"\][^{]+\[data-animate="edge"\][^{]*\{([^}]*)\}/)?.[1] || '';
   assert.ok(runningRule, 'running edge rule missing');
   assert.doesNotMatch(runningRule, /stroke-dasharray|stroke-dashoffset/);
@@ -61,7 +68,9 @@ test('ambient ownership is generation-bounded and cannot replay after settle', (
   assert.match(template, /if \(ambientStarted \|\| !capable\) return false/);
   assert.match(template, /ambientStarted = true;[\s\S]*?html\.setAttribute\('data-ambient-motion', 'running'\)/);
   assert.match(template, /ambientPending\.delete\(event\.target\)/);
-  assert.match(template, /if \(!ambientPending\.size\) settleAmbient\('complete'\)/);
+  // An animation ending must not settle the ambient: the edge flow loops, and
+  // a one-shot node pulse ending is not the end of anything.
+  assert.doesNotMatch(template, /settleAmbient\('complete'\)/);
   assert.match(template, /svg\.addEventListener\('animationend', onAmbientBoundary, true\)/);
   assert.match(template, /svg\.addEventListener\('animationcancel', onAmbientBoundary, true\)/);
   assert.match(template, /if \(paused \|\| owner \|\| html\.hasAttribute\('data-embed'\)/);

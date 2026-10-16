@@ -178,6 +178,12 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       --text: #ffffff;
       --text-muted: #94a3b8;
       --text-dim: #475569;
+      /* A vendored mark keeps its real artwork, so a single-luminance logo
+         (GitHub, Vercel, Rust are black; Anthropic, Prisma are white) cannot read
+         against the face underneath. The plate therefore inverts with the theme:
+         a light chip on dark gives black ink its contrast, a dark chip on light
+         gives white ink its contrast, and a multi-colour mark simply covers it. */
+      --brand-mark-ink: #ffffff;
       /* UI chrome and menu hints need more contrast than SVG .t-dim accents */
       --text-faint: #7d8da1;
 
@@ -229,6 +235,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       --text-muted: #5b6474;
       --text-dim: #9aa3b2;
       --text-faint: #6b7280;
+      --brand-mark-ink: #0f172a;
 
       --panel: #ffffff;
       --panel-border: #e5e7eb;
@@ -4080,6 +4087,18 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     }
     svg .semantic-sigil > * { vector-effect: non-scaling-stroke; }
     svg .semantic-sigil .sigil-fill { fill: currentColor; stroke: none; }
+    /* A sigil nests a 256-grid scale inside a sized translate. With a fill-box
+       reference each scale resolves about its own ink box, which walks the mark
+       down-right of its authored corner whenever the glyph's ink does not start
+       at the grid origin (the Phosphor globe starts at 20,20: +18 units). Pin
+       both levels to the viewport so nested scales compose about a fixed origin
+       and the mark paints exactly where the renderer placed it. The layers
+       runtime honours this too: it never stamps fill-box on transformed children.
+       See the data-layer-shift walk in flowey/bin/flow-layers.mjs. */
+    svg .semantic-sigil, svg .semantic-sigil * {
+      transform-box: view-box;
+      transform-origin: 0 0;
+    }
     svg .s-actor      { color: var(--actor-stroke); }
     svg .s-action     { color: var(--action-stroke); }
     svg .s-decision   { color: var(--decision-stroke); }
@@ -4096,6 +4115,17 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
        semantic node and relationship vocabulary. */
     svg .brand-mark { pointer-events: none; }
     svg .brand-mark-badge { fill: #fff; stroke: none; }
+    /* A single-ink mark is inlined with currentColor so the theme can recolour it:
+       black on a light face, white on a dark one, with no plate behind it. Marks
+       that carry real colour never take this class and keep their own artwork. */
+    svg .brand-mark-mono {
+      color: var(--brand-mark-ink);
+      fill: currentColor;
+      stroke: currentColor;
+    }
+    /* A mark that replaces the node glyph is drawn straight onto the node face:
+       no plate, no frame, nothing between the artwork and the fill behind it. */
+    svg .brand-mark.brand-mark-plain { filter: none; }
     svg .brand-mark-frame {
       fill: none;
       stroke: #cbd5e1;
@@ -4715,15 +4745,30 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     .c-lane           { fill: var(--lane-fill); stroke: var(--lane-stroke); stroke-dasharray: 6,6; }
 
     /* Optional trace animation, enabled only by meta.animation = "trace".
-       The ordinary viewer performs one ambient pass and then restores the
-       authored solid/alert/async line language. WebM samples the same
-       authored geometry into an explicit canvas timeline. */
+       The ambient edge flow is a continuous dash cycle: the keyframes advance
+       exactly one dash period, so the line loops with no visible jump and no
+       settled end state. The dashed line language is restored whenever motion is
+       suppressed (Still, reduced motion, embed, share playback, a focused owner,
+       or a hidden document). WebM samples the same authored geometry into an
+       explicit canvas timeline. */
+    /* A trace diagram is authored as flowing dashes and must never be seen as a
+       solid stroke. The dash therefore lives on the base rule, not inside the
+       keyframes: any interruption of the animation (a hover or focus owner, a
+       paused reader, an embed) would otherwise drop the dash and flash the
+       authored solid line for a frame before the loop resumes. Only the offset
+       animates, so a suppressed edge settles as a still dashed line. */
+    svg[data-animation="trace"] [data-animate="edge"] {
+      stroke-dasharray: 10 8;
+    }
+    svg[data-animation="trace"] [data-graph-role="automatic-crossover"]:has(> [data-animate="edge"]) > [data-graph-role="automatic-crossover-underlay"] {
+      stroke-dasharray: 10 8;
+    }
     html[data-ambient-motion="running"] svg[data-animation="trace"] [data-animate="edge"] {
-      animation: flowey-edge-flow 2.4s linear 1;
+      animation: flowey-edge-flow 2.4s linear infinite;
       animation-delay: calc(var(--step, 0) * 160ms);
     }
     html[data-ambient-motion="running"] svg[data-animation="trace"] [data-graph-role="automatic-crossover"]:has(> [data-animate="edge"]) > [data-graph-role="automatic-crossover-underlay"] {
-      animation: flowey-edge-flow 2.4s linear 1;
+      animation: flowey-edge-flow 2.4s linear infinite;
       animation-delay: calc(var(--step, 0) * 160ms);
     }
     html[data-ambient-motion="running"] svg[data-animation="trace"] [data-animate="node"] {
@@ -4772,11 +4817,13 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       animation: none !important;
       stroke-dashoffset: 0;
     }
+    /* One dash period of `10 8` is 18 user units, so 18 -> 0 lands exactly where
+       the next cycle begins. A longer travel would visibly jump at the wrap, and
+       a shorter one would crawl. This is why the cycle must not be re-tuned
+       without re-checking the dasharray. */
     @keyframes flowey-edge-flow {
-      0% { stroke-dasharray: 10 8; stroke-dashoffset: 54; opacity: 0.42; }
-      88% { stroke-dasharray: 10 8; stroke-dashoffset: 0; opacity: 1; }
-      99.9% { stroke-dasharray: 10 8; stroke-dashoffset: 0; opacity: 1; }
-      100% { stroke-dashoffset: 0; opacity: 1; }
+      from { stroke-dasharray: 10 8; stroke-dashoffset: 18; opacity: 1; }
+      to { stroke-dasharray: 10 8; stroke-dashoffset: 0; opacity: 1; }
     }
     @keyframes flowey-node-pulse {
       0%, 72%, 100% { filter: none; stroke-width: 1.5; }
@@ -7198,12 +7245,19 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         detachAmbientBoundary();
         html.setAttribute('data-ambient-motion', 'settled');
         html.setAttribute('data-ambient-settle-reason', reason || 'complete');
+        // A suppressed ambient is a pause, not a completion. Releasing the
+        // latch here lets the next live render restart the flow, so Still ->
+        // Live actually brings the lines back. Only a suppression clears it.
+        if (reason === 'suppressed') ambientStarted = false;
         return true;
       }
+      // The ambient edge flow never completes: it is an infinite dash cycle,
+      // so `animationend` from it can never arrive. The one-shot node pulses
+      // still end, and treating that as "the pass finished" would freeze the
+      // edge flow seconds into the page's life - the exact defect this guards.
+      // Only suppression settles the ambient now.
       function onAmbientBoundary(event) {
-        if (!ambientPending.has(event.target)) return;
         ambientPending.delete(event.target);
-        if (!ambientPending.size) settleAmbient('complete');
       }
       function startAmbient() {
         if (ambientStarted || !capable) return false;

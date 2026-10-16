@@ -648,12 +648,27 @@ function markAttrs(mark) {
   ].filter(Boolean).join(' ');
 }
 
-export function renderBrandMark(node, { x, y, size = 16 } = {}) {
+export function renderBrandMark(node, { x, y, size = 16, transparent = false } = {}) {
   const mark = brandMarkFor(node);
   if (!mark) return '';
-  const inset = 3;
+  const inset = transparent ? 0 : 3;
   let content;
-  if (mark.kind === 'preset') {
+  if (mark.mono) {
+    // Single-ink artwork is inlined with currentColor and themed by the
+    // viewer, so a black logo paints black on a light node face and white on a
+    // dark one. No plate and no baked colour: only the luminance is themed.
+    if (mark.ink) {
+      const scale = (size - inset * 2) / mark.viewBox;
+      content = `<g transform="translate(${inset} ${inset}) scale(${scale})" class="brand-mark-mono">${mark.ink}</g>`;
+    } else {
+      const scale = (size - inset * 2) / mark.viewBox;
+      content = `<path d="${esc(mark.path)}" transform="translate(${inset} ${inset}) scale(${scale})" class="brand-mark-mono"/>`;
+    }
+  } else if (mark.kind === 'preset' && mark.dataUrl) {
+    // Vendored real artwork keeps its own colours, gradients, and strokes, so
+    // it renders as an image rather than being flattened to one brand hex.
+    content = `<image href="${esc(mark.dataUrl)}" x="${inset}" y="${inset}" width="${size - inset * 2}" height="${size - inset * 2}" preserveAspectRatio="xMidYMid meet"/>`;
+  } else if (mark.kind === 'preset') {
     const scale = (size - inset * 2) / mark.viewBox;
     content = `<path d="${esc(mark.path)}" transform="translate(${inset} ${inset}) scale(${scale})" fill="#${esc(mark.hex)}"/>`;
   } else if (mark.kind === 'remote') {
@@ -662,9 +677,15 @@ export function renderBrandMark(node, { x, y, size = 16 } = {}) {
     const scale = size / 20;
     content = `<g transform="scale(${scale})" class="brand-mark-fallback"><circle cx="10" cy="10" r="5.2"/><path d="M4.8 10h10.4M10 4.8c1.6 1.6 2.4 3.3 2.4 5.2s-.8 3.6-2.4 5.2M10 4.8C8.4 6.4 7.6 8.1 7.6 10s.8 3.6 2.4 5.2"/></g>`;
   }
-  return `<g aria-hidden="true" ${markAttrs(mark)} class="brand-mark" transform="translate(${x} ${y})">
-            <rect width="${size}" height="${size}" rx="4" class="brand-mark-badge"/>
+  // A mark that stands in for the node's own glyph sits directly on the node
+  // face: the artwork's own colours already read against the node fill, and a
+  // plate behind it looks like a sticker. Single-ink marks solve contrast by
+  // recolouring for the theme instead of by adding a background.
+  const chrome = transparent
+    ? ''
+    : `\n            <rect width="${size}" height="${size}" rx="4" class="brand-mark-badge"/>
             ${content}
-            <rect width="${size}" height="${size}" rx="4" class="brand-mark-frame"/>
+            <rect width="${size}" height="${size}" rx="4" class="brand-mark-frame"/>`;
+  return `<g aria-hidden="true" ${markAttrs(mark)} class="brand-mark${transparent ? ' brand-mark-plain' : ''}" transform="translate(${x} ${y})">${chrome || `\n            ${content}`}
           </g>`;
 }

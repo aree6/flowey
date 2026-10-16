@@ -6255,6 +6255,60 @@ async function commandMotion(args) {
   console.log(`bytes: ${identity.bytes}`);
 }
 
+async function commandLayers(args) {
+  if (args.includes('--help') || args.includes('-h')) {
+    console.log('Usage: flowey layers <input.html> <layers.json> [output.html] [--json]\n\nAdds a collapsible layer panel to a delivered artifact. Each layer in the JSON names a horizontal band (a, b) and the height it collapses by; unchecking a layer hides its nodes, edges, and boundary frames and slides the bands below it upward, so the reader moves between a detailed and a high-level view. Run after `deliver`/`finalize`, like `motion` and `links`. Re-running refuses to double-wrap.');
+    return;
+  }
+  const json = args.includes('--json');
+  const positional = args.filter((arg) => !arg.startsWith('--'));
+  const unknown = args.find((arg) => arg.startsWith('--') && arg !== '--json');
+  if (unknown) fail(`Unknown layers option "${unknown}".`);
+  if (positional.length < 2 || positional.length > 3) fail('Usage: flowey layers <input.html> <layers.json> [output.html] [--json]');
+  const inputPath = path.resolve(positional[0]);
+  const layersPath = path.resolve(positional[1]);
+  const outputPath = path.resolve(positional[2] || positional[0]);
+  const { applyFlowLayers } = await import('./flow-layers.mjs');
+  const html = readStageInput(inputPath);
+  let definition;
+  try {
+    definition = JSON.parse(fs.readFileSync(layersPath, 'utf8'));
+  } catch (error) {
+    fail(`layers definition is not readable JSON: ${error.message}`);
+  }
+  const layers = Array.isArray(definition) ? definition : definition.layers;
+  let staged;
+  try {
+    staged = applyFlowLayers(html, layers);
+  } catch (error) {
+    fail(error.message, 1);
+  }
+  if (!staged.applied) {
+    if (json) {
+      console.log(JSON.stringify({
+        schemaVersion: 1, ok: true, command: 'layers',
+        input: inputPath, output: outputPath, applied: false, reason: staged.reason,
+      }, null, 2));
+      return;
+    }
+    console.log(`skipped: ${staged.reason}`);
+    return;
+  }
+  const identity = writeStageOutput(outputPath, staged.html);
+  if (json) {
+    console.log(JSON.stringify({
+      schemaVersion: 1, ok: true, command: 'layers',
+      input: inputPath, output: outputPath, applied: true, artifact: identity,
+      layers: layers.map((layer) => ({ id: layer.id, label: layer.label })),
+    }, null, 2));
+    return;
+  }
+  console.log(`flow-layers -> ${outputPath}`);
+  console.log(`layers: ${layers.map((layer) => layer.label).join(', ')}`);
+  console.log(`sha256: ${identity.sha256}`);
+  console.log(`bytes: ${identity.bytes}`);
+}
+
 async function commandIcons(args) {
   if (args.includes('--help') || args.includes('-h')) {
     console.log('Usage: flowey icons <words> [--emit] [--limit <n>] [--json]\n\nSearches the 50 vendored Phosphor glyphs (MIT, offline, icons/). Query one concrete noun at a time ("database", not "customer mobile payment"); results rank best-first. Set node "icon" to the match "icon" value. --emit prints the corner-stamp markup.');
@@ -7235,6 +7289,9 @@ try {
       break;
     case 'motion':
       await commandMotion(args);
+      break;
+    case 'layers':
+      await commandLayers(args);
       break;
     case 'links':
       await commandLinks(args);

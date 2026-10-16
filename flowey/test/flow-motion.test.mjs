@@ -42,16 +42,54 @@ test('flow-motion loops the ambient edge flow with a seamless dash cycle', () =>
   }
 });
 
-test('flow-motion fits present mode for slide iframes and keeps notes', () => {
+test('flow-motion gives present mode the whole canvas', () => {
   const out = applyFlowMotion(HTML);
   // Slide carries the title: viewer header hidden, budget to the canvas.
   assert.match(out, /\[data-present="true"[^\{]*\.header\{display:none !important\}/);
-  // Rail-open notes beat the present-mode cards hide.
-  assert.match(out, /\[data-reader-rail="true"\] \.cards\{display:flex !important\}/);
-  // Reveal pill kept available in present mode (collapsed only, never the
-  // opened dock; only when the panel has content).
-  assert.match(out, /rail-reveal/);
-  assert.match(out, /data-reader-rail","collapsed"/);
+  assert.match(out, /\[data-present="true"[^\{]*\.container\{gap:0;height:100dvh;padding:0\}/);
+  // Every other viewer affordance goes too: a slide wants the drawing only.
+  for (const chrome of ['.toolbar', '.diagram-nav', '.rail-reveal', '.reader-rail', '.cards', '[data-legend]']) {
+    assert.ok(
+      out.includes(chrome),
+      `present mode should hide ${chrome} so the drawing fills the slide`,
+    );
+  }
+  assert.match(out, /\[data-legend\]\{display:none !important\}/);
+  // The nav reserve that padded the canvas for the bottom bar goes with it.
+  assert.match(out, /\.diagram-container\{--flowey-nav-reserve:0px\}/);
+  // Still scoped: embed is untouched by all of the above.
+  for (const rule of out.match(/html\[data-present="true"\][^}]+\}/g) || []) {
+    assert.ok(rule.includes(':not([data-embed="true"])'), `unscoped present rule: ${rule}`);
+  }
+});
+
+test('flow-motion only pins the rail for visible content', () => {
+  const out = applyFlowMotion(HTML);
+  // Present mode hides .cards with display:none while the hidden attribute
+  // stays false, so a bare `!c.hidden` check sees content where none is
+  // visible and reserves a 288px rail over a chromeless slide. Content means
+  // visible content: computed display and visibility decide, not the attribute.
+  assert.match(out, /function vis\(el\)\{[^}]*getComputedStyle\(el\)\.display!=="none"/);
+  assert.match(out, /function vis\(el\)\{[^}]*getComputedStyle\(el\)\.visibility!=="hidden"/);
+  assert.ok(!out.includes('c.children.length&&!c.hidden)'), 'stale hidden-attribute check still present');
+});
+
+test('flow-motion clamps the canvas to the present viewport', () => {
+  const out = applyFlowMotion(HTML);
+  // The viewer width-fitting loop can force a pixel width wider than the
+  // embedding frame, which shifts the drawing and misaligns hover hit areas.
+  // Stylesheet !important beats the inline custom properties the loop sets, so
+  // the rail reserve and the diagram cap stay at zero/full in present mode.
+  assert.match(out, /--flowey-rail-width:0px !important/);
+  assert.match(out, /--flowey-rail-gap:0px !important/);
+  assert.match(out, /--flowey-diagram-max-width:100% !important/);
+  assert.match(out, /\.diagram-container\{width:100% !important;min-width:0 !important;max-width:100% !important\}/);
+  assert.match(out, /\.diagram-container svg\{max-width:100% !important;\}/);
+  // A pixel height forced by the width-fitting loop overflows short frames
+  // and clips the drawing's foot, so both axes are capped and the meet fit
+  // letterboxes instead of spilling.
+  assert.match(out, /\.diagram-container\{height:100% !important;min-height:0 !important;max-height:100% !important;overflow:hidden !important\}/);
+  assert.match(out, /\.diagram-container svg\{width:100% !important;height:100% !important;\}/);
 });
 
 test('flow-motion refuses to double-wrap', () => {

@@ -52,12 +52,19 @@
         detachAmbientBoundary();
         html.setAttribute('data-ambient-motion', 'settled');
         html.setAttribute('data-ambient-settle-reason', reason || 'complete');
+        // A suppressed ambient is a pause, not a completion. Releasing the
+        // latch here lets the next live render restart the flow, so Still ->
+        // Live actually brings the lines back. Only a suppression clears it.
+        if (reason === 'suppressed') ambientStarted = false;
         return true;
       }
+      // The ambient edge flow never completes: it is an infinite dash cycle,
+      // so `animationend` from it can never arrive. The one-shot node pulses
+      // still end, and treating that as "the pass finished" would freeze the
+      // edge flow seconds into the page's life - the exact defect this guards.
+      // Only suppression settles the ambient now.
       function onAmbientBoundary(event) {
-        if (!ambientPending.has(event.target)) return;
         ambientPending.delete(event.target);
-        if (!ambientPending.size) settleAmbient('complete');
       }
       function startAmbient() {
         if (ambientStarted || !capable) return false;

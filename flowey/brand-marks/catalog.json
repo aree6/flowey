@@ -2,11 +2,969 @@
   "schemaVersion": 1,
   "marks": [
     {
+      "id": "airtable",
+      "title": null,
+      "category": "collaboration",
+      "asset": "airtable.svg",
+      "hex": "18BFFF",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/airtable/default.svg",
+      "domains": [
+        "airtable.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "alibaba-cloud",
+      "title": null,
+      "category": "milestone",
+      "asset": "alibaba-cloud.svg",
+      "hex": "FF6A00",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/alibabacloud/default.svg",
+      "aliases": [
+        "aliyun"
+      ],
+      "domains": [
+        "alibabacloud.com",
+        "aliyun.com"
+      ],
+      "license": "MIT"
+    },
+    {
+      "id": "angular",
+      "title": null,
+      "category": "framework",
+      "asset": "angular.svg",
+      "hex": "0F0F11",
+      "viewBox": 242.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/angular/default.svg",
+      "domains": [
+        "angular.dev"
+      ],
+      "license": "CC-BY-4.0"
+    },
+    {
+      "id": "ansible",
+      "title": null,
+      "category": "engineering",
+      "asset": "ansible.svg",
+      "hex": "EE0000",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/ansible/default.svg",
+      "domains": [
+        "ansible.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "anthropic",
+      "title": "Anthropic",
+      "category": "ai",
+      "domains": [
+        "www.anthropic.com"
+      ],
+      "asset": "anthropic.svg",
+      "hex": "191919",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/anthropic/default.svg"
+    },
+    {
+      "id": "apache-airflow",
+      "title": null,
+      "category": "data",
+      "asset": "apache-airflow.svg",
+      "hex": "0CB6FF",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/airflow/default.svg",
+      "aliases": [
+        "airflow"
+      ],
+      "domains": [
+        "airflow.apache.org"
+      ],
+      "license": "brand-use"
+    },
+    {
+      "id": "apache-kafka",
+      "title": null,
+      "category": "data",
+      "asset": "apache-kafka.svg",
+      "hex": "231F20",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/apache-kafka/default.svg",
+      "aliases": [
+        "kafka"
+      ],
+      "domains": [
+        "kafka.apache.org"
+      ],
+      "license": "Apache-2.0"
+    },
+    {
+      "id": "argo",
+      "title": null,
+      "category": "engineering",
+      "asset": "argo.svg",
+      "hex": "EF7B4D",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/argo/default.svg",
+      "aliases": [
+        "argocd",
+        "argo-cd"
+      ],
+      "domains": [
+        "argoproj.github.io"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "asana",
+      "title": null,
+      "category": "collaboration",
+      "asset": "asana.svg",
+      "hex": "F06A6A",
+      "viewBox": 251.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/asana/default.svg",
+      "domains": [
+        "asana.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "bitbucket",
+      "title": null,
+      "category": "engineering",
+      "asset": "bitbucket.svg",
+      "hex": "0052CC",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/bitbucket/default.svg",
+      "domains": [
+        "bitbucket.org"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "bun",
+      "title": "Bun",
+      "category": "language",
+      "aliases": [
+        "bunjs"
+      ],
+      "domains": [
+        "bun.sh"
+      ],
+      "asset": "bun.svg",
+      "hex": "000000",
+      "viewBox": 80.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/bun/default.svg"
+    },
+    {
+      "id": "circleci",
+      "title": null,
+      "category": "engineering",
+      "asset": "circleci.svg",
+      "hex": "343434",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/circleci/default.svg",
+      "aliases": [
+        "circle-ci"
+      ],
+      "domains": [
+        "circleci.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "claude",
+      "title": null,
+      "category": "ai",
+      "asset": "claude.svg",
+      "hex": "D97757",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/claude/default.svg",
+      "aliases": [
+        "claude-ai"
+      ],
+      "domains": [
+        "claude.ai"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "clickhouse",
+      "title": null,
+      "category": "data",
+      "asset": "clickhouse.svg",
+      "hex": "FFCC01",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/clickhouse/default.svg",
+      "domains": [
+        "clickhouse.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "cloudflare",
+      "title": null,
+      "category": "milestone",
+      "asset": "cloudflare.svg",
+      "hex": "F38020",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/cloudflare/default.svg",
+      "domains": [
+        "cloudflare.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "cloudinary",
+      "title": null,
+      "category": "milestone",
+      "asset": "cloudinary.svg",
+      "hex": "3448C5",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/cloudinary/default.svg",
+      "domains": [
+        "cloudinary.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "databricks",
+      "title": null,
+      "category": "data",
+      "asset": "databricks.svg",
+      "hex": "FF3621",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/databricks/default.svg",
+      "domains": [
+        "databricks.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "datadog",
+      "title": null,
+      "category": "engineering",
+      "asset": "datadog.svg",
+      "hex": "632CA6",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/datadog/default.svg",
+      "domains": [
+        "datadoghq.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "deepseek",
+      "title": null,
+      "category": "ai",
+      "asset": "deepseek.svg",
+      "hex": "4D6BFE",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/deepseek/default.svg",
+      "domains": [
+        "deepseek.com"
+      ],
+      "license": "MIT"
+    },
+    {
+      "id": "digitalocean",
+      "title": null,
+      "category": "milestone",
+      "asset": "digitalocean.svg",
+      "hex": "0080FF",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/digitalocean/default.svg",
+      "aliases": [
+        "digital-ocean"
+      ],
+      "domains": [
+        "digitalocean.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "discord",
+      "title": null,
+      "category": "collaboration",
+      "asset": "discord.svg",
+      "hex": "5865F2",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/discord/default.svg",
+      "domains": [
+        "discord.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "django",
+      "title": null,
+      "category": "framework",
+      "asset": "django.svg",
+      "hex": "092E20",
+      "viewBox": 32.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/django/default.svg",
+      "domains": [
+        "djangoproject.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "docker",
+      "title": "Docker",
+      "category": "engineering",
+      "aliases": [
+        "docker compose"
+      ],
+      "domains": [
+        "www.docker.com"
+      ],
+      "asset": "docker.svg",
+      "hex": "2496ED",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/docker/default.svg"
+    },
+    {
+      "id": "dotnet",
+      "title": null,
+      "category": "framework",
+      "asset": "dotnet.svg",
+      "hex": "512BD4",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/dotnet/default.svg",
+      "aliases": [
+        ".net"
+      ],
+      "domains": [
+        "dotnet.microsoft.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "elasticsearch",
+      "title": null,
+      "category": "data",
+      "asset": "elasticsearch.svg",
+      "hex": "005571",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/elasticsearch/default.svg",
+      "aliases": [
+        "elastic"
+      ],
+      "domains": [
+        "elastic.co"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "express",
+      "title": null,
+      "category": "framework",
+      "asset": "express.svg",
+      "hex": "000000",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/express/default.svg",
+      "domains": [
+        "expressjs.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "facebook",
+      "title": null,
+      "category": "channel",
+      "asset": "facebook.svg",
+      "hex": "0866FF",
+      "viewBox": 666.667,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/facebook/default.svg",
+      "domains": [
+        "facebook.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "fastapi",
+      "title": null,
+      "category": "framework",
+      "asset": "fastapi.svg",
+      "hex": "009688",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/fastapi/default.svg",
+      "domains": [
+        "fastapi.tiangolo.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "figma",
+      "title": null,
+      "category": "collaboration",
+      "asset": "figma.svg",
+      "hex": "F24E1E",
+      "viewBox": 54.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/figma/default.svg",
+      "domains": [
+        "figma.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "firebase",
+      "title": null,
+      "category": "milestone",
+      "asset": "firebase.svg",
+      "hex": "DD2C00",
+      "viewBox": 600.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/firebase/default.svg",
+      "domains": [
+        "firebase.google.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "flask",
+      "title": null,
+      "category": "framework",
+      "asset": "flask.svg",
+      "hex": "3BABC3",
+      "viewBox": 32.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/flask/default.svg",
+      "domains": [
+        "palletsprojects.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "fly-io",
+      "title": null,
+      "category": "milestone",
+      "asset": "fly-io.svg",
+      "hex": "24175B",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/flydotio/default.svg",
+      "aliases": [
+        "fly.io"
+      ],
+      "domains": [
+        "fly.io"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "github",
+      "title": null,
+      "category": "engineering",
+      "asset": "github.svg",
+      "hex": "181717",
+      "viewBox": 1024.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/github/default.svg",
+      "domains": [
+        "github.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "github-actions",
+      "title": null,
+      "category": "engineering",
+      "asset": "github-actions.svg",
+      "hex": "2088FF",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/github-actions/default.svg",
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "gitlab",
+      "title": null,
+      "category": "engineering",
+      "asset": "gitlab.svg",
+      "hex": "FC6D26",
+      "viewBox": 32.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/gitlab/default.svg",
+      "domains": [
+        "gitlab.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "go",
+      "title": null,
+      "category": "language",
+      "asset": "go.svg",
+      "hex": "00ADD8",
+      "viewBox": 207.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/go/default.svg",
+      "aliases": [
+        "golang"
+      ],
+      "domains": [
+        "go.dev"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "google-cloud",
+      "title": null,
+      "category": "milestone",
+      "asset": "google-cloud.svg",
+      "hex": "FFF",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/googlecloud/default.svg",
+      "aliases": [
+        "gcp",
+        "googlecloud"
+      ],
+      "domains": [
+        "cloud.google.com"
+      ],
+      "license": "MIT"
+    },
+    {
+      "id": "google-gemini",
+      "title": null,
+      "category": "ai",
+      "asset": "google-gemini.svg",
+      "hex": "8E75B2",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/google-gemini/default.svg",
+      "aliases": [
+        "gemini"
+      ],
+      "domains": [
+        "gemini.google.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "grafana",
+      "title": "Grafana",
+      "category": "engineering",
+      "domains": [
+        "grafana.com"
+      ],
+      "asset": "grafana.svg",
+      "hex": "F46800",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/grafana/default.svg"
+    },
+    {
+      "id": "helm",
+      "title": null,
+      "category": "engineering",
+      "asset": "helm.svg",
+      "hex": "0F1689",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/helm/default.svg",
+      "domains": [
+        "helm.sh"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "hubspot",
+      "title": null,
+      "category": "business",
+      "asset": "hubspot.svg",
+      "hex": "FF7A59",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/hubspot/default.svg",
+      "domains": [
+        "hubspot.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "hugging-face",
+      "title": null,
+      "category": "ai",
+      "asset": "hugging-face.svg",
+      "hex": "FFD21E",
+      "viewBox": 95.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/hugging-face/default.svg",
+      "aliases": [
+        "huggingface"
+      ],
+      "domains": [
+        "huggingface.co"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "influxdb",
+      "title": null,
+      "category": "data",
+      "asset": "influxdb.svg",
+      "hex": "22ADF6",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/influxdb/default.svg",
+      "aliases": [
+        "influx-db"
+      ],
+      "domains": [
+        "influxdata.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "instagram",
+      "title": null,
+      "category": "channel",
+      "asset": "instagram.svg",
+      "hex": "FF0069",
+      "viewBox": 264.583,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/instagram/default.svg",
+      "domains": [
+        "instagram.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "intercom",
+      "title": null,
+      "category": "business",
+      "asset": "intercom.svg",
+      "hex": "6AFDEF",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/intercom/default.svg",
+      "domains": [
+        "intercom.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "javascript",
+      "title": null,
+      "category": "language",
+      "asset": "javascript.svg",
+      "hex": "F7DF1E",
+      "viewBox": 1052.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/javascript/default.svg",
+      "aliases": [
+        "js"
+      ],
+      "license": "MIT"
+    },
+    {
+      "id": "jenkins",
+      "title": null,
+      "category": "engineering",
+      "asset": "jenkins.svg",
+      "hex": "D24939",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/jenkins/default.svg",
+      "domains": [
+        "jenkins.io"
+      ],
+      "license": "CC-BY-SA-3.0"
+    },
+    {
+      "id": "jira",
+      "title": "Jira",
+      "category": "collaboration",
+      "aliases": [
+        "atlassian"
+      ],
+      "domains": [
+        "atlassian.design/resources/logo-library"
+      ],
+      "asset": "jira.svg",
+      "hex": "0052CC",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/jira/default.svg"
+    },
+    {
+      "id": "kubernetes",
+      "title": "Kubernetes",
+      "category": "engineering",
+      "domains": [
+        "kubernetes.io"
+      ],
+      "asset": "kubernetes.svg",
+      "hex": "326CE5",
+      "viewBox": 722.8,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/kubernetes/default.svg"
+    },
+    {
+      "id": "linear",
+      "title": null,
+      "category": "collaboration",
+      "asset": "linear.svg",
+      "hex": "5E6AD2",
+      "viewBox": 100.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/linear/default.svg",
+      "domains": [
+        "linear.app"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "mariadb",
+      "title": null,
+      "category": "data",
+      "asset": "mariadb.svg",
+      "hex": "003545",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/mariadb/default.svg",
+      "aliases": [
+        "maria-db"
+      ],
+      "domains": [
+        "mariadb.org"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "meta",
+      "title": null,
+      "category": "ai",
+      "asset": "meta.svg",
+      "hex": "0467DF",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/meta/default.svg",
+      "aliases": [
+        "llama"
+      ],
+      "domains": [
+        "meta.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "miro",
+      "title": null,
+      "category": "collaboration",
+      "asset": "miro.svg",
+      "hex": "050038",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/miro/default.svg",
+      "domains": [
+        "miro.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "mistral-ai",
+      "title": null,
+      "category": "ai",
+      "asset": "mistral-ai.svg",
+      "hex": "FA520F",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/mistral-ai/default.svg",
+      "aliases": [
+        "mistral"
+      ],
+      "domains": [
+        "mistral.ai"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "model-context-protocol",
+      "title": "Model Context Protocol",
+      "category": "engineering",
+      "aliases": [
+        "mcp",
+        "modelcontextprotocol"
+      ],
+      "domains": [
+        "modelcontextprotocol.io"
+      ],
+      "asset": "mcp-model-context-protocol.svg",
+      "hex": "FFF",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/mcp-model-context-protocol/default.svg"
+    },
+    {
+      "id": "mongodb",
+      "title": null,
+      "category": "data",
+      "asset": "mongodb.svg",
+      "hex": "47A248",
+      "viewBox": 120.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/mongodb/default.svg",
+      "aliases": [
+        "mongo"
+      ],
+      "domains": [
+        "mongodb.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "mysql",
+      "title": null,
+      "category": "data",
+      "asset": "mysql.svg",
+      "hex": "4479A1",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/mysql/default.svg",
+      "domains": [
+        "mysql.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "neon",
+      "title": null,
+      "category": "milestone",
+      "asset": "neon.svg",
+      "hex": "000000",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/neon/default.svg",
+      "domains": [
+        "neon.tech"
+      ],
+      "license": "MIT"
+    },
+    {
+      "id": "netlify",
+      "title": null,
+      "category": "milestone",
+      "asset": "netlify.svg",
+      "hex": "00C7B7",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/netlify/default.svg",
+      "domains": [
+        "netlify.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "next-js",
+      "title": null,
+      "category": "framework",
+      "asset": "next-js.svg",
+      "hex": "000000",
+      "viewBox": 180.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/nextdotjs/default.svg",
+      "aliases": [
+        "nextjs",
+        "next.js"
+      ],
+      "domains": [
+        "nextjs.org"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "node-js",
+      "title": "Node.js",
+      "category": "language",
+      "aliases": [
+        "node"
+      ],
+      "domains": [
+        "nodejs.org"
+      ],
+      "asset": "nodejs.svg",
+      "hex": "539E43",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/nodejs/default.svg"
+    },
+    {
+      "id": "notion",
+      "title": null,
+      "category": "collaboration",
+      "asset": "notion.svg",
+      "hex": "FFF",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/notion/default.svg",
+      "domains": [
+        "notion.so"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "ollama",
+      "title": null,
+      "category": "ai",
+      "asset": "ollama.svg",
+      "hex": "FFF",
+      "viewBox": 646.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/ollama/default.svg",
+      "domains": [
+        "ollama.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
       "id": "openai",
       "title": "OpenAI",
       "category": "ai",
-      "aliases": ["chatgpt", "gpt", "codex"],
-      "domains": ["openai.com", "chatgpt.com"],
+      "aliases": [
+        "chatgpt",
+        "gpt",
+        "codex"
+      ],
+      "domains": [
+        "openai.com",
+        "chatgpt.com"
+      ],
       "custom": {
         "viewBox": 20,
         "hex": "000000",
@@ -15,117 +973,726 @@
         "guidelines": "https://openai.com/brand/"
       }
     },
-    { "id": "claude", "category": "ai", "simpleIcon": "claude", "aliases": ["claude-ai"], "domains": ["claude.ai"] },
-    { "id": "anthropic", "category": "ai", "simpleIcon": "anthropic", "domains": ["anthropic.com"] },
-    { "id": "google-gemini", "category": "ai", "simpleIcon": "googlegemini", "aliases": ["gemini"], "domains": ["gemini.google.com"] },
-    { "id": "deepseek", "category": "ai", "simpleIcon": "deepseek", "domains": ["deepseek.com"] },
-    { "id": "qwen", "category": "ai", "simpleIcon": "qwen", "domains": ["qwen.ai"] },
-    { "id": "meta", "category": "ai", "simpleIcon": "meta", "aliases": ["llama"], "domains": ["meta.com"] },
-    { "id": "mistral-ai", "category": "ai", "simpleIcon": "mistralai", "aliases": ["mistral"], "domains": ["mistral.ai"] },
-    { "id": "hugging-face", "category": "ai", "simpleIcon": "huggingface", "aliases": ["huggingface"], "domains": ["huggingface.co"] },
-    { "id": "ollama", "category": "ai", "simpleIcon": "ollama", "domains": ["ollama.com"] },
-    { "id": "openrouter", "category": "ai", "simpleIcon": "openrouter", "aliases": ["open-router"], "domains": ["openrouter.ai"] },
-    { "id": "perplexity", "category": "ai", "simpleIcon": "perplexity", "domains": ["perplexity.ai"] },
-    { "id": "replicate", "category": "ai", "simpleIcon": "replicate", "domains": ["replicate.com"] },
-
-    { "id": "google-cloud", "category": "milestone", "simpleIcon": "googlecloud", "aliases": ["gcp", "googlecloud"], "domains": ["cloud.google.com"] },
-    { "id": "cloudflare", "category": "milestone", "simpleIcon": "cloudflare", "domains": ["cloudflare.com"] },
-    { "id": "vercel", "category": "milestone", "simpleIcon": "vercel", "domains": ["vercel.com"] },
-    { "id": "netlify", "category": "milestone", "simpleIcon": "netlify", "domains": ["netlify.com"] },
-    { "id": "digitalocean", "category": "milestone", "simpleIcon": "digitalocean", "aliases": ["digital-ocean"], "domains": ["digitalocean.com"] },
-    { "id": "render", "category": "milestone", "simpleIcon": "render", "domains": ["render.com"] },
-    { "id": "railway", "category": "milestone", "simpleIcon": "railway", "domains": ["railway.com", "railway.app"] },
-    { "id": "fly-io", "category": "milestone", "simpleIcon": "flydotio", "aliases": ["fly.io"], "domains": ["fly.io"] },
-    { "id": "cloudinary", "category": "milestone", "simpleIcon": "cloudinary", "domains": ["cloudinary.com"] },
-    { "id": "alibaba-cloud", "category": "milestone", "simpleIcon": "alibabacloud", "aliases": ["aliyun"], "domains": ["alibabacloud.com", "aliyun.com"] },
-    { "id": "firebase", "category": "milestone", "simpleIcon": "firebase", "domains": ["firebase.google.com"] },
-    { "id": "supabase", "category": "milestone", "simpleIcon": "supabase", "domains": ["supabase.com"] },
-    { "id": "neon", "category": "milestone", "simpleIcon": "neon", "domains": ["neon.tech"] },
-
-    { "id": "github", "category": "engineering", "simpleIcon": "github", "domains": ["github.com"] },
-    { "id": "gitlab", "category": "engineering", "simpleIcon": "gitlab", "domains": ["gitlab.com"] },
-    { "id": "bitbucket", "category": "engineering", "simpleIcon": "bitbucket", "domains": ["bitbucket.org"] },
-    { "id": "docker", "category": "engineering", "simpleIcon": "docker", "domains": ["docker.com"] },
-    { "id": "kubernetes", "category": "engineering", "simpleIcon": "kubernetes", "aliases": ["k8s"], "domains": ["kubernetes.io"] },
-    { "id": "terraform", "category": "engineering", "simpleIcon": "terraform", "domains": ["terraform.io"] },
-    { "id": "pulumi", "category": "engineering", "simpleIcon": "pulumi", "domains": ["pulumi.com"] },
-    { "id": "ansible", "category": "engineering", "simpleIcon": "ansible", "domains": ["ansible.com"] },
-    { "id": "jenkins", "category": "engineering", "simpleIcon": "jenkins", "domains": ["jenkins.io"] },
-    { "id": "circleci", "category": "engineering", "simpleIcon": "circleci", "aliases": ["circle-ci"], "domains": ["circleci.com"] },
-    { "id": "github-actions", "category": "engineering", "simpleIcon": "githubactions" },
-    { "id": "argo", "category": "engineering", "simpleIcon": "argo", "aliases": ["argocd", "argo-cd"], "domains": ["argoproj.github.io"] },
-    { "id": "helm", "category": "engineering", "simpleIcon": "helm", "domains": ["helm.sh"] },
-    { "id": "grafana", "category": "engineering", "simpleIcon": "grafana", "domains": ["grafana.com"] },
-    { "id": "prometheus", "category": "engineering", "simpleIcon": "prometheus", "domains": ["prometheus.io"] },
-    { "id": "sentry", "category": "engineering", "simpleIcon": "sentry", "domains": ["sentry.io"] },
-    { "id": "datadog", "category": "engineering", "simpleIcon": "datadog", "domains": ["datadoghq.com"] },
-    { "id": "pagerduty", "category": "engineering", "simpleIcon": "pagerduty", "aliases": ["pager-duty"], "domains": ["pagerduty.com"] },
-
-    { "id": "postgresql", "category": "data", "simpleIcon": "postgresql", "aliases": ["postgres"], "domains": ["postgresql.org"] },
-    { "id": "mysql", "category": "data", "simpleIcon": "mysql", "domains": ["mysql.com"] },
-    { "id": "mongodb", "category": "data", "simpleIcon": "mongodb", "aliases": ["mongo"], "domains": ["mongodb.com"] },
-    { "id": "redis", "category": "data", "simpleIcon": "redis", "domains": ["redis.io"] },
-    { "id": "apache-kafka", "category": "data", "simpleIcon": "apachekafka", "aliases": ["kafka"], "domains": ["kafka.apache.org"] },
-    { "id": "rabbitmq", "category": "data", "simpleIcon": "rabbitmq", "aliases": ["rabbit-mq"], "domains": ["rabbitmq.com"] },
-    { "id": "clickhouse", "category": "data", "simpleIcon": "clickhouse", "domains": ["clickhouse.com"] },
-    { "id": "elasticsearch", "category": "data", "simpleIcon": "elasticsearch", "aliases": ["elastic"], "domains": ["elastic.co"] },
-    { "id": "opensearch", "category": "data", "simpleIcon": "opensearch", "aliases": ["open-search"], "domains": ["opensearch.org"] },
-    { "id": "snowflake", "category": "data", "simpleIcon": "snowflake", "domains": ["snowflake.com"] },
-    { "id": "databricks", "category": "data", "simpleIcon": "databricks", "domains": ["databricks.com"] },
-    { "id": "planetscale", "category": "data", "simpleIcon": "planetscale", "aliases": ["planet-scale"], "domains": ["planetscale.com"] },
-    { "id": "prisma", "category": "data", "simpleIcon": "prisma", "domains": ["prisma.io"] },
-    { "id": "sqlite", "category": "data", "simpleIcon": "sqlite", "domains": ["sqlite.org"] },
-    { "id": "mariadb", "category": "data", "simpleIcon": "mariadb", "aliases": ["maria-db"], "domains": ["mariadb.org"] },
-    { "id": "influxdb", "category": "data", "simpleIcon": "influxdb", "aliases": ["influx-db"], "domains": ["influxdata.com"] },
-    { "id": "apache-airflow", "category": "data", "simpleIcon": "apacheairflow", "aliases": ["airflow"], "domains": ["airflow.apache.org"] },
-
-    { "id": "notion", "category": "collaboration", "simpleIcon": "notion", "domains": ["notion.so"] },
-    { "id": "figma", "category": "collaboration", "simpleIcon": "figma", "domains": ["figma.com"] },
-    { "id": "jira", "category": "collaboration", "simpleIcon": "jira", "domains": ["atlassian.com"] },
-    { "id": "linear", "category": "collaboration", "simpleIcon": "linear", "domains": ["linear.app"] },
-    { "id": "discord", "category": "collaboration", "simpleIcon": "discord", "domains": ["discord.com"] },
-    { "id": "zoom", "category": "collaboration", "simpleIcon": "zoom", "domains": ["zoom.us"] },
-    { "id": "trello", "category": "collaboration", "simpleIcon": "trello", "domains": ["trello.com"] },
-    { "id": "asana", "category": "collaboration", "simpleIcon": "asana", "domains": ["asana.com"] },
-    { "id": "airtable", "category": "collaboration", "simpleIcon": "airtable", "domains": ["airtable.com"] },
-    { "id": "miro", "category": "collaboration", "simpleIcon": "miro", "domains": ["miro.com"] },
-    { "id": "stripe", "category": "business", "simpleIcon": "stripe", "domains": ["stripe.com"] },
-    { "id": "shopify", "category": "business", "simpleIcon": "shopify", "domains": ["shopify.com"] },
-    { "id": "hubspot", "category": "business", "simpleIcon": "hubspot", "domains": ["hubspot.com"] },
-    { "id": "paypal", "category": "business", "simpleIcon": "paypal", "domains": ["paypal.com"] },
-    { "id": "intercom", "category": "business", "simpleIcon": "intercom", "domains": ["intercom.com"] },
-    { "id": "zendesk", "category": "business", "simpleIcon": "zendesk", "domains": ["zendesk.com"] },
-    { "id": "wordpress", "category": "business", "simpleIcon": "wordpress", "domains": ["wordpress.org", "wordpress.com"] },
-    { "id": "woocommerce", "category": "business", "simpleIcon": "woocommerce", "aliases": ["woo-commerce"], "domains": ["woocommerce.com"] },
-
-    { "id": "wechat", "category": "channel", "simpleIcon": "wechat", "aliases": ["weixin", "微信"], "domains": ["weixin.qq.com"] },
-    { "id": "youtube", "category": "channel", "simpleIcon": "youtube", "domains": ["youtube.com", "youtu.be"] },
-    { "id": "tiktok", "category": "channel", "simpleIcon": "tiktok", "aliases": ["douyin", "抖音"], "domains": ["tiktok.com", "douyin.com"] },
-    { "id": "x", "category": "channel", "simpleIcon": "x", "aliases": ["twitter"], "domains": ["x.com", "twitter.com"] },
-    { "id": "instagram", "category": "channel", "simpleIcon": "instagram", "domains": ["instagram.com"] },
-    { "id": "facebook", "category": "channel", "simpleIcon": "facebook", "domains": ["facebook.com"] },
-    { "id": "reddit", "category": "channel", "simpleIcon": "reddit", "domains": ["reddit.com"] },
-    { "id": "telegram", "category": "channel", "simpleIcon": "telegram", "domains": ["telegram.org", "t.me"] },
-    { "id": "whatsapp", "category": "channel", "simpleIcon": "whatsapp", "domains": ["whatsapp.com"] },
-    { "id": "pinterest", "category": "channel", "simpleIcon": "pinterest", "domains": ["pinterest.com"] },
-
-    { "id": "python", "category": "language", "simpleIcon": "python", "domains": ["python.org"] },
-    { "id": "typescript", "category": "language", "simpleIcon": "typescript", "aliases": ["ts"], "domains": ["typescriptlang.org"] },
-    { "id": "javascript", "category": "language", "simpleIcon": "javascript", "aliases": ["js"] },
-    { "id": "go", "category": "language", "simpleIcon": "go", "aliases": ["golang"], "domains": ["go.dev"] },
-    { "id": "rust", "category": "language", "simpleIcon": "rust", "domains": ["rust-lang.org"] },
-    { "id": "node-js", "category": "framework", "simpleIcon": "nodedotjs", "aliases": ["node", "nodejs"], "domains": ["nodejs.org"] },
-    { "id": "react", "category": "framework", "simpleIcon": "react", "aliases": ["reactjs"], "domains": ["react.dev"] },
-    { "id": "vue", "category": "framework", "simpleIcon": "vuedotjs", "aliases": ["vuejs", "vue.js"], "domains": ["vuejs.org"] },
-    { "id": "next-js", "category": "framework", "simpleIcon": "nextdotjs", "aliases": ["nextjs", "next.js"], "domains": ["nextjs.org"] },
-    { "id": "pytorch", "category": "framework", "simpleIcon": "pytorch", "domains": ["pytorch.org"] },
-    { "id": "tensorflow", "category": "framework", "simpleIcon": "tensorflow", "domains": ["tensorflow.org"] },
-    { "id": "angular", "category": "framework", "simpleIcon": "angular", "domains": ["angular.dev"] },
-    { "id": "svelte", "category": "framework", "simpleIcon": "svelte", "domains": ["svelte.dev"] },
-    { "id": "django", "category": "framework", "simpleIcon": "django", "domains": ["djangoproject.com"] },
-    { "id": "flask", "category": "framework", "simpleIcon": "flask", "domains": ["palletsprojects.com"] },
-    { "id": "fastapi", "category": "framework", "simpleIcon": "fastapi", "domains": ["fastapi.tiangolo.com"] },
-    { "id": "spring", "category": "framework", "simpleIcon": "spring", "aliases": ["spring-boot"], "domains": ["spring.io"] },
-    { "id": "dotnet", "category": "framework", "simpleIcon": "dotnet", "aliases": [".net"], "domains": ["dotnet.microsoft.com"] }
+    {
+      "id": "openrouter",
+      "title": null,
+      "category": "ai",
+      "asset": "openrouter.svg",
+      "hex": "94A3B8",
+      "viewBox": 512.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/openrouter/default.svg",
+      "aliases": [
+        "open-router"
+      ],
+      "domains": [
+        "openrouter.ai"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "opensearch",
+      "title": null,
+      "category": "data",
+      "asset": "opensearch.svg",
+      "hex": "005EB8",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/opensearch/default.svg",
+      "aliases": [
+        "open-search"
+      ],
+      "domains": [
+        "opensearch.org"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "pagerduty",
+      "title": null,
+      "category": "engineering",
+      "asset": "pagerduty.svg",
+      "hex": "06AC38",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/pagerduty/default.svg",
+      "aliases": [
+        "pager-duty"
+      ],
+      "domains": [
+        "pagerduty.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "paypal",
+      "title": null,
+      "category": "business",
+      "asset": "paypal.svg",
+      "hex": "002991",
+      "viewBox": 37.35095977783203,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/paypal/default.svg",
+      "domains": [
+        "paypal.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "perplexity",
+      "title": null,
+      "category": "ai",
+      "asset": "perplexity.svg",
+      "hex": "1FB8CD",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/perplexity/default.svg",
+      "domains": [
+        "perplexity.ai"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "pinterest",
+      "title": null,
+      "category": "channel",
+      "asset": "pinterest.svg",
+      "hex": "BD081C",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/pinterest/default.svg",
+      "domains": [
+        "pinterest.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "planetscale",
+      "title": null,
+      "category": "data",
+      "asset": "planetscale.svg",
+      "hex": "000000",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/planetscale/default.svg",
+      "aliases": [
+        "planet-scale"
+      ],
+      "domains": [
+        "planetscale.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "postgresql",
+      "title": "PostgreSQL",
+      "category": "data",
+      "aliases": [
+        "postgres",
+        "psql"
+      ],
+      "domains": [
+        "www.postgresql.org"
+      ],
+      "asset": "postgresql.svg",
+      "hex": "4169E1",
+      "viewBox": 432.071,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/postgresql/default.svg"
+    },
+    {
+      "id": "prisma",
+      "title": null,
+      "category": "data",
+      "asset": "prisma.svg",
+      "hex": "2D3748",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/prisma/default.svg",
+      "domains": [
+        "prisma.io"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "prometheus",
+      "title": null,
+      "category": "engineering",
+      "asset": "prometheus.svg",
+      "hex": "E6522C",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/prometheus/default.svg",
+      "domains": [
+        "prometheus.io"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "pulumi",
+      "title": null,
+      "category": "engineering",
+      "asset": "pulumi.svg",
+      "hex": "8A3391",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/pulumi/default.svg",
+      "domains": [
+        "pulumi.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "python",
+      "title": null,
+      "category": "language",
+      "asset": "python.svg",
+      "hex": "3776AB",
+      "viewBox": 32.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/python/default.svg",
+      "domains": [
+        "python.org"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "pytorch",
+      "title": null,
+      "category": "framework",
+      "asset": "pytorch.svg",
+      "hex": "EE4C2C",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/pytorch/default.svg",
+      "domains": [
+        "pytorch.org"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "qwen",
+      "title": null,
+      "category": "ai",
+      "asset": "qwen.svg",
+      "hex": "615CED",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/qwen/default.svg",
+      "domains": [
+        "qwen.ai"
+      ],
+      "license": "MIT"
+    },
+    {
+      "id": "rabbitmq",
+      "title": null,
+      "category": "data",
+      "asset": "rabbitmq.svg",
+      "hex": "FF6600",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/rabbitmq/default.svg",
+      "aliases": [
+        "rabbit-mq"
+      ],
+      "domains": [
+        "rabbitmq.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "railway",
+      "title": null,
+      "category": "milestone",
+      "asset": "railway.svg",
+      "hex": "0B0D0E",
+      "viewBox": 1024.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/railway/default.svg",
+      "domains": [
+        "railway.com",
+        "railway.app"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "react",
+      "title": "React",
+      "category": "framework",
+      "domains": [
+        "react.dev"
+      ],
+      "asset": "react.svg",
+      "hex": "61DAFB",
+      "viewBox": 569.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/react/default.svg"
+    },
+    {
+      "id": "reddit",
+      "title": null,
+      "category": "channel",
+      "asset": "reddit.svg",
+      "hex": "FF4500",
+      "viewBox": 216.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/reddit/default.svg",
+      "domains": [
+        "reddit.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "redis",
+      "title": null,
+      "category": "data",
+      "asset": "redis.svg",
+      "hex": "FF4438",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/redis/default.svg",
+      "domains": [
+        "redis.io"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "render",
+      "title": null,
+      "category": "milestone",
+      "asset": "render.svg",
+      "hex": "000000",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/render/default.svg",
+      "domains": [
+        "render.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "replicate",
+      "title": null,
+      "category": "ai",
+      "asset": "replicate.svg",
+      "hex": "EA2805",
+      "viewBox": 726.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/replicate/default.svg",
+      "domains": [
+        "replicate.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "rust",
+      "title": null,
+      "category": "language",
+      "asset": "rust.svg",
+      "hex": "000000",
+      "viewBox": 224.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/rust/default.svg",
+      "domains": [
+        "rust-lang.org"
+      ],
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "id": "sentry",
+      "title": null,
+      "category": "engineering",
+      "asset": "sentry.svg",
+      "hex": "362D59",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/sentry/default.svg",
+      "domains": [
+        "sentry.io"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "shopify",
+      "title": null,
+      "category": "business",
+      "asset": "shopify.svg",
+      "hex": "7AB55C",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/shopify/default.svg",
+      "domains": [
+        "shopify.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "snowflake",
+      "title": null,
+      "category": "data",
+      "asset": "snowflake.svg",
+      "hex": "29B5E8",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/snowflake/default.svg",
+      "domains": [
+        "snowflake.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "spring",
+      "title": null,
+      "category": "framework",
+      "asset": "spring.svg",
+      "hex": "6DB33F",
+      "viewBox": 64.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/spring/default.svg",
+      "aliases": [
+        "spring-boot"
+      ],
+      "domains": [
+        "spring.io"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "sqlite",
+      "title": null,
+      "category": "data",
+      "asset": "sqlite.svg",
+      "hex": "003B57",
+      "viewBox": 512.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/sqlite/default.svg",
+      "domains": [
+        "sqlite.org"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "stripe",
+      "title": null,
+      "category": "business",
+      "asset": "stripe.svg",
+      "hex": "635BFF",
+      "viewBox": 512.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/stripe/default.svg",
+      "domains": [
+        "stripe.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "supabase",
+      "title": null,
+      "category": "milestone",
+      "asset": "supabase.svg",
+      "hex": "3FCF8E",
+      "viewBox": 109.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/supabase/default.svg",
+      "domains": [
+        "supabase.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "svelte",
+      "title": null,
+      "category": "framework",
+      "asset": "svelte.svg",
+      "hex": "FF3E00",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/svelte/default.svg",
+      "domains": [
+        "svelte.dev"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "telegram",
+      "title": null,
+      "category": "channel",
+      "asset": "telegram.svg",
+      "hex": "26A5E4",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/telegram/default.svg",
+      "domains": [
+        "telegram.org",
+        "t.me"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "tensorflow",
+      "title": null,
+      "category": "framework",
+      "asset": "tensorflow.svg",
+      "hex": "FF6F00",
+      "viewBox": 266.79,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/tensorflow/default.svg",
+      "domains": [
+        "tensorflow.org"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "terraform",
+      "title": null,
+      "category": "engineering",
+      "asset": "terraform.svg",
+      "hex": "844FBA",
+      "viewBox": 50.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/terraform/default.svg",
+      "domains": [
+        "terraform.io"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "tiktok",
+      "title": null,
+      "category": "channel",
+      "asset": "tiktok.svg",
+      "hex": "000000",
+      "viewBox": 352.28,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/tiktok/default.svg",
+      "aliases": [
+        "douyin",
+        "抖音"
+      ],
+      "domains": [
+        "tiktok.com",
+        "douyin.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "traefik",
+      "title": "Traefik",
+      "category": "milestone",
+      "aliases": [
+        "traefik proxy"
+      ],
+      "domains": [
+        "traefik.io"
+      ],
+      "asset": "traefik.svg",
+      "hex": "24A1C1",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/traefik/default.svg"
+    },
+    {
+      "id": "trello",
+      "title": null,
+      "category": "collaboration",
+      "asset": "trello.svg",
+      "hex": "0052CC",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/trello/default.svg",
+      "domains": [
+        "trello.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "typescript",
+      "title": null,
+      "category": "language",
+      "asset": "typescript.svg",
+      "hex": "3178C6",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/typescript/default.svg",
+      "aliases": [
+        "ts"
+      ],
+      "domains": [
+        "typescriptlang.org"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "vercel",
+      "title": null,
+      "category": "milestone",
+      "asset": "vercel.svg",
+      "hex": "000",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/vercel/default.svg",
+      "domains": [
+        "vercel.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "vite",
+      "title": null,
+      "category": "framework",
+      "asset": "vite.svg",
+      "hex": "9135FF",
+      "viewBox": 48.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/vite/default.svg",
+      "domains": [
+        "vite.dev"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "vue",
+      "title": null,
+      "category": "framework",
+      "asset": "vue.svg",
+      "hex": "4FC08D",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/vuedotjs/default.svg",
+      "aliases": [
+        "vuejs",
+        "vue.js"
+      ],
+      "domains": [
+        "vuejs.org"
+      ],
+      "license": "CC-BY-NC-SA-4.0"
+    },
+    {
+      "id": "wechat",
+      "title": null,
+      "category": "channel",
+      "asset": "wechat.svg",
+      "hex": "07C160",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/wechat/default.svg",
+      "aliases": [
+        "weixin",
+        "微信"
+      ],
+      "domains": [
+        "weixin.qq.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "whatsapp",
+      "title": null,
+      "category": "channel",
+      "asset": "whatsapp.svg",
+      "hex": "25D366",
+      "viewBox": 360.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/whatsapp/default.svg",
+      "domains": [
+        "whatsapp.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "woocommerce",
+      "title": null,
+      "category": "business",
+      "asset": "woocommerce.svg",
+      "hex": "96588A",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/woocommerce/default.svg",
+      "aliases": [
+        "woo-commerce"
+      ],
+      "domains": [
+        "woocommerce.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "wordpress",
+      "title": null,
+      "category": "business",
+      "asset": "wordpress.svg",
+      "hex": "21759B",
+      "viewBox": 122.52,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/wordpress/default.svg",
+      "domains": [
+        "wordpress.org",
+        "wordpress.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "x",
+      "title": null,
+      "category": "channel",
+      "asset": "x.svg",
+      "hex": "000000",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/x/default.svg",
+      "aliases": [
+        "twitter"
+      ],
+      "domains": [
+        "x.com",
+        "twitter.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "youtube",
+      "title": null,
+      "category": "channel",
+      "asset": "youtube.svg",
+      "hex": "FF0000",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/youtube/default.svg",
+      "domains": [
+        "youtube.com",
+        "youtu.be"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "zendesk",
+      "title": null,
+      "category": "business",
+      "asset": "zendesk.svg",
+      "hex": "03363D",
+      "viewBox": 24.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/zendesk/default.svg",
+      "domains": [
+        "zendesk.com"
+      ],
+      "license": "CC0-1.0"
+    },
+    {
+      "id": "zoom",
+      "title": null,
+      "category": "collaboration",
+      "asset": "zoom.svg",
+      "hex": "0B5CFF",
+      "viewBox": 256.0,
+      "provider": "TheSVG",
+      "source": "https://thesvg.org/icons/zoom/default.svg",
+      "domains": [
+        "zoom.us"
+      ],
+      "license": "CC0-1.0"
+    }
   ]
 }

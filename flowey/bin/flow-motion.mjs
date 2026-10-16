@@ -52,16 +52,37 @@ const AMBIENT_CSS = '@keyframes flowey-ambient-loop{from{stroke-dashoffset:18;op
   + 'html svg[data-animation="trace"] [data-graph-role="automatic-crossover"]:has(> [data-animate="edge"]) > [data-graph-role="automatic-crossover-underlay"]{animation:none !important}}';
 
 // Slide fit for `?present=1` deck iframes: the slide carries the title, so
-// the viewer header is hidden and its budget returns to the canvas. Notes
-// stay reachable: the rail-open cards rule beats the present-mode hide.
-const SLIDE_FIT_CSS = 'html[data-present="true"]:not([data-embed="true"]) body{padding:.5rem}'
-  + 'html[data-present="true"]:not([data-embed="true"]) .container{gap:0;height:calc(100dvh - 1rem)}'
+// the viewer header is hidden and its budget returns to the canvas.
+//
+// The rest of the viewer chrome goes with it, because a slide wants the
+// drawing and nothing else: the preset/live/export toolbar, the bottom
+// find-and-zoom nav, the notes rail and its reveal pill, and the drawing's own
+// legend. All five are viewer affordances for a page someone is exploring; in
+// a slide the presenter already has the narration, so each one is chrome
+// competing with the artefact the slide exists to show. Notes live in the
+// authoring candidate too, and the deck's own readout carries the numbers.
+//
+// Opt-in per present mode, never under ?embed=1: embed already hides the
+// chrome and must keep doing so on its own terms, and none of this touches
+// the default page, where the toolbar and the rail are the product.
+const SLIDE_FIT_CSS = 'html[data-present="true"]:not([data-embed="true"]) body{padding:0}'
+  + 'html[data-present="true"]:not([data-embed="true"]) .container{gap:0;height:100dvh;padding:0}'
   + 'html[data-present="true"]:not([data-embed="true"]) .header{display:none !important}'
-  + 'html[data-present="true"]:not([data-embed="true"]) .diagram-container{padding:.5rem;padding-bottom:calc(.5rem + var(--flowey-nav-reserve,0px))}'
-  + 'html[data-present="true"]:not([data-embed="true"])[data-reader-rail="true"] .cards{display:flex !important}'
-  + 'html[data-present="true"]:not([data-embed="true"]) .rail-reveal{top:3.75rem}';
+  + 'html[data-present="true"]:not([data-embed="true"]) .diagram-container{padding:0}'
+  + 'html[data-present="true"]:not([data-embed="true"]) .toolbar,'
+  + 'html[data-present="true"]:not([data-embed="true"]) .diagram-nav,'
+  + 'html[data-present="true"]:not([data-embed="true"]) .rail-reveal,'
+  + 'html[data-present="true"]:not([data-embed="true"]) .reader-rail,'
+  + 'html[data-present="true"]:not([data-embed="true"]) .cards,'
+  + 'html[data-present="true"]:not([data-embed="true"]) [data-legend]{display:none !important}'
+  + 'html[data-present="true"]:not([data-embed="true"]) .diagram-container{--flowey-nav-reserve:0px}'
+  + 'html[data-present="true"]:not([data-embed="true"]){--flowey-rail-width:0px !important;--flowey-rail-gap:0px !important;--flowey-diagram-max-width:100% !important}'
+  + 'html[data-present="true"]:not([data-embed="true"]) .diagram-container{width:100% !important;min-width:0 !important;max-width:100% !important}'
+  + 'html[data-present="true"]:not([data-embed="true"]) .diagram-container svg{max-width:100% !important;}'
+  + 'html[data-present="true"]:not([data-embed="true"]) .diagram-container{height:100% !important;min-height:0 !important;max-height:100% !important;overflow:hidden !important}'
+  + 'html[data-present="true"]:not([data-embed="true"]) .diagram-container svg{width:100% !important;height:100% !important;}';
 
-const RAIL_JS = '(function(){function content(){try{var c=document.querySelector(".cards");var o=document.getElementById("node-outline");var f=document.querySelector(".focus-chip.relationship-lens");return Boolean((c&&c.children.length&&!c.hidden)||(o&&!o.hidden)||(f&&!f.hidden));}catch(e){return false;}}'
+const RAIL_JS = '(function(){function vis(el){try{return !!el&&!el.hidden&&getComputedStyle(el).display!=="none"&&getComputedStyle(el).visibility!=="hidden";}catch(e){return false;}}function content(){try{var c=document.querySelector(".cards");var o=document.getElementById("node-outline");var f=document.querySelector(".focus-chip.relationship-lens");return Boolean((c&&c.children.length&&vis(c))||vis(o)||vis(f));}catch(e){return false;}}'
   + 'function pin(){try{var h=document.documentElement;if(h.getAttribute("data-present")!=="true"||h.getAttribute("data-embed")==="true")return;if(!content())return;var m=h.getAttribute("data-reader-rail");if(m!=="true"&&m!=="collapsed"){h.setAttribute("data-reader-rail","collapsed");h.style.setProperty("--flowey-rail-width","288px");h.style.setProperty("--flowey-rail-gap","20px");}var b=document.getElementById("rail-reveal");if(b&&m!=="true"){b.hidden=false;b.setAttribute("aria-expanded","false");}}catch(e){}}'
   + 'pin();try{new MutationObserver(function(muts){for(var i=0;i<muts.length;i++){if(muts[i].attributeName==="data-reader-rail"){pin();break;}}}).observe(document.documentElement,{attributes:true,attributeFilter:["data-reader-rail"]});}catch(e){}'
   + 'document.addEventListener("DOMContentLoaded",pin);})();';

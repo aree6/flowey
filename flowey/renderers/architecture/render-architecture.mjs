@@ -925,13 +925,25 @@ function renderComponent(c) {
   const tag = c.tag
     ? `\n        <text data-detail="fine" x="${cx}" y="${c.y + labelLayout.ys[hasSub ? 2 : 1]}" class="${accent}" font-size="${fittedNodeFontSize(c.tag, c.width, componentTextFit.tagPreferred, componentTextFit.tagMinimum)}" text-anchor="middle">${esc(c.tag)}</text>`
     : '';
-  const brand = renderBrandMark(c, { x: c.x + c.width - 22, y: c.y + 6 });
+  // A product mark stands in for the type glyph in the corner rail rather than
+  // competing with it: one identity per node, drawn on the node face. Both
+  // occupy the identical pinned top-left corner so a node never mixes a
+  // corner mark with a mid-left glyph.
+  const hasBrand = Boolean(brandMarkFor(c));
+  const cornerX = c.x + 6;
+  const cornerY = c.y + labelLayout.sigilY;
+  const brand = hasBrand
+    ? renderBrandMark(c, { x: cornerX, y: cornerY, size: labelLayout.sigilSize, transparent: true })
+    : '';
+  const glyph = hasBrand
+    ? ''
+    : renderSemanticSigil(c.type, { icon: c.icon, x: cornerX, y: cornerY, size: labelLayout.sigilSize });
   const passport = { kind: c.type, sublabel: c.sublabel, tag: c.tag, context: componentContext(c), ...brandMetadataFor(c) };
   return `        <g ${focusNodeAttrs(c.id, c.label, passport, arch.meta.locale)}>
           ${focusNodeTitle(c.label, passport)}
           <rect x="${c.x}" y="${c.y}" width="${c.width}" height="${c.height}" rx="6" class="c-mask"/>
           <rect x="${c.x}" y="${c.y}" width="${c.width}" height="${c.height}" rx="6" class="${fill}"${animateAttr(arch.meta, 'node', componentSteps.get(c.id))} stroke-width="1.5"/>
-          ${renderSemanticSigil(c.type, { icon: c.icon, x: c.x + 6, y: c.y + labelLayout.sigilY, size: labelLayout.sigilSize })}${brand ? `\n          ${brand}` : ''}
+          ${glyph}${brand ? `\n          ${brand}` : ''}
           <text data-node-label=""${hasSub ? ' data-detail-anchor=""' : ''} x="${c.x + labelLayout.x}" y="${labelY}" class="t-primary" font-size="${labelFontSize}" font-weight="600" text-anchor="middle">${esc(c.label)}</text>${sub}${tag}
         </g>`;
 }

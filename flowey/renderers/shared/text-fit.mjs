@@ -105,6 +105,8 @@ export function nodeLabelLayout({ width, height, rows, side = 'left', brand = fa
   }
   // A deliberately short fixed box may have no spare row. Preserve its text
   // and geometry, and fit only the decorative sigil in the space above it.
+  // The corner stays pinned: a mark must never drift to the left middle just
+  // because the box is short.
   result.sigilY = 1;
   result.sigilSize = Math.max(1, Math.min(SEMANTIC_SIGIL_SIZE,
     Math.floor(rows[0].y - rows[0].font * 1.2 - 3)));
